@@ -38,6 +38,9 @@ public class UserRequestDTO implements Serializable {
     @NotNull(message = "username must be not null")
     private String userName;
 
+    @NotNull(message = "password must be not null")
+    private String password;
+
     @Email(message = "email invalid format") // Chi chap nhan nhung gia tri dung dinh dang email
     //@Pattern(regexp = "^\\d{10}$", message = "phone invalid format")
     private String email;

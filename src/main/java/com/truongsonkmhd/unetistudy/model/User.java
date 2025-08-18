@@ -38,7 +38,7 @@ public class User implements UserDetails , Serializable {
     @Column(name = "gender", length = 255)
     private Gender gender;
 
-    @Column(name = "birthday", length = 255)
+    @Column(name = "date_of_birth", length = 255)
     private Date birthday;
 
     @Column(name = "email", length = 255)
@@ -60,7 +60,8 @@ public class User implements UserDetails , Serializable {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "status", length = 255)
+    @Column(name = "status", length = 255 ,insertable = false)
+    //insertable = false → Hibernate sẽ không đưa cột status vào câu lệnh insert nếu bạn không set ⇒ DB dùng DEFAULT 'ACTIVE'.
     private UserStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")

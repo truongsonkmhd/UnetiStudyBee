@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,6 @@ public class UserServiceDetail {
     private final UserRepository userRepository;
 
     public UserDetailsService userDetailsService() {
-        return userRepository::findByUsername;
-    }
+        return username -> userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));    }
 }

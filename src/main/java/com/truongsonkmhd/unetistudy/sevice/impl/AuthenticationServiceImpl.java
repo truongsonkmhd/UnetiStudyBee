@@ -2,6 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
 import com.truongsonkmhd.unetistudy.dto.response.TokenResponse;
+import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
 import com.truongsonkmhd.unetistudy.sevice.JwtService;
@@ -51,10 +52,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // Get user
-        var user = userRepository.findByUsername(request.getUsername());
-        if (user == null) {
-            log.info("LỖI LÒI");
-            throw new UsernameNotFoundException(request.getUsername());
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + request.getUsername()));
+
+        if (!user.isEnabled()) {
+            throw new DisabledException("User is disabled");
         }
 
         String accessToken = jwtService.generateAccessToken(user.getUsername(), authorities);

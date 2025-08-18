@@ -5,11 +5,13 @@ import com.truongsonkmhd.unetistudy.dto.request.UserPasswordRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.request.UserUpdateRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.response.UserPageResponse;
 import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
+    UserDetailsService userDetailsService();
 
     UserPageResponse getAllUsersWithSortBy(String sort, int page, int size);
 

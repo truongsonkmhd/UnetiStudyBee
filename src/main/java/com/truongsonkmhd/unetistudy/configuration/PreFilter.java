@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Configuration
 @Slf4j(topic = "CUSTOMIZE-REQUEST-FILTER ")
-public class CustomizeRequestFilter extends OncePerRequestFilter {
+public class PreFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("{} {}", request.getMethod(), request.getRequestURI());

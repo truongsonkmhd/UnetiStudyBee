@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @Tag(name = "User Controller")
 @Slf4j(topic = "USER_CONTROLLER")
 @RequiredArgsConstructor
@@ -97,19 +97,13 @@ public class UserController {
 
         log.info("Request add user,{} {}", request.getFirstName(), request.getLastName());
         try{
-            UUID userId = userService. saveUser(request);
+            UUID userId = userService.saveUser(request);
             return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"),userId);
         }catch (Exception e){
             log.info("errorMessage = {}", e.getMessage() , e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Add user fail");
         }
 
-//        Map<String, Object> result = new LinkedHashMap<>();
-//        result.put("status", HttpStatus.CREATED.value());
-//        result.put("message", " User created successfully");
-//        result.put("data", userService.saveUser(request));
-//
-//        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update User", description = "API update user to database")

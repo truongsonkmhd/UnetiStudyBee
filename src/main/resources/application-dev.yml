@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/uneti_study
     username: postgres
-    password: Son01072004jqk@
+    password: postgres
   jpa:
     properties:
       hibernate:
@@ -33,5 +33,6 @@ openapi:
 jwt:
   expiryMinutes: 5
   expiryDay: 14 #2 tuan
-  accessKey: q/pUsru9/XIxLDSON1wVxV5CA1i1h/mTrFU6a0l6KaA=
-  refreshKey: og9IMp84+s2W5uaheMxxAcEo9N5iyhzxlxFYIMIp4kI=
+  accessKey: c2VjcmV0QGtleS5hcGlfaGFzX2JlZW5fZGVzaWduZWRfYnlfVGF5TFE=
+  refreshKey: 9k1jJAWAKQCnCEz1pwcPNegbHoLugf9hgEnn6sz5pFc=
+  secret: my-super-secret-key-very-strong

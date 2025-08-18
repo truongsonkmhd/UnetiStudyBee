@@ -8,7 +8,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.*;
@@ -30,6 +29,10 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${jwt.refreshKey}")
     private String refreshKey;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
     @Override
     public String generateAccessToken(String username, List<String> authorities) {
         log.info("Generate access token for user {} with authorities {}", username, authorities);
@@ -65,12 +68,17 @@ public class JwtServiceImpl implements JwtService {
     private Claims extraAllClaim(String token, TokenType type) {
         try {
             return Jwts.parser()
-                    .setSigningKey(accessKey)
+                    .setSigningKey(getSignInKey())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
             throw new AccessDeniedException("Access denied, error: " + e.getMessage());
         }
+    }
+
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
 

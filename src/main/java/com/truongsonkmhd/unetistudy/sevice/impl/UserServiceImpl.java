@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,11 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Override
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
     @Override
     public UserPageResponse getAllUsersWithSortBy(String sortBy, int pageNo, int pageSize) {
 
@@ -173,7 +180,8 @@ public class UserServiceImpl implements UserService {
                 .email(req.getEmail())
                 .phone(req.getPhone())
                 .username(req.getUserName())
-                .status(UserStatus.NONE)
+                .password(passwordEncoder.encode(req.getPassword()))
+                .status(UserStatus.ACTIVE)
                 .type(UserType.valueOf(req.getType().toUpperCase()))
                 .addresses(convertToAddress(req.getAddresses()))
                 .build();
