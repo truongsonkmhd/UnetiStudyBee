@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,8 +14,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "select u from User u where u.status = 'ACTIVE'  " +
-            "and lower(u.firstName) like :keyword" +
-            " or lower(u.lastName)  like :keyword" +
+            "and lower(u.fullName) like :keyword" +
             " or lower(u.username) like :keyword" +
             " or lower(u.phone) like :keyword" +
             " or lower(u.email) like :keyword")
@@ -22,5 +22,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByUsername(String username);
 
-    User findByEmail(String email);
+    @Query("select  u from User u join u.token t where t.refreshToken =: refreshToken")
+    Optional<User> findByRefreshToken(@Param("refreshToken") String refreshToken);
+    // đây lầ cách lấy ở userRepo , nhưng ta nên lấy ở TokenRepository để đỡ phình to class (áp dụng SOLID)
+
+    @Query("""
+           select distinct u
+           from User u
+           left join fetch u.roles r
+           where u.username = :username
+             and u.isDeleted = :isDeleted
+           """)
+    Optional<User> getByUsernameAndIsDeletedWithRoles(@Param("username") String username,
+                                                      @Param("isDeleted") Boolean isDeleted);
+   //(left join "fetch") Dùng fetch để giải quyết N+1 problem và đảm bảo dữ liệu quan hệ được load cùng lúc.
 }

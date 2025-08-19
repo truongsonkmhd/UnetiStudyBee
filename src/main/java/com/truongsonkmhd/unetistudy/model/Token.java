@@ -40,6 +40,6 @@ public class Token {
     private boolean expired;
 
     @OneToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "id", unique = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 }

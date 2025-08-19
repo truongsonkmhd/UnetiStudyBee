@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/uneti_study
     username: postgres
-    password: Son01072004jqk@
+    password: postgres
   jpa:
     properties:
       hibernate:
@@ -30,10 +30,33 @@ openapi:
     title: Backend service
     version: 1.0.0
 
-jwt:
-  expiryMinutes: 5
-  expiryDay: 14 #2 tuan
-  accessKey: c2VjcmV0QGtleS5hcGlfaGFzX2JlZW5fZGVzaWduZWRfYnlfVGF5TFE=
-  refreshKey: 9k1jJAWAKQCnCEz1pwcPNegbHoLugf9hgEnn6sz5pFc=
-  secretKey: QpOD7PxEqUCWRB8BU6e+Hv29TQLUuG+0sxxSJZWAPGhrVVszWZU2hT5RhoQTvhgv
-  expiration: 2592000 # 30 days = 30 * 24 * 60 * 60
+security:
+  jwt:
+    refresh-token-validity-in-seconds: 2592000
+    refresh-token-validity-in-seconds-for-remember-me: 25920000
+
+jhipster:
+  # CORS is disabled by default on microservices, as you should access them through a gateway.
+  # If you want to enable it, please uncomment the configuration below.
+  cors:
+    allowed-origins: "http://localhost:4221,https://localhost:4221,http://localhost:8097,https://localhost:8097,"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count"
+    allow-credentials: true
+    max-age: 1800
+  security:
+    authentication:
+      jwt:
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        base64-secret: ODFjYzVlMDQ2NDlhNjM2NDRiN2ZjYWRhNzlhY2ExODk2NzNiMWQzZmI1NDBiYzA2N2FhZWU4OGZjYTQyZjU1YjllY2YzNDQzNDg3MDkxYjhkMzc2YTcyNzhiMWY1OWRkYzUwN2FhNGQ4MjUxYzVjNGEzODU3MTA2MmU4MjcwODg=
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+  logging:
+    use-json-format: false # By default, logs are not in Json format
+    logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
+      enabled: false
+      host: localhost
+      port: 5000
+      ring-buffer-size: 512

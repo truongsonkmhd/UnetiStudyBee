@@ -21,11 +21,8 @@ import static com.truongsonkmhd.unetistudy.common.Gender.*;
 
 @Getter
 public class UserRequestDTO implements Serializable {
-    @NotBlank(message = "firstName must be not blank") // Khong cho phep gia tri blank
-    private String firstName;
-
-    @NotNull(message = "lastName must be not null") // Khong cho phep gia tri null
-    private String lastName;
+    @NotBlank(message = "fullName must be not blank") // Khong cho phep gia tri blank
+    private String fullName;
 
     @GenderSubset(anyOf = {MALE, FEMALE, OTHER})// cách 2 validation
     private Gender gender;

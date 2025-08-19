@@ -13,6 +13,7 @@ import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.AddressRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
+import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsService userDetailsService() {
+
         return username -> userRepository.findByUsername(username)
+                .map(MyUserDetail::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
     @Override
@@ -120,8 +123,7 @@ public class UserServiceImpl implements UserService {
         log.info("Convert User Entity Page");
         List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
                 .id(entity.getId())
-                .fistName(entity.getFirstName())
-                .lastName(entity.getLastName())
+                .fullName(entity.getFullName())
                 .gender(entity.getGender())
                 .birthday(entity.getBirthday())
                 .userName(entity.getUsername())
@@ -149,8 +151,7 @@ public class UserServiceImpl implements UserService {
 
         return UserResponse.builder()
                 .id(id)
-                .fistName(user.getFirstName())
-                .lastName(user.getLastName())
+                .fullName(user.getFullName())
                 .gender(user.getGender())
                 .birthday(user.getBirthday())
                 .userName(user.getUsername())
@@ -173,8 +174,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     public UUID saveUser(UserRequestDTO req) {
         User user = User.builder()
-                .firstName(req.getFirstName())
-                .lastName(req.getLastName())
+                .fullName(req.getFullName())
                 .gender(req.getGender())
                 .birthday(req.getBirthday())
                 .email(req.getEmail())
@@ -214,8 +214,7 @@ public class UserServiceImpl implements UserService {
         log.info("Updating user: {}", req);
         // Get user by id
         User user = getUserEntity(userId);
-        user.setFirstName(req.getFirstName());
-        user.setLastName(req.getLastName());
+        user.setFullName(req.getFullName());
         user.setGender(req.getGender());
         user.setBirthday(req.getBirthday());
 

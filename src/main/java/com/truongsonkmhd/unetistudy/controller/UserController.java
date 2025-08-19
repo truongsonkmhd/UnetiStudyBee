@@ -99,7 +99,6 @@ public class UserController {
     @PostMapping("/add")
     public ResponseData<UUID> createUser(@RequestBody UserRequestDTO request) {
 
-        log.info("Request add user,{} {}", request.getFirstName(), request.getLastName());
         try{
             UUID userId = userService.saveUser(request);
             return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"),userId);

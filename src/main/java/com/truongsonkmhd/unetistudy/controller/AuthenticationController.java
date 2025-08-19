@@ -1,8 +1,10 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.truongsonkmhd.unetistudy.configuration.Translator;
+import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
 import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
 import com.truongsonkmhd.unetistudy.dto.request.UserRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
 import com.truongsonkmhd.unetistudy.dto.response.ResponseData;
 import com.truongsonkmhd.unetistudy.dto.response.ResponseError;
 import com.truongsonkmhd.unetistudy.dto.response.TokenResponse;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth/authenticate")
 @Slf4j(topic = "AUTHENTICATION-CONTROLLER")
 @Tag(name = "Authentication Controller")
 @RequiredArgsConstructor
@@ -32,22 +34,35 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @Operation(summary = "Create User", description = "API add new user to database")
-    @PostMapping("/login")
-    public ResponseEntity<IResponseMessage> createUser(
-            @RequestBody SignInRequest request
-    ) {
-        String tokenGenerator = authenticationService.login(
-                request.getUsername(),
-                request.getPassword()
-        );
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(tokenGenerator));
+//    @Operation(summary = "Create User", description = "API add new user to database")
+//    @PostMapping("/login")
+//    public ResponseEntity<IResponseMessage> createUser(
+//            @RequestBody SignInRequest request
+//    ) {
+//        String tokenGenerator = authenticationService.login(
+//                request.getUsername(),
+//                request.getPassword()
+//        );
+//        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(tokenGenerator));
+//
+//    }
+
+    @PostMapping("")
+    public ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationRequest request){
+        AuthenticationResponse authenticateResponse = this.authenticationService.authenticate(request);
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
-    @Operation(summary = "Refresh token" , description = "Get access token token by refresh")
+    @Operation(summary = "sign-in-with-token", description = "API sign-in-with-token")
+    @PostMapping("/sign-in-with-token")
+    public ResponseEntity<IResponseMessage> loginWithToken(@RequestBody String token){
+        AuthenticationResponse authenticationResponse = this.authenticationService.loginWithToken(token);
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationResponse));
+    }
+
     @PostMapping("/refresh-token")
-    public TokenResponse getRefreshToken(@RequestBody SignInRequest refreshToken){
-        log.info("Refresh token request");
-        return TokenResponse.builder().accessToken("DUMMY-ACCESS-TOKEN").refreshToken("DUMMY-REFRESH-TOKEN").build();
+    public ResponseEntity<IResponseMessage> login(@RequestBody String refreshToken){
+        AuthenticationResponse authenticateResponse = this.authenticationService.refreshToken(refreshToken);
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 }

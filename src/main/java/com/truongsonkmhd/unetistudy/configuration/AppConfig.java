@@ -22,7 +22,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
-    private final String[] whitelistedUrls = {"/auth/**" , "/users/add"};
+    private static final String[] WHITE_LIST_URL = {"auth/**" ,
+            "/users/add"};
 
     private final PreFilter requestFilter;
     private final UserServiceDetail userServiceDetail;
@@ -30,7 +31,7 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain configure(@NonNull HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(whitelistedUrls).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(WHITE_LIST_URL).permitAll().anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

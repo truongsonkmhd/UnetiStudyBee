@@ -1,8 +1,13 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
-import com.truongsonkmhd.unetistudy.dto.response.TokenResponse;
+import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
 
 public interface AuthenticationService {
-    String login(String userName, String password) ;
+
+    AuthenticationResponse loginWithToken(String token);
+
+    AuthenticationResponse refreshToken(String refreshToken);
+
+    AuthenticationResponse authenticate(AuthenticationRequest request);
 }

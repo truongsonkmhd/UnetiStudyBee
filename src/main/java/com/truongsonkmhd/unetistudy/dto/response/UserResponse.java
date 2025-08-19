@@ -14,8 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserResponse implements Serializable {
     private UUID id;
-    private String fistName;
-    private String lastName;
+    private String fullName;
     private Gender gender;
     private Date birthday;
     private String userName;

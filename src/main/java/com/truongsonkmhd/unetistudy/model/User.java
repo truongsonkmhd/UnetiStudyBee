@@ -7,8 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,18 +18,15 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_user")
-public class User implements UserDetails , Serializable {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "first_name", length = 255)
-    private String firstName;
-
-    @Column(name = "last_name", length = 255)
-    private String lastName;
+    @Column(name = "full_name", length = 255)
+    private String fullName;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -53,6 +48,15 @@ public class User implements UserDetails , Serializable {
     @Column(name = "password", length = 255)
     private String password;
 
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "is_activated")
+    private Boolean isActivated;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type", length = 255)
@@ -67,34 +71,14 @@ public class User implements UserDetails , Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private Set<Address> addresses = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<UserHasRole> roles = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user")
-    private Set<GroupHasUser> groups = new HashSet<>();
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserStatus.ACTIVE.equals(status);
-    }
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Token token;
 }
