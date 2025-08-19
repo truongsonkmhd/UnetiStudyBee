@@ -31,6 +31,13 @@
 	</properties>
 	<dependencies>
 
+		<dependency>
+			<groupId>tech.jhipster</groupId>
+			<artifactId>jhipster-framework</artifactId>
+			<version>8.4.0</version>
+		</dependency>
+
+
 		<!-- Health check -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,7 +1,9 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
+import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
 import com.truongsonkmhd.unetistudy.dto.response.TokenResponse;
+import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,42 +34,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
 
     @Override
-    public TokenResponse getAccessToken(SignInRequest request) {
-        log.info("Get access token "+ request.getUsername() + request.getPassword()) ;
+    public String login(String userName, String password) throws DataNotFoundException {
+        // exists by user
+        Optional<User> optionalUser = userRepository.findByUsername(userName);
+//        if (optionalUser.isEmpty()) {
+//            throw new DataNotFoundException(
+//                    translate(MessageKeys.PHONE_NUMBER_AND_PASSWORD_FAILED)
+//            );
+//        }
+        User user = optionalUser.get();
+        // check password
+//        if (user.getFacebookAccountId() == 0 && user.getGoogleAccountId() == 0) {
+//            if (!passwordEncoder.matches(password, user.getPassword())) {
+//                throw new BadCredentialsException(
+//                        translate(MessageKeys.PHONE_NUMBER_AND_PASSWORD_FAILED)
+//                );
+//            }
+//        }
+//        Optional<Role> optionalRole = roleRepository.findById(user.getRole().getId());
+//        if (optionalRole.isEmpty() || ) {}
 
-        List<String> authorities = new ArrayList<>();
-
-        try {
-            // Thực hiện xác thực với username và password
-            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-
-            log.info("isAuthenticated = {}", authenticate.isAuthenticated());
-            log.info("Authorities: {}", authenticate.getAuthorities().toString());
-            authorities.add(authenticate.getAuthorities().toString());
-
-            // Nếu xác thực thành công, lưu thông tin vào SecurityContext
-            SecurityContextHolder.getContext().setAuthentication(authenticate);
-        } catch (BadCredentialsException | DisabledException e) {
-            log.error("errorMessage: {}", e.getMessage());
-            throw new AccessDeniedException(e.getMessage());
+        // kiểm tra xem user đã được active hay chưa
+        if (!(optionalUser.get().getStatus() == UserStatus.ACTIVE)) {
+       //     throw new DataNotFoundException(translate(MessageKeys.USER_ID_LOCKED));
         }
+        // authenticated with java spring security
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                user.getUsername(),
+                password,
+                user.getAuthorities())
+        );
 
-        // Get user
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + request.getUsername()));
-
-        if (!user.isEnabled()) {
-            throw new DisabledException("User is disabled");
-        }
-
-        String accessToken = jwtService.generateAccessToken(user.getUsername(), authorities);
-        String refreshToken = jwtService.generateRefreshToken(user.getUsername(), authorities);
-        return TokenResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
-
-}
-
-    @Override
-    public TokenResponse getRefreshToken(String request) {
-        return null;
+        // generate token
+        return jwtService.generateToken(user);
     }
 }

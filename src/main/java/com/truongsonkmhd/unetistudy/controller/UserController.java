@@ -8,6 +8,7 @@ import com.truongsonkmhd.unetistudy.dto.response.ResponseData;
 import com.truongsonkmhd.unetistudy.dto.response.ResponseError;
 import com.truongsonkmhd.unetistudy.dto.response.UserPageResponse;
 import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,6 +46,8 @@ public class UserController {
         @Autowired
         private final UserService userService;
     */
+
+
 
     @Operation(summary = "Get User Sorted", description = "API retrieve user sorted ")
     @GetMapping("/list")

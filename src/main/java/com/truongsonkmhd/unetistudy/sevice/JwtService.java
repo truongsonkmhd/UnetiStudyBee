@@ -1,16 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.common.TokenType;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 public interface JwtService {
-    String generateAccessToken(String username, List<String> authorities);
+    String generateToken(UserDetails userDetails);
 
-    String generateRefreshToken(String username, List<String> authorities);
-
-    String extractUsername(String token , TokenType type);
 }

@@ -1,118 +1,107 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.common.TokenType;
-import com.truongsonkmhd.unetistudy.exception.InvalidDataException;
+import com.truongsonkmhd.unetistudy.common.UserStatus;
+import com.truongsonkmhd.unetistudy.model.Token;
+import com.truongsonkmhd.unetistudy.repository.TokenRepository;
 import com.truongsonkmhd.unetistudy.sevice.JwtService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import java.security.Key;
-import java.util.*;
-import java.util.function.Function;
 
-import org.springframework.security.access.AccessDeniedException;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @Slf4j(topic = "JWT-SERVICE")
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-    @Value("${jwt.expiryMinutes}")
-    private long expiryMinutes;
+    @Value("${jwt.expiration}")
+    private int expiration; // lưu trong biến môi trường
 
-    @Value("${jwt.expiryDay}")
-    private long expiryDay;
+    @Value("${jwt.secretKey}")
+    private String secretKey;
 
-    @Value("${jwt.accessKey}")
-    private String accessKey;
+    private final TokenRepository tokenRepository;
 
-    @Value("${jwt.refreshKey}")
-    private String refreshKey;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Override
-    public String generateAccessToken(String username, List<String> authorities) {
-        log.info("Generate access token for user {} with authorities {}", username, authorities);
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", authorities);
-
-        return generateToken(claims, username);
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateRefreshToken(String username, List<String> authorities) {
-        log.info("Generate refresh token");
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", authorities);
-
-        return generateRefreshToken(claims, username);
-    }
-    // để giải nén token có đúng hay không , còn có hạn hay không , cũng như là xem hàm có hợp lệ hay không
-    @Override
-    public String extractUsername(String token, TokenType type) {
-        log.info("Extract username from token {} with type {}" ,token, type);
-
-        return extractClaims(type,token,Claims::getSubject);
-    }
-
-    private <T> T extractClaims(TokenType type , String token , Function<Claims, T> claimsTFunctor){
-        final  Claims claims = extraAllClaim(token,type);
-        return claimsTFunctor.apply(claims);
-    }
-
-
-    private Claims extraAllClaim(String token, TokenType type) {
+    // generate token using jwt utility class and return token as string
+    public String generateToken(Map<String, Object> extractClaims, UserDetails userDetails) {
         try {
-            return Jwts.parser()
-                    .setSigningKey(getSignInKey())
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (ExpiredJwtException | SignatureException | MalformedJwtException e) {
-            throw new AccessDeniedException("Access denied, error: " + e.getMessage());
+            return Jwts
+                    .builder()
+                    .setClaims(extractClaims)
+                    .setSubject(userDetails.getUsername())
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                    .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                    .compact();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
         }
     }
 
+    // decode and get the key
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        // decode SECRET_KEY
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-    private String generateToken(Map<String,Object> claims, String username){ // ký tự bí mật để không hiển thị ra ngoài , hiển thị dạng mã hóa thôi
-        log.info("Generate access token for user {} with name {}", username , claims);
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000* 60 * expiryMinutes))
-                .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.ES256)
-                .compact();
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    private String generateRefreshToken(Map<String,Object> claims, String username){
-        log.info("Generate refresh token for user {} with name {}", username , claims);
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000* 60 * 60 * 24 * expiryMinutes))
-                .signWith(getKey(TokenType.REFRESH_TOKEN), SignatureAlgorithm.ES256)
-                .compact();
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    private Key getKey(TokenType type){
-        switch (type){
-            case ACCESS_TOKEN -> {
-                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessKey)); // mã hóa
-            }
-            case REFRESH_TOKEN -> {
-                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshKey));
-            }
-            default -> throw new InvalidDataException("Invalid token type");
+
+    // if token is valid by checking if token is expired for current user
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String phoneNumber = extractPhoneNumber(token);
+        Token existingToken = tokenRepository.findByToken(token);
+        if (existingToken == null
+                || existingToken.isRevoked()
+                || !(existingToken.getUser().getStatus() == UserStatus.ACTIVE)
+        ) {
+            return false;
         }
+        return phoneNumber.equals(userDetails.getUsername()) && !isTokenExpirated(token);
     }
+
+    // extract user from token
+    public String extractPhoneNumber(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    // if token expirated
+    public boolean isTokenExpirated(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    // get expiration data from token
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
 }

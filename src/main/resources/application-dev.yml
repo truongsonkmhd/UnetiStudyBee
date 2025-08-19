@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/uneti_study
     username: postgres
-    password: postgres
+    password: Son01072004jqk@
   jpa:
     properties:
       hibernate:
@@ -35,4 +35,5 @@ jwt:
   expiryDay: 14 #2 tuan
   accessKey: c2VjcmV0QGtleS5hcGlfaGFzX2JlZW5fZGVzaWduZWRfYnlfVGF5TFE=
   refreshKey: 9k1jJAWAKQCnCEz1pwcPNegbHoLugf9hgEnn6sz5pFc=
-  secret: my-super-secret-key-very-strong
+  secretKey: QpOD7PxEqUCWRB8BU6e+Hv29TQLUuG+0sxxSJZWAPGhrVVszWZU2hT5RhoQTvhgv
+  expiration: 2592000 # 30 days = 30 * 24 * 60 * 60

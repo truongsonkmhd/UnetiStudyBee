@@ -15,6 +15,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
         <module name="ShoppApp" />
+        <module name="TruowngSown" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -24,6 +25,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="ShoppApp" options="-parameters" />
+      <module name="TruowngSown" options="-parameters" />
       <module name="UnetiStudyBee" options="-parameters" />
     </option>
   </component>
