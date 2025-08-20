@@ -36,4 +36,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> getByUsernameAndIsDeletedWithRoles(@Param("username") String username,
                                                       @Param("isDeleted") Boolean isDeleted);
    //(left join "fetch") Dùng fetch để giải quyết N+1 problem và đảm bảo dữ liệu quan hệ được load cùng lúc.
+    @Query("select u from User u where u.username =: username")
+    Optional<User> findByUserName(@Param("username") String username);
 }

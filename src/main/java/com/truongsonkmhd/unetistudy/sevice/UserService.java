@@ -5,6 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.request.UserPasswordRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.request.UserUpdateRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.response.UserPageResponse;
 import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface UserService {
 
     UserResponse findById(UUID id);
 
-    UserResponse findByUsername(String username);
+    User findByUsername(String username);
 
     UserResponse findByEmail(String email);
 

@@ -12,7 +12,7 @@ import java.time.Instant;
 @Setter
 @Data
 @Entity
-@Table(name = "tokens")
+@Table(name = "token")
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +34,10 @@ public class Token {
     private Instant refreshExpirationTime; // thời gian sống của refresh token
 
     @Column(name = "revoked", nullable = false)
-    private boolean revoked;
+    private boolean revoked;//đã bị thu hồi hay chưa (dù chưa quá hạn).
 
     @Column(name = "expired", nullable = false)
-    private boolean expired;
+    private boolean expired; //flag kết hợp với expirationTime.
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)

@@ -1,21 +1,29 @@
 package com.truongsonkmhd.unetistudy.security;
 
-import com.truongsonkmhd.unetistudy.common.UserStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.io.Serializable;
-import java.util.Collection;
-
-
 import com.truongsonkmhd.unetistudy.model.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-public record MyUserDetail(User user) implements UserDetails, Serializable {
+public class MyUserDetail implements UserDetails {
+    private final User user;
+
+    public MyUserDetail(User user) {
+        this.user = user;
+    }
+
+    public User user() {
+        return user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-      return  null;
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -30,23 +38,21 @@ public record MyUserDetail(User user) implements UserDetails, Serializable {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // hoặc check logic riêng nếu bạn muốn
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // có thể map từ UserStatus hoặc field khác
+        return user.getIsActivated();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // có thể map từ refreshTokenExpirationTime nếu cần
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserStatus.ACTIVE.equals(user.getStatus());
+        return !user.getIsDeleted();
     }
-
-
 }

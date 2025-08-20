@@ -6,9 +6,9 @@ spring:
     add-properties: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/uneti_study
+    url: jdbc:postgresql://localhost:5432/uneti-study
     username: postgres
-    password: postgres
+    password: Son01072004jqk@
   jpa:
     properties:
       hibernate:
@@ -32,6 +32,7 @@ openapi:
 
 security:
   jwt:
+    token-validity-in-seconds: 900
     refresh-token-validity-in-seconds: 2592000
     refresh-token-validity-in-seconds-for-remember-me: 25920000
 

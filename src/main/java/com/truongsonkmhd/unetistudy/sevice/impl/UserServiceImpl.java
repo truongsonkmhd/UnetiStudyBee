@@ -161,8 +161,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findByUsername(String username) {
-        return null;
+    public User findByUsername(String username) {
+        return userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Override

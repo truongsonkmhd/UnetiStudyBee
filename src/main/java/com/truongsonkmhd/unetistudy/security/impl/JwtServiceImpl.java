@@ -5,6 +5,7 @@ import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
 import com.truongsonkmhd.unetistudy.security.JwtService;
+import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,17 +49,17 @@ public class JwtServiceImpl implements JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateRefreshToken(UserDetails userDetails, boolean isRememberMe) {
-        return buildToken(new HashMap<>(), userDetails, isRememberMe ? refreshExpirationRememberMe : refreshExpiration);
+    public String generateRefreshToken(MyUserDetail myUserDetail, boolean isRememberMe) {
+        return buildToken(new HashMap<>(), myUserDetail, isRememberMe ? refreshExpirationRememberMe : refreshExpiration);
     }
 
-    public String generateToken(UserDetails userDetails, boolean isRememberMe) {
-        User myUser = (User) userDetails;
+    public String generateToken(MyUserDetail myUserDetail, boolean isRememberMe) {
+        User user = myUserDetail.user();
         Map<String, Object> extractClaims = Map.ofEntries(
-                Map.entry(CLAIM_USER_ID, myUser.getId()),
-                Map.entry(CLAIM_USER_FULL_NAME, myUser.getFullName())
+                Map.entry(CLAIM_USER_ID, user.getId()),
+                Map.entry(CLAIM_USER_FULL_NAME, user.getFullName())
         );
-        return generateToken(extractClaims, userDetails, isRememberMe);
+        return generateToken(extractClaims, myUserDetail, isRememberMe);
     }
 
     public String generateToken(

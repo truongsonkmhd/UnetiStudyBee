@@ -3,6 +3,8 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
 import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
 import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.exception.InvalidDataException;
+import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
@@ -10,6 +12,7 @@ import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
 import com.truongsonkmhd.unetistudy.security.JwtService;
+import com.truongsonkmhd.unetistudy.sevice.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +32,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${security.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpirationSeconds;
 
+    @Value("${security.jwt.token-validity-in-seconds}")
+    private long accessTokenExpirationSeconds;
+
+
     @Value("${security.jwt.refresh-token-validity-in-seconds-for-remember-me}")
     private long refreshTokenExpirationSecondsRememberMe;
 
@@ -41,6 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final UserService userService;
 
     @Transactional
     @Override
@@ -55,25 +64,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("User is not activated");
         }
 
-        // 3) Check password (hash)
+        // 3) Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
         // 4) Tạo token
-        boolean rememberMe = request.getIsRememberMe() != null && request.getIsRememberMe();
+        boolean rememberMe = Boolean.TRUE.equals(request.getIsRememberMe());
         long rtTtl = rememberMe ? refreshTokenExpirationSecondsRememberMe : refreshTokenExpirationSeconds;
 
-        MyUserDetail principal = new MyUserDetail(user);
-        String accessToken = jwtService.generateToken(principal, rememberMe);
-        String refreshToken = jwtService.generateRefreshToken(principal, rememberMe);
+        MyUserDetail myUserDetail = new MyUserDetail(user);
+        String accessToken = jwtService.generateToken(myUserDetail, rememberMe);
+        String refreshToken = jwtService.generateRefreshToken(myUserDetail, rememberMe);
 
         Instant now = Instant.now();
-        Instant accessExp = now.plusSeconds(refreshTokenExpirationSeconds);
+        Instant accessExp = now.plusSeconds(accessTokenExpirationSeconds);
         Instant refreshExp = now.plusSeconds(rtTtl);
 
-        // 5) Ghi/rotate bản ghi Token (OneToOne)
-        Token dbToken = tokenRepository.findByUser(user).orElseGet(Token::new);
+        // Nếu user đã có token → update thay vì insert
+        Token dbToken = tokenRepository.findByUser(user).orElse(new Token());
         dbToken.setUser(user);
         dbToken.setToken(accessToken);
         dbToken.setRefreshToken(refreshToken);
@@ -84,9 +93,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dbToken.setExpired(false);
         tokenRepository.save(dbToken);
 
-        // 6) Trả response
-        return createAuthenticationResponse(accessToken, refreshToken, principal);
+        return createAuthenticationResponse(accessToken, refreshToken, myUserDetail);
     }
+
 
 //    @Override
 //    public String login(String userName, String password) throws DataNotFoundException {
@@ -125,38 +134,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //    }
 
 
-
     @Transactional
     @Override
-    public AuthenticationResponse loginWithToken(String token){
+    public AuthenticationResponse loginWithToken(String token) {
         String userName = jwtService.extractUsername(token);
         User user = this.userRepository.getByUsernameAndIsDeletedWithRoles(userName, false).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user));
     }
 
     @Transactional
-    public AuthenticationResponse refreshToken(String refreshToken){
+    public AuthenticationResponse refreshToken(String rawRefreshToken){
 
-        Token token =  tokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
-        User user = token.getUser();
+        Token token = verifyRefreshToken(rawRefreshToken);
 
-        if(!token.getRefreshExpirationTime().isAfter(Instant.now())){
+        if (token.getRefreshExpirationTime() == null || !token.getRefreshExpirationTime().isAfter(Instant.now())) {
             throw new RuntimeException("RefreshToken is expired!");
         }
+
+        User user = token.getUser();
         MyUserDetail myUserDetail = new MyUserDetail(user);
 
-        var jwtToken = this.jwtService.generateToken(myUserDetail, false);
-        var newRefreshToken = this.jwtService.generateRefreshToken(myUserDetail, false);
-        Instant refreshTokenExpirationTime = Instant.now().plusSeconds(refreshTokenExpirationSeconds);
-        token.setRefreshToken(newRefreshToken);
-        token.setRefreshExpirationTime(refreshTokenExpirationTime);
-        this.userRepository.save(user);
+        // Tạo mới cặp token
+        String newAccessToken  = jwtService.generateToken(myUserDetail, false);
+        String newRefreshToken = jwtService.generateRefreshToken(myUserDetail, false);
 
-        return createAuthenticationResponse(jwtToken, newRefreshToken, myUserDetail);
+        // Cập nhật đầy đủ record
+        token.setToken(newAccessToken);
+        token.setExpirationTime(Instant.now().plusSeconds(accessTokenExpirationSeconds));
+        token.setRefreshToken(newRefreshToken);
+        token.setRefreshExpirationTime(Instant.now().plusSeconds(refreshTokenExpirationSeconds));
+
+        tokenRepository.save(token);
+
+        return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail);
     }
 
-    private AuthenticationResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail){
+    private AuthenticationResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail) {
         return AuthenticationResponse.builder()
                 .isAuthenticated(true)
                 .token(token)
@@ -171,5 +184,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .gender(myUserDetail.user().getGender())
                         .build())
                 .build();
+    }
+
+    public Token verifyRefreshToken(String refreshToken) {
+        Token token = tokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new DataNotFoundException("Invalid refresh token"));
+
+        if (token.getExpirationTime().compareTo(Instant.now()) < 0) {
+            tokenRepository.delete(token);
+            throw new RuntimeException("Refresh token expired");
+        }
+
+        return token;
+    }
+
+    public String forgotPassword(String userName){
+
+        User user = userService.findByUsername(userName);
+        if(!user.getIsActivated()){
+            throw new InvalidDataException("User not active");
+        }
+
+        MyUserDetail myUserDetail = new MyUserDetail(user);
+
+        //String resetToken = jwtService.generateToken(myUserDetail);
+
+        return "";
     }
 }

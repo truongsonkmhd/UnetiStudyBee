@@ -4,6 +4,7 @@ import com.truongsonkmhd.unetistudy.configuration.Translator;
 import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
 import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
 import com.truongsonkmhd.unetistudy.dto.request.UserRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.request.auth.RefreshTokenRequest;
 import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
 import com.truongsonkmhd.unetistudy.dto.response.ResponseData;
 import com.truongsonkmhd.unetistudy.dto.response.ResponseError;
@@ -53,16 +54,16 @@ public class AuthenticationController {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
-    @Operation(summary = "sign-in-with-token", description = "API sign-in-with-token")
-    @PostMapping("/sign-in-with-token")
-    public ResponseEntity<IResponseMessage> loginWithToken(@RequestBody String token){
-        AuthenticationResponse authenticationResponse = this.authenticationService.loginWithToken(token);
+
+    @PostMapping("/login-with-token")
+    public ResponseEntity<IResponseMessage> loginWithToken(@RequestBody  RefreshTokenRequest req){
+        AuthenticationResponse authenticationResponse = this.authenticationService.loginWithToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationResponse));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<IResponseMessage> login(@RequestBody String refreshToken){
-        AuthenticationResponse authenticateResponse = this.authenticationService.refreshToken(refreshToken);
+    public ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenRequest req){
+        AuthenticationResponse authenticateResponse = this.authenticationService.refreshToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 }

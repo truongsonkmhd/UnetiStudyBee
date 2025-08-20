@@ -1,5 +1,4 @@
 package com.truongsonkmhd.unetistudy.dto.response.common;
-
 import com.truongsonkmhd.unetistudy.constant.AppConstant;
 
 public class PageResponseMessage extends ResponseMessage {
@@ -19,17 +18,6 @@ public class PageResponseMessage extends ResponseMessage {
         this.totalPage = (int) Math.ceil((double)totalRecord / pageSize);
     }
 
-//    public PageResponseMessage(Integer currentPage, Integer pageSize, Integer totalRecord, Object ...data) {
-//
-//        this.status = AppConstant.ResponseConstant.SUCCESS;
-//        this.statusCode = AppConstant.ResponseConstant.StatusCode.SUCCESS;
-//        this.message = AppConstant.ResponseConstant.MessageConstant.SuccessMessage.LOADED;
-//        this.data = data;
-//        this.currentPage = currentPage;
-//        this.pageSize = pageSize;
-//        this.totalRecord = totalRecord;
-//        this.totalPage = (int) Math.ceil((double)totalRecord / pageSize);
-//    }
 
     public Integer getCurrentPage() {
         return currentPage;

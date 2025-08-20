@@ -1,6 +1,5 @@
 package com.truongsonkmhd.unetistudy.dto.response.common;
 
-
 import com.truongsonkmhd.unetistudy.constant.AppConstant;
 
 public class SuccessResponseMessage extends ResponseMessage {
