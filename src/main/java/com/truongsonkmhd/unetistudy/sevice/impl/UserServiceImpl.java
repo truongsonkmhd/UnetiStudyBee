@@ -142,7 +142,6 @@ public class UserServiceImpl implements UserService {
                 .phone(entity.getPhone())
                 .email(entity.getEmail())
                 .build()
-
         ).toList();
 
         UserPageResponse response = new UserPageResponse();
