@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.security;
 
+import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,11 +15,13 @@ public record MyUserDetail(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<Role> roleList = user.getRoles().stream().toList();
-
-        List<String> roleName = user.getRoles().stream().map(Role::getName).toList();
+        if (user.getRoles() == null) {
+            return List.of();
+        }
         return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+//                .map(Role::getCode)
+                .map(ele -> "ROLE_" + ele.getCode())
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
@@ -34,21 +37,21 @@ public record MyUserDetail(User user) implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.getIsActivated();
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return !user.getIsDeleted();
+        return UserStatus.ACTIVE.equals(user.getStatus());
     }
 }

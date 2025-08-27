@@ -14,7 +14,11 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_role")
-public class Role extends AbstractEntity<Integer>{
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // phù hợp với PostgreSQL
+    @Column(name = "id")
+    private Long id;
     @Column(name = "name")
     private String name;
     @Column(name = "code")
@@ -25,8 +29,14 @@ public class Role extends AbstractEntity<Integer>{
     private Boolean isDeleted;
     @Column(name = "is_activated")
     private Boolean isActivated;
-    @OneToMany(mappedBy = "role")
-    private Set<RoleHasPermission> roles = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_role_permission",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
     @JsonIgnoreProperties(

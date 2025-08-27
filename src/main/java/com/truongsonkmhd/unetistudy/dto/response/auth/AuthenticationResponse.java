@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.dto.response.auth;
 
-import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationUser;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +14,6 @@ public class AuthenticationResponse {
     public Boolean isAuthenticated;
     public String token;
     public String refreshToken;
-    private AuthenticationUser user;
+    private UserResponse user;
 }
 

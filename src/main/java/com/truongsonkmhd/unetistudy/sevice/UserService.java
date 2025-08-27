@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.request.UserRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.request.UserPasswordRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.request.UserUpdateRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.response.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -24,11 +24,11 @@ public interface UserService {
 
     UserResponse findByEmail(String email);
 
-    UUID saveUser(UserRequestDTO user);
+    UUID saveUser(UserRequest user);
 
-    void update(UUID userId , UserUpdateRequestDTO user);
+    UserResponse update(UUID userId , UserUpdateRequest user);
 
-    void changePassword(UserPasswordRequestDTO oldPassword);
+    void changePassword(UserPasswordRequest oldPassword);
 
     void delete(UUID id);
 }

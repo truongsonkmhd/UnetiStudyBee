@@ -16,12 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -41,43 +39,60 @@ public class JwtServiceImpl implements JwtService {
     private long refreshExpirationRememberMe;
 
     public static final String CLAIM_USER_ID = "id";
+
     public static final String CLAIM_USER_FULL_NAME = "fullName";
+
+    public static final String SCOPE = "scope";
 
     private final TokenRepository tokenRepository;
 
+    public static final String[] WHITE_LIST_URL = { "/api/v1/auth/**" ,
+            "/api/authenticate/**",
+            "/api/users/add"
+    };
+    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    @Override
+    public boolean isValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    @Override
     public String generateRefreshToken(MyUserDetail myUserDetail, boolean isRememberMe) {
         return buildToken(new HashMap<>(), myUserDetail, isRememberMe ? refreshExpirationRememberMe : refreshExpiration);
     }
 
+    @Override
     public String generateToken(MyUserDetail myUserDetail, boolean isRememberMe) {
         User user = myUserDetail.user();
         Map<String, Object> extractClaims = Map.ofEntries(
                 Map.entry(CLAIM_USER_ID, user.getId()),
-                Map.entry(CLAIM_USER_FULL_NAME, user.getFullName())
+                Map.entry(CLAIM_USER_FULL_NAME, user.getFullName()),
+                Map.entry(SCOPE, buildScope(myUserDetail))
         );
         return generateToken(extractClaims, myUserDetail, isRememberMe);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails,
+            MyUserDetail myUserDetail,
             boolean isRememberMe
     ) {
-        return buildToken(extraClaims, userDetails, isRememberMe ? jwtExpirationRememberMe : jwtExpiration);
+        return buildToken(extraClaims, myUserDetail, isRememberMe ? jwtExpirationRememberMe : jwtExpiration);
     }
 
 
     // generate token using jwt utility class and return token as string
-    public String buildToken(Map<String, Object> extractClaims, UserDetails userDetails, long expiration) {
+    public String buildToken(Map<String, Object> extractClaims, MyUserDetail myUserDetail, long expiration) {
         try {
             return Jwts
                     .builder()
                     .setClaims(extractClaims)
-                    .setSubject(userDetails.getUsername())
+                    .setSubject(myUserDetail.getUsername())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + (expiration + 1000)))
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -94,6 +109,20 @@ public class JwtServiceImpl implements JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+//    private Key getKey(TokenType type) {
+//        log.info("Create key for type {}", type);
+//
+//        switch (type) {
+//            case ACCESS_TOKEN -> {
+//                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessKey));
+//            }
+//            case REFRESH_TOKEN -> {
+//                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshKey));
+//            }
+//            default -> throw new InvalidDataException("Invalid token type");
+//        }
+//    }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -137,4 +166,17 @@ public class JwtServiceImpl implements JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    private String buildScope(MyUserDetail myUserDetail){
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        if (!CollectionUtils.isEmpty(myUserDetail.user().getRoles()))
+            myUserDetail.user().getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getCode());
+                if (!CollectionUtils.isEmpty(role.getPermissions()))
+                    role.getPermissions()
+                            .forEach(permission -> stringJoiner.add(permission.getName()));
+            });
+
+        return stringJoiner.toString();
+    }
 }

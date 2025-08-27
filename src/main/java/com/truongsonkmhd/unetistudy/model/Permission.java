@@ -1,8 +1,6 @@
 package com.truongsonkmhd.unetistudy.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
@@ -15,10 +13,16 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_permission")
-public class Permission  extends  AbstractEntity<Integer>{
+public class Permission {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "permission")
-    private Set<RoleHasPermission> permissions = new HashSet<>();
 }

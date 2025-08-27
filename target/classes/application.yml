@@ -2,7 +2,7 @@ server:
     port: 97
 spring:
   application:
-    name: shopp-app
+    name: uneti-study
   profiles:
     active: dev
 

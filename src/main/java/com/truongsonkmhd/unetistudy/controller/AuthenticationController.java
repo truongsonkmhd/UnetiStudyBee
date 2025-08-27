@@ -1,33 +1,22 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.configuration.Translator;
-import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.request.SignInRequest;
-import com.truongsonkmhd.unetistudy.dto.request.UserRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
 import com.truongsonkmhd.unetistudy.dto.request.auth.RefreshTokenRequest;
-import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.response.ResponseData;
-import com.truongsonkmhd.unetistudy.dto.response.ResponseError;
-import com.truongsonkmhd.unetistudy.dto.response.TokenResponse;
+import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
 import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
-import com.truongsonkmhd.unetistudy.sevice.UserService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
-@RequestMapping("/auth/authenticate")
+@RequestMapping("/api/authenticate")
 @Slf4j(topic = "AUTHENTICATION-CONTROLLER")
 @Tag(name = "Authentication Controller")
 @RequiredArgsConstructor

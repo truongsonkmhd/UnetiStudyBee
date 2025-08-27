@@ -2,16 +2,20 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.request.AddressRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.request.UserPasswordRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.request.UserRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.request.UserUpdateRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.response.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.request.AddressRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
+import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
+import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
 import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.AddressRepository;
+import com.truongsonkmhd.unetistudy.repository.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,9 +43,17 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
 
+    private final RoleRepository roleRepository;
+
+    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final UserResponseMapper userResponseMapper;
+
+    private final UserRequestMapper userRequestMapper;
+
+    private final UserUpdateRequestMapper userUpdateRequestMapper;
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -75,7 +88,6 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(sorts));
         Page<User> users = userRepository.findAll(pageable);
-
 
         return getUserPageResponse(pageNo, pageSize, users);
     }
@@ -126,7 +138,7 @@ public class UserServiceImpl implements UserService {
                 .fullName(entity.getFullName())
                 .gender(entity.getGender())
                 .birthday(entity.getBirthday())
-                .userName(entity.getUsername())
+                .username(entity.getUsername())
                 .phone(entity.getPhone())
                 .email(entity.getEmail())
                 .build()
@@ -143,21 +155,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserResponse findById(UUID id) {
 
         log.info("Find user by id: {}", id);
 
-        User user = getUserEntity(id);
-
-        return UserResponse.builder()
-                .id(id)
-                .fullName(user.getFullName())
-                .gender(user.getGender())
-                .birthday(user.getBirthday())
-                .userName(user.getUsername())
-                .phone(user.getPhone())
-                .email(user.getEmail())
-                .build();
+        return userResponseMapper.toDto(getUserEntity(id));
     }
 
     @Override
@@ -172,14 +175,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UUID saveUser(UserRequestDTO req) {
+    public UUID saveUser(UserRequest req) {
         User user = User.builder()
                 .fullName(req.getFullName())
                 .gender(req.getGender())
                 .birthday(req.getBirthday())
                 .email(req.getEmail())
                 .phone(req.getPhone())
-                .username(req.getUserName())
+                .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .status(UserStatus.ACTIVE)
                 .type(UserType.valueOf(req.getType().toUpperCase()))
@@ -192,7 +195,7 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
-    private Set<Address> convertToAddress(Set<AddressRequestDTO> addresses) {
+    private Set<Address> convertToAddress(Set<AddressRequest> addresses) {
         Set<Address> result = new HashSet<>();
         addresses.forEach(a ->
                 result.add(Address.builder()
@@ -208,33 +211,26 @@ public class UserServiceImpl implements UserService {
         );
         return result;
     }
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UUID userId, UserUpdateRequestDTO req) {
-        log.info("Updating user: {}", req);
-        // Get user by id
-        User user = getUserEntity(userId);
-        user.setFullName(req.getFullName());
-        user.setGender(req.getGender());
-        user.setBirthday(req.getBirthday());
+        @Override
+        @Transactional()
+        public UserResponse update(UUID userId, UserUpdateRequest req) {
+            log.info("Updating user: {}", req);
+            // Get user by id
+            User user = getUserEntity(userId);
+            userUpdateRequestMapper.partialUpdate(user,req);
 
-        if(!req.getEmail().equals(user.getEmail())){
-            user.setEmail(req.getEmail());
+            var roles  = roleRepository.findAllByNames(req.getRoles());
+            user.setRoles(new HashSet<>(roles));
+
+            log.info("Updated user: {}", req);
+            user.setAddresses(convertToAddress(req.getAddresses()));
+            log.info("Updated address: {}", req);
+
+            return userResponseMapper.toDto(userRepository.save(user));
         }
 
-        user.setPhone(req.getPhone());
-        user.setUsername(req.getUserName());
-
-        userRepository.save(user);
-        log.info("Updated user: {}", req);
-        user.setAddresses(convertToAddress(req.getAddresses()));
-
-
-        log.info("Updated address: {}", req);
-    }
-
     @Override
-    public void changePassword(UserPasswordRequestDTO req) {
+    public void changePassword(UserPasswordRequest req) {
         log.info("Changing password for user: {}", req);
         // Get user by id
         User user = getUserEntity(req.getId());
@@ -255,7 +251,6 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
         log.info("Deleted user: {}", user);
-
     }
 
     /**

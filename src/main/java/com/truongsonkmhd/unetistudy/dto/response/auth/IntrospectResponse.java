@@ -13,6 +13,6 @@ import java.util.UUID;
 @Builder
 public class IntrospectResponse {
     private boolean isValid;
-    private String userName;
+    private String username;
     private UUID id;
 }

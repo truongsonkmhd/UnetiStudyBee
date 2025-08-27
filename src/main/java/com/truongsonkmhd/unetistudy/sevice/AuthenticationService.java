@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
 
 public interface AuthenticationService {
 

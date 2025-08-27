@@ -1,0 +1,42 @@
+package com.truongsonkmhd.unetistudy.controller;
+
+import com.truongsonkmhd.unetistudy.dto.request.permission.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.request.role.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.sevice.RoleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/roles")
+@Slf4j(topic = "ROLE-CONTROLLER")
+@Tag(name = "role Controller")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class RoleController {
+
+    RoleService roleService;
+
+    @PostMapping("/create")
+    ResponseEntity<IResponseMessage> create(@RequestBody RoleRequest request){
+        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(roleService.create(request)));
+    }
+
+    @GetMapping
+    ResponseEntity<IResponseMessage> getAll(){
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(roleService.getAll()));
+    }
+
+    @DeleteMapping("/{roleId}")
+    public ResponseEntity<IResponseMessage> delete(@PathVariable long roleId) {
+        return ResponseEntity.ok().body(
+                SuccessResponseMessage.DeletedSuccess(roleService.delete(roleId))
+        );
+    }
+}

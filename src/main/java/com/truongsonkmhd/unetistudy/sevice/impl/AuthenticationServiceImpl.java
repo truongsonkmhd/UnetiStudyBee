@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.dto.request.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.response.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.response.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.InvalidDataException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.model.Token;
@@ -16,13 +16,14 @@ import com.truongsonkmhd.unetistudy.sevice.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+
+import static com.truongsonkmhd.unetistudy.common.UserStatus.ACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
 
-    private final AuthenticationManager authenticationManager;
 
     private final TokenRepository tokenRepository;
 
@@ -58,9 +58,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository
                 .getByUsernameAndIsDeletedWithRoles(request.getUsername(), false)
                 .orElseThrow(() -> new RuntimeException("User not found or deleted"));
+        log.info("USER: {}" , user.getRoles());
 
         // 2) Trạng thái
-        if (Boolean.FALSE.equals(user.getIsActivated())) {
+        if (!ACTIVE.equals(user.getStatus())) {
             throw new RuntimeException("User is not activated");
         }
 
@@ -76,6 +77,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         MyUserDetail myUserDetail = new MyUserDetail(user);
         String accessToken = jwtService.generateToken(myUserDetail, rememberMe);
         String refreshToken = jwtService.generateRefreshToken(myUserDetail, rememberMe);
+
+        log.info("Authorities: {}" , myUserDetail.getAuthorities());
 
         Instant now = Instant.now();
         Instant accessExp = now.plusSeconds(accessTokenExpirationSeconds);
@@ -177,7 +180,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .user(UserResponse.builder()
                         .id(myUserDetail.user().getId())
                         .fullName(myUserDetail.user().getFullName())
-                        .userName(myUserDetail.user().getUsername())
+                        .username(myUserDetail.user().getUsername())
                         .email(myUserDetail.user().getEmail())
                         .phone(myUserDetail.user().getPhone())
                         .birthday(myUserDetail.user().getBirthday())
@@ -201,7 +204,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public String forgotPassword(String userName){
 
         User user = userService.findByUsername(userName);
-        if(!user.getIsActivated()){
+        if(!ACTIVE.equals(user.getStatus())){
             throw new InvalidDataException("User not active");
         }
 

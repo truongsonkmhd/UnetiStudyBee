@@ -54,9 +54,6 @@ public class User implements Serializable {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @Column(name = "is_activated")
-    private Boolean isActivated;
-
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type", length = 255)
