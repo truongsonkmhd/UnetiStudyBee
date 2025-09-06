@@ -8,8 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UnetiStudyApplication {
 
 	public static void main(String[] args) {
-		System.out.println(new BCryptPasswordEncoder().encode("pass123"));
-
 		SpringApplication.run(UnetiStudyApplication.class, args);
 	}
 

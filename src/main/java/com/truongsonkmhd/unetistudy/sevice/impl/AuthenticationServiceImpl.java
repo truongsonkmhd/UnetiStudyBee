@@ -1,12 +1,23 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.SignedJWT;
 import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.request.auth.IntrospectRequest;
+import com.truongsonkmhd.unetistudy.dto.request.auth.LogoutRequest;
 import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.response.auth.IntrospectResponse;
 import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.exception.AppException;
+import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 import com.truongsonkmhd.unetistudy.exception.InvalidDataException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
+import com.truongsonkmhd.unetistudy.model.InvalidatedToken;
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
+import com.truongsonkmhd.unetistudy.repository.InvalidatedTokenRepository;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
@@ -14,6 +25,7 @@ import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
 import com.truongsonkmhd.unetistudy.security.JwtService;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.time.Instant;
+import java.util.Date;
 
 import static com.truongsonkmhd.unetistudy.common.UserStatus.ACTIVE;
 
@@ -36,7 +50,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${security.jwt.token-validity-in-seconds}")
     private long accessTokenExpirationSeconds;
 
-
+    @NonFinal
+    @Value("${security.jwt.signerKey}")
+    protected String SIGNER_KEY;
     @Value("${security.jwt.refresh-token-validity-in-seconds-for-remember-me}")
     private long refreshTokenExpirationSecondsRememberMe;
 
@@ -48,6 +64,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
 
     private final PasswordEncoder passwordEncoder;
+
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     private final UserService userService;
 
@@ -201,17 +219,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return token;
     }
 
-    public String forgotPassword(String userName){
+    public IntrospectResponse introspect(IntrospectRequest request)
+            throws JOSEException, ParseException {
+        var token = request.getToken();
+        boolean isValid = true;
 
-        User user = userService.findByUsername(userName);
-        if(!ACTIVE.equals(user.getStatus())){
-            throw new InvalidDataException("User not active");
+        try {
+            verifyToken(token);
+        } catch (AppException e) {
+            isValid = false;
         }
 
-        MyUserDetail myUserDetail = new MyUserDetail(user);
+        return IntrospectResponse.builder()
+                .valid(isValid)
+                .build();
+    }
+    @Override
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
 
-        //String resetToken = jwtService.generateToken(myUserDetail);
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
 
-        return "";
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository
+                .existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        return signedJWT;
     }
 }

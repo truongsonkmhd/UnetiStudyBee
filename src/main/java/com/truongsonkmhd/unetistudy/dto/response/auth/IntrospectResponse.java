@@ -12,7 +12,5 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class IntrospectResponse {
-    private boolean isValid;
-    private String username;
-    private UUID id;
+    boolean valid;
 }

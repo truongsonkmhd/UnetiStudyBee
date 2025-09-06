@@ -1,10 +1,10 @@
 server:
-    port: 97
+    port: 8097
 spring:
   application:
     name: uneti-study
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 # Health check
 management:
