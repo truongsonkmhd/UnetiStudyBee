@@ -1,7 +1,13 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
+import com.nimbusds.jose.JOSEException;
 import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.request.auth.IntrospectRequest;
+import com.truongsonkmhd.unetistudy.dto.request.auth.LogoutRequest;
 import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.response.auth.IntrospectResponse;
+
+import java.text.ParseException;
 
 public interface AuthenticationService {
 
@@ -11,5 +17,7 @@ public interface AuthenticationService {
 
     AuthenticationResponse authenticate(AuthenticationRequest request);
 
-    //String logout()
+    void logout(LogoutRequest request) throws ParseException, JOSEException;
+
+    IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException;
 }

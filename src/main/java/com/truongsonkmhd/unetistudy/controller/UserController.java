@@ -1,16 +1,10 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.configuration.Translator;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
 import com.truongsonkmhd.unetistudy.dto.request.user.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
 import com.truongsonkmhd.unetistudy.dto.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.response.ResponseData;
-import com.truongsonkmhd.unetistudy.dto.response.ResponseError;
 import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.response.user.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
-import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,72 +43,50 @@ public class UserController {
         private final UserService userService;
     */
 
+
     @Operation(summary = "Get User Sorted", description = "API retrieve user sorted ")
-        @GetMapping("/List")
-    ResponseData<UserPageResponse> getAllUsersWithSortBy(@RequestParam(required = false) String sortBy,
-                                                                @RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                                @RequestParam(defaultValue = "20") int pageSize) {
+    @GetMapping("/List")
+    ResponseEntity<IResponseMessage> getAllUsersWithSortBy(@RequestParam(required = false) String sortBy,
+                                                         @RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                         @RequestParam(defaultValue = "20") int pageSize) {
         log.info("Request get all users with sort by");
 
-        try {
-            return new ResponseData<>(HttpStatus.OK.value(),
-                    "Get All Users With Sort by",
-                    userService.getAllUsersWithSortBy( sortBy, pageNo, pageSize));
-        } catch (Exception e){
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
+        var listAllUsersWithSortBy = userService.getAllUsersWithSortBy( sortBy, pageNo, pageSize);
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(listAllUsersWithSortBy));
     }
 
     @Operation(summary = "Get User Sorted multiple column", description = "API retrieve user sorted multiple column")
     @GetMapping("/List_sort_multiple")
-    ResponseData<UserPageResponse> getAllUsersWithSortByMultipleColumns(@RequestParam(required = false) List<String> sort,
+    ResponseEntity<IResponseMessage> getAllUsersWithSortByMultipleColumns(@RequestParam(required = false) List<String> sort,
                                                                 @RequestParam(defaultValue = "0", required = false) int pageNo,
                                                                 @RequestParam(defaultValue = "20") int pageSize) {
         log.info("Request get all of users with sort by multiple column");
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userService.getAllUsersWithSortByMultipleColumns( pageNo, pageSize, sort)));
 
-        try {
-            return new ResponseData<>(HttpStatus.OK.value(),
-                    "Get All Users With Sort by",
-                    userService.getAllUsersWithSortByMultipleColumns( pageNo, pageSize, sort));
-        } catch (Exception e){
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
     }
 
     @Operation(summary = "Get user detail", description = "API retrieve user detail by ID from database")
     @GetMapping("/{userId}")
-    ResponseData<UserResponse> getUserDetail(@PathVariable UUID userId) {
+    public ResponseEntity<IResponseMessage> getUserDetail(@PathVariable UUID userId) {
         log.info("Get user detail by ID: {}", userId);
-
-        try{
-            return new ResponseData<>(HttpStatus.OK.value(), "get User Detail", userService.findById(userId));
-        }catch (ResourceNotFoundException e){
-            log.error("errorMessager = {}" , e.getMessage(), e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-        }
-
+        var userDetailById = userService.findById(userId);
+        return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userDetailById));
     }
 
     @Operation(summary = "Create User", description = "API add new user to database")
     @PostMapping("/add")
-    ResponseData<UUID> createUser(@RequestBody UserRequest request) {
-
-        try{
-            UUID userId = userService.saveUser(request);
-            return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"),userId);
-        }catch (Exception e){
-            log.info("errorMessage = {}", e.getMessage() , e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Add user fail");
-        }
+    ResponseEntity<IResponseMessage> createUser(@RequestBody UserRequest request) {
+        UUID userId = userService.saveUser(request);
+        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(userId));
 
     }
+
 
     @Operation(summary = "Update User", description = "API update user to database")
     @PutMapping("/upd/{userId}")
     ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
         log.info("Updating user: {}", request);
         return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.update(userId,request)));
-
     }
 
     @Operation(
@@ -123,31 +94,22 @@ public class UserController {
             description = "API deactivate (soft delete) user from database"
     )
     @DeleteMapping("del/{userId}")
-    ResponseData<Void> deleteUser(@PathVariable("userId") UUID userId) {
+    ResponseEntity<IResponseMessage> deleteUser(@PathVariable("userId") UUID userId) {
         log.info("Deleting user: {}", userId);
-        try{
-            userService.delete(userId);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("user.del.success"));
-        }catch (Exception e){
-            log.error(ERROR_MESSAGE, e.getMessage(),e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "delete user fail");
-        }
+        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.delete(userId)));
+
     }
 
     @Operation(summary = "Change Password", description = "API change password user to database")
     @PatchMapping("/change-pwd")
-    ResponseData<Void> changePassword(@RequestBody UserPasswordRequest request) {
+    ResponseEntity<IResponseMessage> changePassword(@RequestBody UserPasswordRequest request) {
         log.info("Changing password for user: {}", request);
+        return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userService.changePassword(request)));
 
-        try{
-            userService.changePassword(request);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("password.change.success"));
-        } catch (Exception e){
-            log.error(ERROR_MESSAGE,e.getMessage(),e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "change-pwd fail");
-        }
 
     }
+
+
 
 
 }

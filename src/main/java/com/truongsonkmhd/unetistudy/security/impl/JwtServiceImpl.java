@@ -48,7 +48,7 @@ public class JwtServiceImpl implements JwtService {
 
     public static final String[] WHITE_LIST_URL = { "/api/v1/auth/**" ,
             "/api/authenticate/**",
-            "/api/users/add"
+            "/api/users/add",
     };
     @Override
     public String extractUsername(String token) {
