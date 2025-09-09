@@ -51,6 +51,10 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/permissions/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN , AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/users/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/roles/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/api/course/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/api/course-module/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/api/course-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(

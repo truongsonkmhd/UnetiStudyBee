@@ -65,7 +65,7 @@ public class User implements Serializable {
     //insertable = false → Hibernate sẽ không đưa cột status vào câu lệnh insert nếu bạn không set ⇒ DB dùng DEFAULT 'ACTIVE'.
     private UserStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true) //orphanRemoval: nếu xóa user => address cũng sẽ mất
     private Set<Address> addresses = new HashSet<>();
 
     @ManyToMany
@@ -78,4 +78,5 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Token token;
+
 }

@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.request.user.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,9 +78,7 @@ public class UserController {
     ResponseEntity<IResponseMessage> createUser(@RequestBody UserRequest request) {
         UUID userId = userService.saveUser(request);
         return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(userId));
-
     }
-
 
     @Operation(summary = "Update User", description = "API update user to database")
     @PutMapping("/upd/{userId}")
@@ -105,11 +103,6 @@ public class UserController {
     ResponseEntity<IResponseMessage> changePassword(@RequestBody UserPasswordRequest request) {
         log.info("Changing password for user: {}", request);
         return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userService.changePassword(request)));
-
-
     }
-
-
-
 
 }

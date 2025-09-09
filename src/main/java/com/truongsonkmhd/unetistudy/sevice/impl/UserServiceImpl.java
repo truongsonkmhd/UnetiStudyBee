@@ -2,13 +2,14 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.request.AddressRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.response.user.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.request.AddressRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -53,6 +54,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRequestMapper userRequestMapper;
 
+    private final AddressDTOMapper addressDTOMapper;
+
     private final UserUpdateRequestMapper userUpdateRequestMapper;
 
     @Override
@@ -62,6 +65,7 @@ public class UserServiceImpl implements UserService {
                 .map(MyUserDetail::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
     @Override
     public UserPageResponse getAllUsersWithSortBy(String sortBy, int pageNo, int pageSize) {
 
@@ -72,21 +76,21 @@ public class UserServiceImpl implements UserService {
 
         List<Sort.Order> sorts = new ArrayList<>();
         // nếu có giá trị
-        if(StringUtils.hasLength(sortBy)){
+        if (StringUtils.hasLength(sortBy)) {
             // firstName: asc|desc
             Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
             Matcher matcher = pattern.matcher(sortBy);
-            if (matcher.find()){
-                if(matcher.group(3).equalsIgnoreCase("asc")){
-                    sorts.add(new Sort.Order(Sort.Direction.ASC,matcher.group(1)));
-                }else{
-                    sorts.add(new Sort.Order(Sort.Direction.DESC,matcher.group(1)));
+            if (matcher.find()) {
+                if (matcher.group(3).equalsIgnoreCase("asc")) {
+                    sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                } else {
+                    sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
                 }
             }
 
         }
 
-        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts));
         Page<User> users = userRepository.findAll(pageable);
 
         return getUserPageResponse(pageNo, pageSize, users);
@@ -100,22 +104,22 @@ public class UserServiceImpl implements UserService {
         }
         List<Sort.Order> orders = new ArrayList<>();
 
-        for (String sortBy: sorts){
+        for (String sortBy : sorts) {
 
             Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
 
             Matcher matcher = pattern.matcher(sortBy);
-            if (matcher.find()){
-                if(matcher.group(3).equalsIgnoreCase("asc")){
-                    orders.add(new Sort.Order(Sort.Direction.ASC,matcher.group(1)));
-                }else{
-                    orders.add(new Sort.Order(Sort.Direction.DESC,matcher.group(1)));
+            if (matcher.find()) {
+                if (matcher.group(3).equalsIgnoreCase("asc")) {
+                    orders.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                } else {
+                    orders.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
                 }
             }
         }
 
 
-        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(orders));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(orders));
 
         Page<User> users = userRepository.findAll(pageable);
 
@@ -131,7 +135,7 @@ public class UserServiceImpl implements UserService {
      * @param userEntities
      * @return
      */
-    private static UserPageResponse getUserPageResponse(int page, int pageSize, Page<User> userEntities) {
+    private UserPageResponse getUserPageResponse(int page, int pageSize, Page<User> userEntities) {
         log.info("Convert User Entity Page");
         List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
                 .id(entity.getId())
@@ -154,10 +158,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserResponse findById(UUID id) {
 
-        log.info("Find user by id: {}", id);
+        log.info("Find user by id: {}", getUserEntity(id).getAddresses().size());
 
         return userResponseMapper.toDto(getUserEntity(id));
     }
@@ -185,8 +188,10 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(req.getPassword()))
                 .status(UserStatus.ACTIVE)
                 .type(UserType.valueOf(req.getType().toUpperCase()))
-                .addresses(convertToAddress(req.getAddresses()))
                 .build();
+
+
+        user.setAddresses(convertToAddress(req.getAddresses(), user));
         userRepository.save(user);
 
         log.info("User has added successfully, userId={}", user.getId());
@@ -194,39 +199,43 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
-    private Set<Address> convertToAddress(Set<AddressRequest> addresses) {
+    private Set<Address> convertToAddress(Set<AddressRequest> addresses, User user) {
         Set<Address> result = new HashSet<>();
-        addresses.forEach(a ->
-                result.add(Address.builder()
-                        .apartmentNumber(a.getApartmentNumber())
-                        .floor(a.getFloor())
-                        .building(a.getBuilding())
-                        .streetNumber(a.getStreetNumber())
-                        .street(a.getStreet())
-                        .city(a.getCity())
-                        .country(a.getCountry())
-                        .addressType(a.getAddressType())
-                        .build())
-        );
+        addresses.forEach(a -> {
+            Address address = Address.builder()
+                    .apartmentNumber(a.getApartmentNumber())
+                    .floor(a.getFloor())
+                    .building(a.getBuilding())
+                    .streetNumber(a.getStreetNumber())
+                    .street(a.getStreet())
+                    .city(a.getCity())
+                    .country(a.getCountry())
+                    .addressType(a.getAddressType())
+                    .build();
+            address.setUser(user);
+            result.add(address);
+        });
         return result;
     }
-        @Override
-        @Transactional()
-        public UserResponse update(UUID userId, UserUpdateRequest req) {
-            log.info("Updating user: {}", req);
-            // Get user by id
-            User user = getUserEntity(userId);
-            userUpdateRequestMapper.partialUpdate(user,req);
 
-            var roles  = roleRepository.findAllByNames(req.getRoles());
-            user.setRoles(new HashSet<>(roles));
 
-            log.info("Updated user: {}", req);
-            user.setAddresses(convertToAddress(req.getAddresses()));
-            log.info("Updated address: {}", req);
+    @Override
+    @Transactional()
+    public UserResponse update(UUID userId, UserUpdateRequest req) {
+        log.info("Updating user: {}", req);
+        // Get user by id
+        User user = getUserEntity(userId);
+        userUpdateRequestMapper.partialUpdate(user, req);
 
-            return userResponseMapper.toDto(userRepository.save(user));
-        }
+        var roles = roleRepository.findAllByNames(req.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
+        log.info("Updated user: {}", req);
+        user.setAddresses(convertToAddress(req.getAddresses() , user));
+        log.info("Updated address: {}", req);
+
+        return userResponseMapper.toDto(userRepository.save(user));
+    }
 
     @Override
     public UUID changePassword(UserPasswordRequest req) {
@@ -240,7 +249,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("Changed password for user: {}", req);
 
-        return  user.getId();
+        return user.getId();
     }
 
     @Override

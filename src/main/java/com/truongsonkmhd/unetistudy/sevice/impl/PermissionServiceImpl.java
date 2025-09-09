@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.dto.request.permission.PermissionRequest;
-import com.truongsonkmhd.unetistudy.dto.response.permission.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.request.permission.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.response.permission.PermissionResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionResponseMapper;

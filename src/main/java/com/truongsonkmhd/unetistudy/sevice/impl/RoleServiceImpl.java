@@ -1,11 +1,9 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.dto.request.role.RoleRequest;
-import com.truongsonkmhd.unetistudy.dto.response.role.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.request.role.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.response.role.RoleResponse;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleResponseMapper;
-import com.truongsonkmhd.unetistudy.model.Permission;
-import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.repository.PermissionRepository;
 import com.truongsonkmhd.unetistudy.repository.RoleRepository;
 import com.truongsonkmhd.unetistudy.sevice.RoleService;
@@ -32,7 +30,6 @@ public class RoleServiceImpl implements RoleService {
     RoleRequestMapper roleRequestMapper;
 
     RoleResponseMapper roleResponseMapper;
-
 
     @Transactional
     @Override
