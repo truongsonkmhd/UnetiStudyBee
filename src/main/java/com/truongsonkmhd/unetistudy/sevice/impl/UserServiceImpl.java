@@ -229,7 +229,7 @@ public class UserServiceImpl implements UserService {
         }
 
     @Override
-    public void changePassword(UserPasswordRequest req) {
+    public UUID changePassword(UserPasswordRequest req) {
         log.info("Changing password for user: {}", req);
         // Get user by id
         User user = getUserEntity(req.getId());
@@ -239,10 +239,12 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         log.info("Changed password for user: {}", req);
+
+        return  user.getId();
     }
 
     @Override
-    public void delete(UUID id) {
+    public UUID delete(UUID id) {
         log.info("Deleting user: {}", id);
 
         // Get user by id
@@ -250,6 +252,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
         log.info("Deleted user: {}", user);
+        return id;
     }
 
     /**

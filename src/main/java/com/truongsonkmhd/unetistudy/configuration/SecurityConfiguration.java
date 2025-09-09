@@ -81,7 +81,7 @@ public class SecurityConfiguration {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:8080",
-                "http://localhost:8081",
+                "http://localhost:8081  ",
                 "http://localhost:5173",
                 "http://localhost:4221",
                 "https://localhost:4221"

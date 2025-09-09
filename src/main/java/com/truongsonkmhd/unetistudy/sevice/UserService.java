@@ -28,7 +28,7 @@ public interface UserService {
 
     UserResponse update(UUID userId , UserUpdateRequest user);
 
-    void changePassword(UserPasswordRequest oldPassword);
+    UUID changePassword(UserPasswordRequest oldPassword);
 
-    void delete(UUID id);
+    UUID delete(UUID id);
 }
