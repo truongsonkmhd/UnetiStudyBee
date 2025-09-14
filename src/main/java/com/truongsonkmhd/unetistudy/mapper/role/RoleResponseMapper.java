@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.role;
 
-import com.truongsonkmhd.unetistudy.dto.response.role.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.role.RoleResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.Role;
 import org.mapstruct.Mapper;

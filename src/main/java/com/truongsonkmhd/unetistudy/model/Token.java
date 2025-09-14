@@ -42,4 +42,19 @@ public class Token {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
+
+    public static Token create(User user, String accessToken, String refreshToken,
+                               Instant accessExp, Instant refreshExp) {
+        return Token.builder()
+                .user(user)
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .expirationTime(accessExp)
+                .refreshExpirationTime(refreshExp)
+                .revoked(false)
+                .expired(false)
+                .build();
+    }
+
 }

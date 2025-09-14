@@ -1,13 +1,10 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.request.permission.PermissionRequest;
-import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.custom.request.permission.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.PermissionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j(topic = "PERMISSION-CONTROLLER")
 @Tag(name = "permission Controller")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
 
     PermissionService permissionService;
@@ -47,7 +43,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{permissionId}")
-    public ResponseEntity<IResponseMessage> delete(@PathVariable long permissionId) {
+    ResponseEntity<IResponseMessage> delete(@PathVariable long permissionId) {
         return ResponseEntity.ok().body(
                 SuccessResponseMessage.DeletedSuccess(permissionService.delete(permissionId))
         );

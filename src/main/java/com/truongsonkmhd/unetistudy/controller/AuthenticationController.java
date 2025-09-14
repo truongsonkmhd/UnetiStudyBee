@@ -1,15 +1,15 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.request.auth.IntrospectRequest;
-import com.truongsonkmhd.unetistudy.dto.request.auth.LogoutRequest;
-import com.truongsonkmhd.unetistudy.dto.request.auth.RefreshTokenRequest;
-import com.truongsonkmhd.unetistudy.dto.response.ApiResponse;
-import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.response.auth.IntrospectResponse;
-import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.IntrospectRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.LogoutRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.RefreshTokenRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.response.ApiResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.auth.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.auth.IntrospectResponse;
+import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,20 +45,20 @@ public class AuthenticationController {
 //    }
 
     @PostMapping("")
-    public ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationRequest request){
+    ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationRequest request){
         AuthenticationResponse authenticateResponse = this.authenticationService.authenticate(request);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
 
     @PostMapping("/login-with-token")
-    public ResponseEntity<IResponseMessage> loginWithToken(@RequestBody  RefreshTokenRequest req){
+    ResponseEntity<IResponseMessage> loginWithToken(@RequestBody  RefreshTokenRequest req){
         AuthenticationResponse authenticationResponse = this.authenticationService.loginWithToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationResponse));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenRequest req){
+    ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenRequest req){
         AuthenticationResponse authenticateResponse = this.authenticationService.refreshToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }

@@ -4,15 +4,14 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
-import com.truongsonkmhd.unetistudy.dto.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.request.auth.IntrospectRequest;
-import com.truongsonkmhd.unetistudy.dto.request.auth.LogoutRequest;
-import com.truongsonkmhd.unetistudy.dto.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.response.auth.IntrospectResponse;
-import com.truongsonkmhd.unetistudy.dto.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.AuthenticationRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.IntrospectRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.auth.LogoutRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.response.auth.AuthenticationResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.auth.IntrospectResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.AppException;
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
-import com.truongsonkmhd.unetistudy.exception.InvalidDataException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.model.InvalidatedToken;
 import com.truongsonkmhd.unetistudy.model.Token;
@@ -101,6 +100,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Instant now = Instant.now();
         Instant accessExp = now.plusSeconds(accessTokenExpirationSeconds);
         Instant refreshExp = now.plusSeconds(rtTtl);
+
+//        Token dbToken = tokenRepository.findByUser(user)
+//                .orElseGet(() -> Token.create(user, accessToken, refreshToken, accessExp, refreshExp));
+//        dbToken.setToken(accessToken);
+//        dbToken.setRefreshToken(refreshToken);
+//        dbToken.setExpirationTime(accessExp);
+//        dbToken.setRefreshExpirationTime(refreshExp);
+//        tokenRepository.save(dbToken);
+
 
         // Nếu user đã có token → update thay vì insert
         Token dbToken = tokenRepository.findByUser(user).orElse(new Token());

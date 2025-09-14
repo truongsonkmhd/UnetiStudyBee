@@ -1,9 +1,8 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.request.permission.PermissionRequest;
-import com.truongsonkmhd.unetistudy.dto.request.role.RoleRequest;
-import com.truongsonkmhd.unetistudy.dto.response.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.response.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.custom.request.role.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.RoleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j(topic = "ROLE-CONTROLLER")
 @Tag(name = "role Controller")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
 
     RoleService roleService;
@@ -34,7 +32,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{roleId}")
-    public ResponseEntity<IResponseMessage> delete(@PathVariable long roleId) {
+    ResponseEntity<IResponseMessage> delete(@PathVariable long roleId) {
         return ResponseEntity.ok().body(
                 SuccessResponseMessage.DeletedSuccess(roleService.delete(roleId))
         );
