@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.request.AddressRequest;
-import com.truongsonkmhd.unetistudy.dto.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.AddressRequest;
+import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
 import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.User;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-10T00:06:49+0700",
+    date = "2025-09-16T01:07:48+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
@@ -171,18 +171,18 @@ public class UserRequestMapperImpl implements UserRequestMapper {
             return null;
         }
 
-        AddressRequest addressRequest = new AddressRequest();
+        AddressRequest.AddressRequestBuilder addressRequest = AddressRequest.builder();
 
-        addressRequest.setApartmentNumber( address.getApartmentNumber() );
-        addressRequest.setFloor( address.getFloor() );
-        addressRequest.setBuilding( address.getBuilding() );
-        addressRequest.setStreetNumber( address.getStreetNumber() );
-        addressRequest.setStreet( address.getStreet() );
-        addressRequest.setCity( address.getCity() );
-        addressRequest.setCountry( address.getCountry() );
-        addressRequest.setAddressType( address.getAddressType() );
+        addressRequest.apartmentNumber( address.getApartmentNumber() );
+        addressRequest.floor( address.getFloor() );
+        addressRequest.building( address.getBuilding() );
+        addressRequest.streetNumber( address.getStreetNumber() );
+        addressRequest.street( address.getStreet() );
+        addressRequest.city( address.getCity() );
+        addressRequest.country( address.getCountry() );
+        addressRequest.addressType( address.getAddressType() );
 
-        return addressRequest;
+        return addressRequest.build();
     }
 
     protected Set<AddressRequest> addressSetToAddressRequestSet(Set<Address> set) {

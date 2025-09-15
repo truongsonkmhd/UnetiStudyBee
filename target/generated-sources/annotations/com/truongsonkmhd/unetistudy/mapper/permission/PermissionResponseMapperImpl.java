@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.permission;
 
-import com.truongsonkmhd.unetistudy.dto.response.permission.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.custom.response.permission.PermissionResponse;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-10T00:06:49+0700",
+    date = "2025-09-16T01:07:47+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
