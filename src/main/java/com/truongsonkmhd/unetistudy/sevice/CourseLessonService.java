@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CourseLessonService {
-    List<LessonResponse> getLessonById(Long theID);
+    List<LessonResponse> getLessonByModuleId(UUID moduleId);
 
-    List<LessonResponse> getLessonShowDTOByModuleIDAndSlug(Long moduleID, String search);
-    List<LessonResponse> getContestShowDTOByIsContest(Long moduleID);
-    List<LessonResponse> getEssayContestShowDTOByIsContest(Long moduleID);
+    List<LessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug);
+    List<LessonResponse> getCodingContest(UUID moduleID);
+    List<LessonResponse> getMultipleChoiceContest(UUID moduleID);
     List<LessonResponse> getLessonAll();
     LessonResponse addLesson(LessonRequest request);
 
