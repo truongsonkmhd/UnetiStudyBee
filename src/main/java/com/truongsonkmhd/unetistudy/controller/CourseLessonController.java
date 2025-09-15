@@ -29,6 +29,30 @@ public class CourseLessonController {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonAll()));
     }
 
+    @GetMapping("/getLessonByModuleId/{moduleId}")
+    @Transactional
+    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId){
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleId(moduleId)));
+    }
+
+    @GetMapping("/getLessonByModuleIDAndSlug/{slug}/{moduleId}")
+    @Transactional
+    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId , @PathVariable String slug){
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleIDAndSlug(moduleId,slug)));
+    }
+
+    @GetMapping("/getLessonByModuleIDAndSlug/{moduleId}")
+    @Transactional
+    ResponseEntity<IResponseMessage> getCodingContest(@PathVariable UUID moduleId){
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getCodingContest(moduleId)));
+    }
+
+    @GetMapping("/getMultipleChoiceContest/{moduleId}")
+    @Transactional
+    ResponseEntity<IResponseMessage> getMultipleChoiceContest(@PathVariable UUID moduleId){
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getMultipleChoiceContest(moduleId)));
+    }
+
     @PostMapping("/add")
     ResponseEntity<IResponseMessage> addLesson(@RequestBody LessonRequest request) {
         return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(lessonService.addLesson(request)));

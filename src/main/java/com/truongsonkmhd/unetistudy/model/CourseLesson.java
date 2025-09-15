@@ -63,4 +63,19 @@ public class CourseLesson {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date updatedAt;
+
+    @Column(name = "Slug", nullable = true)
+    private String slug;
+
+    @Column(name = "is_contest", nullable = true, columnDefinition = "BIT DEFAULT 0")
+    private Boolean isContest;
+
+    @Column(name = "total_points", columnDefinition = "INT DEFAULT 0")
+    private Integer totalPoints;
+
+    @Column(name = "contest_start_time")
+    private Date contestStartTime;
+
+    @Column(name = "contest_end_time")
+    private Date contestEndTime;
 }

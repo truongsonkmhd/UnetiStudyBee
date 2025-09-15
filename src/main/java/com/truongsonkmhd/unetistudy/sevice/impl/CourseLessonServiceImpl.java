@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
+import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.dto.custom.request.lesson.LessonRequest;
 import com.truongsonkmhd.unetistudy.dto.custom.response.lesson.LessonResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
@@ -34,23 +35,23 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     private final CourseModuleRepository courseModuleRepository;
 
     @Override
-    public List<LessonResponse> getLessonById(Long theID) {
-        return null;
+    public List<LessonResponse> getLessonByModuleId(UUID moduleId) {
+        return courseLessonResponseMapper.toDto(courseLessonRepository.getLessonByModuleId(moduleId)) ;
     }
 
     @Override
-    public List<LessonResponse> getLessonShowDTOByModuleIDAndSlug(Long moduleID, String search) {
-        return null;
+    public List<LessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug) {
+        return courseLessonResponseMapper.toDto(courseLessonRepository.getLessonByModuleIdAndSlug(moduleID,slug));
     }
 
     @Override
-    public List<LessonResponse> getContestShowDTOByIsContest(Long moduleID) {
-        return null;
+    public List<LessonResponse> getCodingContest(UUID moduleID) {
+        return courseLessonResponseMapper.toDto(courseLessonRepository.getCodingContest(moduleID));
     }
 
     @Override
-    public List<LessonResponse> getEssayContestShowDTOByIsContest(Long moduleID) {
-        return null;
+    public List<LessonResponse> getMultipleChoiceContest(UUID moduleID) {
+        return courseLessonResponseMapper.toDto(courseLessonRepository.getMultipleChoiceContest(moduleID));
     }
 
     @Override
@@ -71,6 +72,10 @@ public class CourseLessonServiceImpl implements CourseLessonService {
                 );
         CourseLesson courseLesson = courseLessonRequestMapper.toEntity(request);
         courseLesson.setModule(existsCourseModule);
+
+        String baseSlug = new Slugify().slugify(request.getTitle());
+        String uniqueSlug = generateUniqueSlug(baseSlug);
+        courseLesson.setSlug(uniqueSlug);
         courseLessonRepository.save(courseLesson);
         return courseLessonResponseMapper.toDto(courseLesson);
     }
@@ -88,5 +93,15 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     public UUID delete(UUID theId) {
         courseLessonRepository.deleteById(theId);
         return theId;
+    }
+
+    public String generateUniqueSlug(String baseSlug) {
+        String slug= baseSlug;
+        int counter =1;
+        while (courseLessonRepository.existsBySlug(slug)){
+            slug = baseSlug + "-" + counter;
+            counter++;
+        }
+        return slug;
     }
 }

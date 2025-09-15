@@ -105,7 +105,7 @@ public class CourseServiceImpl implements CourseService {
         return courseModuleResponseMapper.toDto(courseModuleRepository.getCourseModuleByCourseSlug(theSlug));
     }
 
-    @Override
+
     public String generateUniqueSlug(String baseSlug) {
         String slug= baseSlug;
         int counter =1;
