@@ -38,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
    //(left join "fetch") Dùng fetch để giải quyết N+1 problem và đảm bảo dữ liệu quan hệ được load cùng lúc.
     @Query("select u from User u where u.username =: userName")
     Optional<User> findByUserName(@Param("userName") String userName);
+
+    @Query("SELECT u.id FROM User u WHERE u.username = :userName")
+    UUID getUserIDByUserName(@Param("userName") String userName);
+
 }

@@ -2,12 +2,12 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.custom.request.AddressRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
@@ -36,7 +36,6 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -158,11 +157,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findById(UUID id) {
+    public UserResponse findByIdResponse(UUID id) {
 
         log.info("Find user by id: {}", getUserEntity(id).getAddresses().size());
 
         return userResponseMapper.toDto(getUserEntity(id));
+    }
+
+    @Override
+    public User findById(UUID id) {
+
+        log.info("Find user by id: {}", getUserEntity(id).getAddresses().size());
+
+        return getUserEntity(id);
     }
 
     @Override
@@ -184,7 +191,7 @@ public class UserServiceImpl implements UserService {
                 .birthday(req.getBirthday())
                 .email(req.getEmail())
                 .phone(req.getPhone())
-                .username(req.getUsername())
+                .username(req.getUserName())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .status(UserStatus.ACTIVE)
                 .type(UserType.valueOf(req.getType().toUpperCase()))
@@ -273,4 +280,8 @@ public class UserServiceImpl implements UserService {
     private User getUserEntity(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
+    @Override
+    public UUID findUserIDByUserName(String userName){
+        return userRepository.getUserIDByUserName(userName);
+    };
 }

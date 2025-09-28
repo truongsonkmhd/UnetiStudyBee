@@ -54,6 +54,8 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/course/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/course-module/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/course-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/api/practice/lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/practice/lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
 
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

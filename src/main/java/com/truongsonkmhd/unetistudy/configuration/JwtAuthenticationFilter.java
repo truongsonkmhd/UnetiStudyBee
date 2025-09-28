@@ -1,11 +1,13 @@
 package com.truongsonkmhd.unetistudy.configuration;
 
+import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.security.JwtService;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import com.truongsonkmhd.unetistudy.sevice.UserServiceDetail;
 import com.truongsonkmhd.unetistudy.utils.CacheUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -25,6 +27,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -75,6 +79,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+
+            String token = null;
+
+
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if ("token".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+            // Nếu token hợp lệ → set vào ThreadLocal
+            if (token != null && jwtService.validateToken(token)) {
+                String username = jwtService.extractUsername(token);
+                UUID userID = jwtService.extractUserID(token);
+                UserContext.setUsername(username);
+                UserContext.setUserID(userID);
+            }
+
+
         }
         filterChain.doFilter(request, response);
     }

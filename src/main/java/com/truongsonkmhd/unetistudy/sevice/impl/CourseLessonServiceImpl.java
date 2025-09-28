@@ -1,13 +1,12 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.github.slugify.Slugify;
-import com.truongsonkmhd.unetistudy.dto.custom.request.lesson.LessonRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.lesson.LessonResponse;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonResponseMapper;
-import com.truongsonkmhd.unetistudy.model.Course;
 import com.truongsonkmhd.unetistudy.model.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.CourseModule;
 import com.truongsonkmhd.unetistudy.repository.CourseLessonRepository;
@@ -70,6 +69,7 @@ public class CourseLessonServiceImpl implements CourseLessonService {
                                 "existsCourseModule not found" + request.getModuleId()
                         )
                 );
+
         CourseLesson courseLesson = courseLessonRequestMapper.toEntity(request);
         courseLesson.setModule(existsCourseModule);
 

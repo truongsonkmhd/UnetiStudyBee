@@ -94,7 +94,7 @@ public class JwtServiceImpl implements JwtService {
                     .setClaims(extractClaims)
                     .setSubject(myUserDetail.getUsername())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + (expiration + 1000)))
+                    .setExpiration(new Date(System.currentTimeMillis() + (expiration + 2000000000)))
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
         } catch (Exception e) {
@@ -109,20 +109,6 @@ public class JwtServiceImpl implements JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-//    private Key getKey(TokenType type) {
-//        log.info("Create key for type {}", type);
-//
-//        switch (type) {
-//            case ACCESS_TOKEN -> {
-//                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessKey));
-//            }
-//            case REFRESH_TOKEN -> {
-//                return Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshKey));
-//            }
-//            default -> throw new InvalidDataException("Invalid token type");
-//        }
-//    }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
@@ -179,4 +165,25 @@ public class JwtServiceImpl implements JwtService {
 
         return stringJoiner.toString();
     }
+    // Phương thức kiểm tra token có hợp lệ không
+
+    @Override
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token); // Giải mã token
+            return claims.getExpiration().after(new Date()); // Kiểm tra token còn hạn không
+        } catch (Exception e) {
+            return false; // Nếu có lỗi thì token không hợp lệ
+        }
+    }
+
+
+    // Phương thức lấy userID từ token
+    @Override
+    public UUID extractUserID(String token) {
+        Claims claims = extractAllClaims(token);
+        String userIdStr = claims.get("userID", String.class);
+        return userIdStr != null ? UUID.fromString(userIdStr) : null;
+    }
+
 }

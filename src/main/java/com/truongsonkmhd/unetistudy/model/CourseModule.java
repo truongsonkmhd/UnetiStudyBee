@@ -2,16 +2,15 @@ package com.truongsonkmhd.unetistudy.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 @Getter
 @Setter
 @Entity
@@ -19,42 +18,47 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_course_module")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseModule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @Column(name = "module_id", nullable = false, updatable = false)
-    private UUID moduleId;
+    UUID moduleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    Course course;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CourseLesson> lessons = new ArrayList<>();
+    List<CourseLesson> lessons = new ArrayList<>();
 
     @Column(name = "title", nullable = false, length = 255)
-    private String title;
+    String title;
 
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
-    private String description;
+    String description;
 
     @Column(name = "order_index", nullable = false)
-    private Integer orderIndex;
+    Integer orderIndex;
 
     @Column(name = "duration")
-    private Integer duration;
+    Integer duration;
 
     @Column(name = "is_published", nullable = false)
-    private Boolean isPublished = false;
+    Boolean isPublished = false;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdAt;
+    Date createdAt;
 
     @Column(name = "updated_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedAt;
+    Date updatedAt;
+
+    @Column(name = "slug", nullable = true)
+    private String slug;
+
 }

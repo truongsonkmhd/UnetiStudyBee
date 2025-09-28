@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.custom.request.AddressRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
 import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.User;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-16T01:07:48+0700",
+    date = "2025-09-28T15:37:54+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
@@ -87,6 +87,34 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         }
 
         return list;
+    }
+
+    @Override
+    public Set<User> toEntity(Set<UserRequest> dtoSet) {
+        if ( dtoSet == null ) {
+            return null;
+        }
+
+        Set<User> set = new LinkedHashSet<User>( Math.max( (int) ( dtoSet.size() / .75f ) + 1, 16 ) );
+        for ( UserRequest userRequest : dtoSet ) {
+            set.add( toEntity( userRequest ) );
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<UserRequest> toDto(Set<User> entitySet) {
+        if ( entitySet == null ) {
+            return null;
+        }
+
+        Set<UserRequest> set = new LinkedHashSet<UserRequest>( Math.max( (int) ( entitySet.size() / .75f ) + 1, 16 ) );
+        for ( User user : entitySet ) {
+            set.add( toDto( user ) );
+        }
+
+        return set;
     }
 
     @Override

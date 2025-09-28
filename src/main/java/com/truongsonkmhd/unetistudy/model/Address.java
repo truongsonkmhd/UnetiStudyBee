@@ -3,6 +3,7 @@ package com.truongsonkmhd.unetistudy.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,50 +17,52 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_address")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class Address{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // phù hợp với PostgreSQL
     @Column(name = "id")
-    private Long id;
+    Long id;
 
     @Column(name = "apartment_number")
-    private String apartmentNumber;
+    String apartmentNumber;
 
     @Column(name = "floor")
-    private String floor;
+    String floor;
 
     @Column(name = "building")
-    private String building;
+    String building;
 
     @Column(name = "street_number")
-    private String streetNumber;
+    String streetNumber;
 
     @Column(name = "street")
-    private String street;
+    String street;
 
     @Column(name = "city")
-    private String city;
+    String city;
 
     @Column(name = "country")
-    private String country;
+    String country;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    User user;
 
     @Column(name = "address_type")
-    private Integer addressType;
+    Integer addressType;
 
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdAt;
+    Date createdAt;
 
     @Column(name = "updated_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedAt;
+    Date updatedAt;
 
 }

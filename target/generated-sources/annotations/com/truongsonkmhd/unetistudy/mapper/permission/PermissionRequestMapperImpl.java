@@ -1,15 +1,17 @@
 package com.truongsonkmhd.unetistudy.mapper.permission;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.permission.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionRequest;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-16T01:07:49+0700",
+    date = "2025-09-28T15:37:54+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
@@ -69,6 +71,34 @@ public class PermissionRequestMapperImpl implements PermissionRequestMapper {
         }
 
         return list;
+    }
+
+    @Override
+    public Set<Permission> toEntity(Set<PermissionRequest> dtoSet) {
+        if ( dtoSet == null ) {
+            return null;
+        }
+
+        Set<Permission> set = new LinkedHashSet<Permission>( Math.max( (int) ( dtoSet.size() / .75f ) + 1, 16 ) );
+        for ( PermissionRequest permissionRequest : dtoSet ) {
+            set.add( toEntity( permissionRequest ) );
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<PermissionRequest> toDto(Set<Permission> entitySet) {
+        if ( entitySet == null ) {
+            return null;
+        }
+
+        Set<PermissionRequest> set = new LinkedHashSet<PermissionRequest>( Math.max( (int) ( entitySet.size() / .75f ) + 1, 16 ) );
+        for ( Permission permission : entitySet ) {
+            set.add( toDto( permission ) );
+        }
+
+        return set;
     }
 
     @Override

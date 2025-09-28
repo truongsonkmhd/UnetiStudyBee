@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -69,7 +69,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<IResponseMessage> getUserDetail(@PathVariable UUID userId) {
         log.info("Get user detail by ID: {}", userId);
-        var userDetailById = userService.findById(userId);
+        var userDetailById = userService.findByIdResponse(userId);
         return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userDetailById));
     }
 

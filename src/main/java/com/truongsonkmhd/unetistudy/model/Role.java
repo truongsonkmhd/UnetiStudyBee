@@ -3,6 +3,7 @@ package com.truongsonkmhd.unetistudy.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,21 +15,23 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_role")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // phù hợp với PostgreSQL
     @Column(name = "id")
-    private Long id;
+    Long id;
     @Column(name = "name")
-    private String name;
+    String name;
     @Column(name = "code")
-    private String code;
+    String code;
     @Column(name = "description")
-    private String description;
+    String description;
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    Boolean isDeleted;
     @Column(name = "is_activated")
-    private Boolean isActivated;
+    Boolean isActivated;
 
     @ManyToMany
     @JoinTable(
@@ -36,13 +39,13 @@ public class Role {
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private Set<Permission> permissions;
+    Set<Permission> permissions;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
     @JsonIgnoreProperties(
             value = {"roles"},
             allowSetters = true
     )
-    private Set<User> users = new HashSet<>();
+    Set<User> users = new HashSet<>();
 
 }

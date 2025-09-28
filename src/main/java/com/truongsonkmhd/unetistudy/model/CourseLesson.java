@@ -2,8 +2,10 @@ package com.truongsonkmhd.unetistudy.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,66 +18,74 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_course_lesson")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseLesson {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @Column(name = "lesson_id", nullable = false, updatable = false)
-    private UUID lessonId;
+    UUID lessonId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id", nullable = false)
-    private CourseModule module;
+    CourseModule module;
+
+    @ManyToOne
+    @JoinColumn(name = "CreatorID", nullable = false)
+    private User creator;
 
     @Column(name = "title", nullable = false, length = 255)
-    private String title;
+    String title;
 
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
-    private String description;
+    String description;
 
     @Column(name = "type", nullable = false, length = 50)
-    private String type;
+    String type;
 
     @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
-    private String content;
+    String content;
 
     @Column(name = "video_url", length = 255)
-    private String videoUrl;
+    String videoUrl;
+
+    @Column(name = "Image", length = 255)
+    String image;
 
     @Column(name = "duration")
-    private Integer duration;
+    Integer duration;
 
     @Column(name = "order_index")
-    private Integer orderIndex;
+    Integer orderIndex;
 
     @Column(name = "is_preview", nullable = false)
-    private Boolean isPreview = false;
+    Boolean isPreview = false;
 
     @Column(name = "is_published", nullable = false)
-    private Boolean isPublished = false;
+    Boolean isPublished = false;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdAt;
+    Date createdAt;
 
     @Column(name = "updated_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedAt;
+    Date updatedAt;
 
     @Column(name = "Slug", nullable = true)
-    private String slug;
+    String slug;
 
     @Column(name = "is_contest", nullable = true, columnDefinition = "BIT DEFAULT 0")
-    private Boolean isContest;
+    Boolean isContest;
 
     @Column(name = "total_points", columnDefinition = "INT DEFAULT 0")
-    private Integer totalPoints;
+    Integer totalPoints;
 
     @Column(name = "contest_start_time")
-    private Date contestStartTime;
+    Date contestStartTime;
 
     @Column(name = "contest_end_time")
-    private Date contestEndTime;
+    Date contestEndTime;
 }

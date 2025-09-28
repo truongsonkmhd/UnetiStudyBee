@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.role.RoleRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.role.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleResponseMapper;
 import com.truongsonkmhd.unetistudy.repository.PermissionRepository;

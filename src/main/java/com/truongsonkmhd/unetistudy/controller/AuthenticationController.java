@@ -1,15 +1,15 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.IntrospectRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.LogoutRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.RefreshTokenRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.ApiResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.IntrospectResponse;
-import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.LogoutDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.RefreshTokenDTORequest;
+import com.truongsonkmhd.unetistudy.dto.a_custom.ApiResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTOResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
+import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,36 +45,36 @@ public class AuthenticationController {
 //    }
 
     @PostMapping("")
-    ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationRequest request){
-        AuthenticationResponse authenticateResponse = this.authenticationService.authenticate(request);
+    ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationDTORequest request){
+        AuthenticationDTOResponse authenticateResponse = this.authenticationService.authenticate(request);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
 
     @PostMapping("/login-with-token")
-    ResponseEntity<IResponseMessage> loginWithToken(@RequestBody  RefreshTokenRequest req){
-        AuthenticationResponse authenticationResponse = this.authenticationService.loginWithToken(req.getRefreshToken());
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationResponse));
+    ResponseEntity<IResponseMessage> loginWithToken(@RequestBody RefreshTokenDTORequest req){
+        AuthenticationDTOResponse authenticationDTOResponse = this.authenticationService.loginWithToken(req.getRefreshToken());
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationDTOResponse));
     }
 
     @PostMapping("/refresh-token")
-    ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenRequest req){
-        AuthenticationResponse authenticateResponse = this.authenticationService.refreshToken(req.getRefreshToken());
+    ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenDTORequest req){
+        AuthenticationDTOResponse authenticateResponse = this.authenticationService.refreshToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
 
     @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
+    ApiResponse<IntrospectDTOResponse> authenticate(@RequestBody IntrospectDTORequest request)
             throws ParseException, JOSEException {
         var result = authenticationService.introspect(request);
-        return ApiResponse.<IntrospectResponse>builder()
+        return ApiResponse.<IntrospectDTOResponse>builder()
                 .result(result)
                 .build();
     }
 
     @PostMapping("/logout")
-    ApiResponse<Void> logout(@RequestBody LogoutRequest request)
+    ApiResponse<Void> logout(@RequestBody LogoutDTORequest request)
             throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()

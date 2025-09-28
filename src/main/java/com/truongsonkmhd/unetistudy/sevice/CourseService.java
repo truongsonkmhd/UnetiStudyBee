@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseModuleResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.request.course.CourseShowRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseShowResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowResponse;
 
 import java.util.List;
 import java.util.UUID;

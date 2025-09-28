@@ -1,12 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.course.CourseModuleRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseModuleResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleRequest;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
-import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
-import com.truongsonkmhd.unetistudy.model.Course;
 import com.truongsonkmhd.unetistudy.model.CourseModule;
 import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.CourseRepository;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

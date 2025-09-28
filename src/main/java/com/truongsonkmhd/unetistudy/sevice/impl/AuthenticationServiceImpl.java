@@ -4,12 +4,12 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.IntrospectRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.LogoutRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.IntrospectResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.LogoutDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTOResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.AppException;
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
@@ -70,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Transactional
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationDTOResponse authenticate(AuthenticationDTORequest request) {
         // 1) Lấy user + roles
         User user = userRepository
                 .getByUsernameAndIsDeletedWithRoles(request.getUsername(), false)
@@ -165,14 +165,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Transactional
     @Override
-    public AuthenticationResponse loginWithToken(String token) {
+    public AuthenticationDTOResponse loginWithToken(String token) {
         String userName = jwtService.extractUsername(token);
         User user = this.userRepository.getByUsernameAndIsDeletedWithRoles(userName, false).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user));
     }
 
     @Transactional
-    public AuthenticationResponse refreshToken(String rawRefreshToken){
+    public AuthenticationDTOResponse refreshToken(String rawRefreshToken){
 
         Token token = verifyRefreshToken(rawRefreshToken);
 
@@ -198,8 +198,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail);
     }
 
-    private AuthenticationResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail) {
-        return AuthenticationResponse.builder()
+    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail) {
+        return AuthenticationDTOResponse.builder()
                 .isAuthenticated(true)
                 .token(token)
                 .refreshToken(refreshToken)
@@ -227,7 +227,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return token;
     }
 
-    public IntrospectResponse introspect(IntrospectRequest request)
+    public IntrospectDTOResponse introspect(IntrospectDTORequest request)
             throws JOSEException, ParseException {
         var token = request.getToken();
         boolean isValid = true;
@@ -238,12 +238,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             isValid = false;
         }
 
-        return IntrospectResponse.builder()
+        return IntrospectDTOResponse.builder()
                 .valid(isValid)
                 .build();
     }
     @Override
-    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+    public void logout(LogoutDTORequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
         String jit = signToken.getJWTClaimsSet().getJWTID();

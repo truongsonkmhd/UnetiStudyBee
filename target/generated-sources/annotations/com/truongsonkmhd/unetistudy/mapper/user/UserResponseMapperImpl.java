@@ -1,9 +1,9 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.AddressDTO;
-import com.truongsonkmhd.unetistudy.dto.custom.response.permission.PermissionResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.role.RoleResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressDTO;
+import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-16T01:07:48+0700",
+    date = "2025-09-28T15:37:54+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
@@ -49,6 +49,34 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         }
 
         return list;
+    }
+
+    @Override
+    public Set<User> toEntity(Set<UserResponse> dtoSet) {
+        if ( dtoSet == null ) {
+            return null;
+        }
+
+        Set<User> set = new LinkedHashSet<User>( Math.max( (int) ( dtoSet.size() / .75f ) + 1, 16 ) );
+        for ( UserResponse userResponse : dtoSet ) {
+            set.add( toEntity( userResponse ) );
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<UserResponse> toDto(Set<User> entitySet) {
+        if ( entitySet == null ) {
+            return null;
+        }
+
+        Set<UserResponse> set = new LinkedHashSet<UserResponse>( Math.max( (int) ( entitySet.size() / .75f ) + 1, 16 ) );
+        for ( User user : entitySet ) {
+            set.add( toDto( user ) );
+        }
+
+        return set;
     }
 
     @Override

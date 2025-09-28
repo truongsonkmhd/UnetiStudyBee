@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.user.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -18,7 +18,9 @@ public interface UserService {
 
     UserPageResponse getAllUsersWithSortByMultipleColumns(int pageNo, int pageSize, List<String> sorts);
 
-    UserResponse findById(UUID id);
+    UserResponse findByIdResponse(UUID id);
+
+    User findById(UUID id);
 
     User findByUsername(String username);
 
@@ -31,4 +33,6 @@ public interface UserService {
     UUID changePassword(UserPasswordRequest oldPassword);
 
     UUID delete(UUID id);
+
+    UUID findUserIDByUserName(String userName);
 }

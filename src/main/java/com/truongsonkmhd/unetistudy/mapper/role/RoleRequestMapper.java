@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.role;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.role.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;

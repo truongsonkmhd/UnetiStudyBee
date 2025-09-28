@@ -16,7 +16,7 @@
         </processorPath>
         <module name="ShoppApp" />
       </profile>
-      <profile name="Annotation profile for TruowngSown" enabled="true">
+      <profile name="Annotation profile for UnetiStudyBee" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />

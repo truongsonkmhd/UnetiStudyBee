@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseShowResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.Course;
 import org.mapstruct.Mapper;
@@ -13,7 +13,7 @@ public interface CourseResponseMapper extends EntityMapper<CourseShowResponse, C
     @Mapping(target = "modules", source = "modules")
     CourseShowResponse toDto(Course entity);
     @Override
-    @Mapping(target = "course_id", ignore = true)
+    @Mapping(target = "courseId", ignore = true)
     @Mapping(target = "slug", ignore = true)
     @Mapping(target = "shortDescription", ignore = true)
     @Mapping(target = "instructor", ignore = true)

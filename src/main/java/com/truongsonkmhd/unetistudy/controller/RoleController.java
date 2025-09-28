@@ -1,13 +1,11 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.custom.request.role.RoleRequest;
-import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.RoleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

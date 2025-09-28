@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DockerCodeExecutionUtil {
-
     private static final int EXECUTION_TIMEOUT_SECONDS = 10;
     private static final int MEMORY_LIMIT_MB = 256;
 
@@ -16,7 +15,7 @@ public class DockerCodeExecutionUtil {
      * Biên dịch code (nếu cần) trong Docker container
      */
     public static void compileInContainer(Path workingDir, String language) throws IOException, InterruptedException {
-        List<String> dockerCommand = new ArrayList<>();
+        List<String> dockerCommand;
         String dockerImage = getDockerImage(language);
 
         switch (language.toLowerCase()) {

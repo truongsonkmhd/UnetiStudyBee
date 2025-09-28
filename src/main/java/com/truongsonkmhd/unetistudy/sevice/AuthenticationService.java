@@ -1,23 +1,23 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.AuthenticationRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.IntrospectRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.auth.LogoutRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.AuthenticationResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.auth.IntrospectResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.LogoutDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTOResponse;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
 
 import java.text.ParseException;
 
 public interface AuthenticationService {
 
-    AuthenticationResponse loginWithToken(String token);
+    AuthenticationDTOResponse loginWithToken(String token);
 
-    AuthenticationResponse refreshToken(String refreshToken);
+    AuthenticationDTOResponse refreshToken(String refreshToken);
 
-    AuthenticationResponse authenticate(AuthenticationRequest request);
+    AuthenticationDTOResponse authenticate(AuthenticationDTORequest request);
 
-    void logout(LogoutRequest request) throws ParseException, JOSEException;
+    void logout(LogoutDTORequest request) throws ParseException, JOSEException;
 
-    IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException;
+    IntrospectDTOResponse introspect(IntrospectDTORequest request) throws JOSEException, ParseException;
 }

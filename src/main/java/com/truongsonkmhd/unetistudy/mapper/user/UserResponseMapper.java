@@ -1,8 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.custom.response.user.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
-import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.mapstruct.*;
 

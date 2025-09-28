@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.role;
 
-import com.truongsonkmhd.unetistudy.dto.custom.response.permission.PermissionResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.response.role.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-16T01:07:47+0700",
+    date = "2025-09-28T15:37:54+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
 )
 @Component
@@ -75,6 +75,34 @@ public class RoleResponseMapperImpl implements RoleResponseMapper {
         }
 
         return list;
+    }
+
+    @Override
+    public Set<Role> toEntity(Set<RoleResponse> dtoSet) {
+        if ( dtoSet == null ) {
+            return null;
+        }
+
+        Set<Role> set = new LinkedHashSet<Role>( Math.max( (int) ( dtoSet.size() / .75f ) + 1, 16 ) );
+        for ( RoleResponse roleResponse : dtoSet ) {
+            set.add( toEntity( roleResponse ) );
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<RoleResponse> toDto(Set<Role> entitySet) {
+        if ( entitySet == null ) {
+            return null;
+        }
+
+        Set<RoleResponse> set = new LinkedHashSet<RoleResponse>( Math.max( (int) ( entitySet.size() / .75f ) + 1, 16 ) );
+        for ( Role role : entitySet ) {
+            set.add( toDto( role ) );
+        }
+
+        return set;
     }
 
     @Override

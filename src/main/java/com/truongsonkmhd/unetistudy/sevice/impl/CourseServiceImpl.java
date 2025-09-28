@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.github.slugify.Slugify;
-import com.truongsonkmhd.unetistudy.dto.custom.request.course.CourseModuleRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseModuleResponse;
-import com.truongsonkmhd.unetistudy.dto.custom.request.course.CourseShowRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.response.course.CourseShowResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleRequest;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowResponse;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;

@@ -2,6 +2,7 @@ package com.truongsonkmhd.unetistudy.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,95 +20,97 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_course")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "course_id")
-    private UUID course_id;
+    UUID courseId;
 
     @Column(name = "title", nullable = false, length = 255)
-    private String title;
+    String title;
     @Column(name = "slug", unique = true, length = 255)
-    private String slug;
+    String slug;
 
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
-    private String description;
+    String description;
 
     @Column(name = "shortDescription", length = 500)
-    private String shortDescription;
+    String shortDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
-    private User instructor;
+    User instructor;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CourseModule> modules = new ArrayList<>();
+    List<CourseModule> modules = new ArrayList<>();
 
     @Column(name = "level", length = 20)
-    private String level;
+    String level;
 
     @Column(name = "category", length = 50)
-    private String category;
+    String category;
 
     @Column(name = "subCategory", length = 50)
-    private String subCategory;
+    String subCategory;
 
     @Column(name = "language", length = 20, nullable = false)
-    private String language = "vi"; // Giá trị mặc định
+    String language = "vi"; // Giá trị mặc định
 
     @Column(name = "duration")
-    private Integer duration;
+    Integer duration;
 
     @Column(name = "capacity")
-    private Integer capacity;
+    Integer capacity;
 
     @Column(name = "enrolledCount", nullable = false)
-    private Integer enrolledCount = 0;
+    Integer enrolledCount = 0;
 
     @Column(name = "rating", precision = 3, scale = 2, nullable = false)
-    private BigDecimal rating = BigDecimal.ZERO;
+    BigDecimal rating = BigDecimal.ZERO;
 
     @Column(name = "ratingCount", nullable = false)
-    private Integer ratingCount = 0;
+    Integer ratingCount = 0;
 
     @Column(name = "price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal price = BigDecimal.ZERO;
+    BigDecimal price = BigDecimal.ZERO;
 
     @Column(name = "discountPrice", precision = 10, scale = 2)
-    private BigDecimal discountPrice;
+    BigDecimal discountPrice;
 
     @Column(name = "imageUrl", length = 255)
-    private String imageUrl;
+    String imageUrl;
 
     @Column(name = "videoUrl", length = 255)
-    private String videoUrl;
+    String videoUrl;
 
     @Column(name = "requirements", columnDefinition = "NVARCHAR(MAX)")
-    private String requirements;
+    String requirements;
 
     @Column(name = "objectives", columnDefinition = "NVARCHAR(MAX)")
-    private String objectives;
+    String objectives;
 
     @Column(name = "syllabus", columnDefinition = "NVARCHAR(MAX)")
-    private String syllabus;
+    String syllabus;
 
     @Column(name = "status", length = 20, nullable = false)
-    private String status = "draft";
+    String status = "draft";
 
     @Column(name = "isPublished", nullable = false)
-    private Boolean isPublished = false;
+    Boolean isPublished = false;
 
     @Column(name = "publishedAt")
-    private LocalDateTime publishedAt;
+    LocalDateTime publishedAt;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdAt;
+    Date createdAt;
 
     @Column(name = "updated_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedAt;
+    Date updatedAt;
 }

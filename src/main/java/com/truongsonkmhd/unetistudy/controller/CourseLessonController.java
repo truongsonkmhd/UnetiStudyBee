@@ -1,9 +1,8 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.custom.request.lesson.LessonRequest;
-import com.truongsonkmhd.unetistudy.dto.custom.request.permission.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
 import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
