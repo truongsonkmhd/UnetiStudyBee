@@ -11,6 +11,7 @@ import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,20 +32,10 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-//    @Operation(summary = "Create User", description = "API add new user to database")
-//    @PostMapping("/login")
-//    public ResponseEntity<IResponseMessage> createUser(
-//            @RequestBody SignInRequest request
-//    ) {
-//        String tokenGenerator = authenticationService.login(
-//                request.getUsername(),
-//                request.getPassword()
-//        );
-//        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(tokenGenerator));
-//
-//    }
-
     @PostMapping("")
+    @Operation(summary = "Đăng nhập tài khoan" +
+            "" +
+            "")
     ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationDTORequest request){
         AuthenticationDTOResponse authenticateResponse = this.authenticationService.authenticate(request);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));

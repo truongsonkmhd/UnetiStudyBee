@@ -14,6 +14,7 @@ import java.util.UUID;
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public class CodingExerciseDetailDTO {
         UUID exerciseID;
+        String lessonId;
         Set<ExerciseTestCasesDTO> exerciseTestCases;
         String title;
         String description;

@@ -11,6 +11,7 @@ public interface CodingExerciseDetailMapper extends EntityMapper<CodingExerciseD
 
     @Override
     @Mapping(source = "exerciseId", target = "exerciseID")
+    @Mapping(source = "lesson.lessonId", target = "lessonId")
     @Mapping(source = "timeLimitMs", target = "timeLimit")
     @Mapping(source = "memoryLimitMb", target = "memoryLimit")
     CodingExerciseDetailDTO toDto(CodingExercise entity);
@@ -19,7 +20,7 @@ public interface CodingExerciseDetailMapper extends EntityMapper<CodingExerciseD
     @Mapping(source = "exerciseID", target = "exerciseId")
     @Mapping(source = "timeLimit", target = "timeLimitMs")
     @Mapping(source = "memoryLimit", target = "memoryLimitMb")
-    // ignore những trường không có trong DTO
+    // lesson phải handle ở service, không map trực tiếp
     @Mapping(target = "lesson", ignore = true)
     @Mapping(target = "solutionCode", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

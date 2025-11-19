@@ -76,8 +76,7 @@ public class UserController {
     @Operation(summary = "Create User", description = "API add new user to database")
     @PostMapping("/add")
     ResponseEntity<IResponseMessage> createUser(@RequestBody UserRequest request) {
-        UUID userId = userService.saveUser(request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(userId));
+        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(userService.saveUser(request)));
     }
 
     @Operation(summary = "Update User", description = "API update user to database")

@@ -37,12 +37,11 @@ public class JudgeController {
 
     private final LessonService lessonService;
 
-    @PostMapping("/run")
+    @PostMapping("/run/{language}")
     public JudgeRunResponseDTO handleRunCode(@RequestBody JudgeRequestDTO request, @PathVariable String language){
         return  judgeService.runUserCode(request,language);
     }
-
-    @PostMapping("submit")
+    @PostMapping("/submit")
     public CodingSubmissionResponseDTO handleSubmitCode(@RequestBody JudgeRequestDTO request, @PathVariable String language){
         // lấy ra submission để lưu vào DB và trả ra cho client
         CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request,language);

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role,Long> {
     @Query("select r from Role r where r.code in :codes")
-    List<Role> findAllByNames(@Param("codes") Collection<String> codes);
+    List<Role> findAllByCodes(@Param("codes") Collection<String> codes);
+    Optional<Role> findByCode(String code);
 }

@@ -14,6 +14,7 @@ import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
 import com.truongsonkmhd.unetistudy.model.Address;
+import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.AddressRepository;
 import com.truongsonkmhd.unetistudy.repository.RoleRepository;
@@ -184,7 +185,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UUID saveUser(UserRequest req) {
+    public User saveUser(UserRequest req) {
         User user = User.builder()
                 .fullName(req.getFullName())
                 .gender(req.getGender())
@@ -194,16 +195,21 @@ public class UserServiceImpl implements UserService {
                 .username(req.getUserName())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .status(UserStatus.ACTIVE)
+                .isDeleted(false)
                 .type(UserType.valueOf(req.getType().toUpperCase()))
                 .build();
 
+        Role studentRole = roleRepository.findByCode(UserType.STUDENT.getValue())
+                .orElseThrow(() -> new RuntimeException("Default role STUDENT not found"));
+
+        //user.setRoles(Set.of(studentRole));
 
         user.setAddresses(convertToAddress(req.getAddresses(), user));
         userRepository.save(user);
 
         log.info("User has added successfully, userId={}", user.getId());
 
-        return user.getId();
+        return user;
     }
 
     private Set<Address> convertToAddress(Set<AddressRequest> addresses, User user) {
@@ -219,7 +225,8 @@ public class UserServiceImpl implements UserService {
                     .country(a.getCountry())
                     .addressType(a.getAddressType())
                     .build();
-            address.setUser(user);
+         //   address.setUser(user);
+
             result.add(address);
         });
         return result;
@@ -234,7 +241,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserEntity(userId);
         userUpdateRequestMapper.partialUpdate(user, req);
 
-        var roles = roleRepository.findAllByNames(req.getRoles());
+        var roles = roleRepository.findAllByCodes(req.getRoles());
         user.setRoles(new HashSet<>(roles));
 
         log.info("Updated user: {}", req);

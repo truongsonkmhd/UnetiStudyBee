@@ -26,7 +26,7 @@ public interface UserService {
 
     UserResponse findByEmail(String email);
 
-    UUID saveUser(UserRequest user);
+    User saveUser(UserRequest user);
 
     UserResponse update(UUID userId , UserUpdateRequest user);
 

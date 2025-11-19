@@ -31,7 +31,7 @@ public class CourseLesson {
     CourseModule module;
 
     @ManyToOne
-    @JoinColumn(name = "CreatorID", nullable = false)
+    @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     @Column(name = "title", nullable = false, length = 255)

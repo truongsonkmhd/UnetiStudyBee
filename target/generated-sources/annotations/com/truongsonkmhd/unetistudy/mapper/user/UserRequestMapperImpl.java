@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-28T15:37:54+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.16 (Microsoft)"
+    date = "2025-11-17T14:24:55+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.17 (Microsoft)"
 )
 @Component
 public class UserRequestMapperImpl implements UserRequestMapper {
@@ -33,7 +33,6 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         user.birthday( dto.getBirthday() );
         user.email( dto.getEmail() );
         user.phone( dto.getPhone() );
-        user.username( dto.getUsername() );
         user.password( dto.getPassword() );
         if ( dto.getType() != null ) {
             user.type( Enum.valueOf( UserType.class, dto.getType() ) );
@@ -137,9 +136,6 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         }
         if ( dto.getPhone() != null ) {
             entity.setPhone( dto.getPhone() );
-        }
-        if ( dto.getUsername() != null ) {
-            entity.setUsername( dto.getUsername() );
         }
         if ( dto.getPassword() != null ) {
             entity.setPassword( dto.getPassword() );
