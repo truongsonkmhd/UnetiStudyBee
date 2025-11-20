@@ -13,6 +13,7 @@ public class AddressDTO {
      String floor;
      String building;
      String streetNumber;
+     Integer addressType;
      String street;
      String city;
      String country;

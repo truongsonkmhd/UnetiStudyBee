@@ -4,19 +4,19 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.LogoutDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTOResponse;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
+import com.truongsonkmhd.unetistudy.common.UserType;
+import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressDTO;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
+import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
 import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.AppException;
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
-import com.truongsonkmhd.unetistudy.model.InvalidatedToken;
-import com.truongsonkmhd.unetistudy.model.Token;
-import com.truongsonkmhd.unetistudy.model.User;
+import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
+import com.truongsonkmhd.unetistudy.mapper.role.RoleResponseMapper;
+import com.truongsonkmhd.unetistudy.model.*;
 import com.truongsonkmhd.unetistudy.repository.InvalidatedTokenRepository;
+import com.truongsonkmhd.unetistudy.repository.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
@@ -35,6 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.truongsonkmhd.unetistudy.common.UserStatus.ACTIVE;
 
@@ -57,6 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
 
+    private final RoleRepository roleRepository;
 
     private final TokenRepository tokenRepository;
 
@@ -64,9 +69,106 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RoleResponseMapper roleResponseMapper;
+
+    private final AddressDTOMapper addressDTOMapper;
+
     InvalidatedTokenRepository invalidatedTokenRepository;
 
-    private final UserService userService;
+    @Transactional
+    @Override
+    public AuthenticationDTOResponse register(RegisterDTORequest request) {
+
+        // 1. Check username trùng
+        if (userRepository.findByUsername(request.getUserName()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        // 2. Check email trùng
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        if (userRepository.findByPhone(request.getPhone()).isPresent()) {
+            throw new RuntimeException("Phone already exists");
+        }
+
+        // 3. Tạo user entity
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .username(request.getUserName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .gender(request.getGender())
+                .birthday(request.getBirthday())
+                .type(UserType.valueOf(request.getType().toUpperCase()))
+                .isDeleted(false)
+                .status(ACTIVE)
+                .build();
+
+        // 4. Lấy danh sách role theo roleCodes
+        List<Role> roles = roleRepository.findAllByCodes(request.getRoleCodes());
+
+        Set<RoleResponse> rolesSet = roles.stream()
+                .map(roleResponseMapper::toDto)
+                .collect(Collectors.toSet());
+
+        if (roles.isEmpty()) {
+            throw new RuntimeException("No roles found from roleCodes");
+        }
+
+        // 5. Convert danh sách address theo request
+
+        // 6. Save user
+        userRepository.save(user);
+
+        // 7. AUTO LOGIN – tạo token
+        MyUserDetail detail = new MyUserDetail(user);
+
+        String accessToken = jwtService.generateToken(detail, false);
+        String refreshToken = jwtService.generateRefreshToken(detail, false);
+
+        Instant now = Instant.now();
+
+        Token token = tokenRepository.findByUser(user).orElse(new Token());
+        token.setUser(user);
+        token.setToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setExpirationTime(now.plusSeconds(accessTokenExpirationSeconds));
+        token.setRefreshExpirationTime(now.plusSeconds(refreshTokenExpirationSeconds));
+        token.setTokenType("Bearer");
+        token.setExpired(false);
+        token.setRevoked(false);
+
+        tokenRepository.save(token);
+
+        // 8. Trả về giống login → FE auto login luôn
+        return createAuthenticationResponse(accessToken, refreshToken, detail ,rolesSet ,request.getAddresses());
+    }
+
+    private Set<Address> convertToAddress(List<AddressDTO> dtos, User user) {
+        Set<Address> addresses = new HashSet<>();
+
+        for (AddressDTO dto : dtos) {
+            Address address = Address.builder()
+                    .apartmentNumber(dto.getApartmentNumber())
+                    .building(dto.getBuilding())
+                    .city(dto.getCity())
+                    .addressType(dto.getAddressType())
+                    .country(dto.getCountry())
+                    .floor(dto.getFloor())
+                    .street(dto.getStreet())
+                    .streetNumber(dto.getStreetNumber())
+                    .user(user)
+                    .build();
+
+            addresses.add(address);
+        }
+
+        return addresses;
+    }
+
 
     @Transactional
     @Override
@@ -75,7 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository
                 .getByUsernameAndIsDeletedWithRoles(request.getUsername(), false)
                 .orElseThrow(() -> new RuntimeException("User not found or deleted"));
-        log.info("USER: {}" , user.getRoles());
+        log.info("USER GET ROLE: {}" , user.getRoles());
 
         // 2) Trạng thái
         if (!ACTIVE.equals(user.getStatus())) {
@@ -101,15 +203,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Instant accessExp = now.plusSeconds(accessTokenExpirationSeconds);
         Instant refreshExp = now.plusSeconds(rtTtl);
 
-//        Token dbToken = tokenRepository.findByUser(user)
-//                .orElseGet(() -> Token.create(user, accessToken, refreshToken, accessExp, refreshExp));
-//        dbToken.setToken(accessToken);
-//        dbToken.setRefreshToken(refreshToken);
-//        dbToken.setExpirationTime(accessExp);
-//        dbToken.setRefreshExpirationTime(refreshExp);
-//        tokenRepository.save(dbToken);
-
-
         // Nếu user đã có token → update thay vì insert
         Token dbToken = tokenRepository.findByUser(user).orElse(new Token());
         dbToken.setUser(user);
@@ -122,53 +215,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dbToken.setExpired(false);
         tokenRepository.save(dbToken);
 
-        return createAuthenticationResponse(accessToken, refreshToken, myUserDetail);
+        return createAuthenticationResponse(accessToken, refreshToken, myUserDetail , roleResponseMapper.toDto(user.getRoles()), addressDTOMapper.toDto(user.getAddresses()));
     }
-
-
-//    @Override
-//    public String login(String userName, String password) throws DataNotFoundException {
-//        // exists by user
-//        Optional<User> optionalUser = userRepository.findByUsername(userName);
-//        if (optionalUser.isEmpty()) {
-////            throw new DataNotFoundException(
-////                    translate(MessageKeys.PHONE_NUMBER_AND_PASSWORD_FAILED)
-////            );
-//        }
-//        User user = optionalUser.get();
-//        // check password
-////        if (user.getFacebookAccountId() == 0 && user.getGoogleAccountId() == 0) {
-////            if (!passwordEncoder.matches(password, user.getPassword())) {
-////                throw new BadCredentialsException(
-////                        translate(MessageKeys.PHONE_NUMBER_AND_PASSWORD_FAILED)
-////                );
-////            }
-////        }
-////        Optional<Role> optionalRole = roleRepository.findById(user.getRole().getId());
-////        if (optionalRole.isEmpty() || ) {}
-//
-//        // kiểm tra xem user đã được active hay chưa
-//        if (!(optionalUser.get().getStatus() == UserStatus.ACTIVE)) {
-//       //     throw new DataNotFoundException(translate(MessageKeys.USER_ID_LOCKED));
-//        }
-////        // authenticated with java spring security
-////        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-////                user.getUsername(),
-////                password,
-////                user.getAuthorities())
-////        );
-//
-//        // generate token
-//        return "";
-//    }
-
 
     @Transactional
     @Override
     public AuthenticationDTOResponse loginWithToken(String token) {
         String userName = jwtService.extractUsername(token);
         User user = this.userRepository.getByUsernameAndIsDeletedWithRoles(userName, false).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user));
+        return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user) , roleResponseMapper.toDto(user.getRoles()),addressDTOMapper.toDto(user.getAddresses()));
     }
 
     @Transactional
@@ -195,10 +250,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         tokenRepository.save(token);
 
-        return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail);
+        return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail,roleResponseMapper.toDto(user.getRoles()),addressDTOMapper.toDto(user.getAddresses()));
     }
 
-    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail) {
+
+    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail , Set<RoleResponse> roles , Set<AddressDTO> addressDTOS) {
         return AuthenticationDTOResponse.builder()
                 .isAuthenticated(true)
                 .token(token)
@@ -211,6 +267,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .phone(myUserDetail.user().getPhone())
                         .birthday(myUserDetail.user().getBirthday())
                         .gender(myUserDetail.user().getGender())
+                        .addresses(addressDTOS)
+                        .roles(roles)
                         .build())
                 .build();
     }

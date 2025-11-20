@@ -22,6 +22,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByPhone(String phone);
+
     @Query("select  u from User u join u.token t where t.refreshToken =: refreshToken")
     Optional<User> findByRefreshToken(@Param("refreshToken") String refreshToken);
     // đây lầ cách lấy ở userRepo , nhưng ta nên lấy ở TokenRepository để đỡ phình to class (áp dụng SOLID)

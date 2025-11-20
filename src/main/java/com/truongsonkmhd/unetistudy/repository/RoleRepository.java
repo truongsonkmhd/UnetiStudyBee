@@ -12,7 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role,Long> {
-    @Query("select r from Role r where r.code in :codes")
+
+    @Query("SELECT r FROM Role r WHERE r.code IN :codes AND r.isDeleted = false AND r.isActivated = true")
     List<Role> findAllByCodes(@Param("codes") Collection<String> codes);
+
     Optional<Role> findByCode(String code);
 }

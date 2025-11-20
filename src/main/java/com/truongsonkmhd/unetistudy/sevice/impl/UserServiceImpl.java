@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -185,7 +186,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User saveUser(UserRequest req) {
+    public UserResponse saveUser(UserRequest req) {
+
+        Set<String> roleCodes = req.getRoleCodes();
+
+        if (roleCodes == null || roleCodes.isEmpty()) {
+            // Nếu client không gửi roles, mặc định dùng STUDENT
+            roleCodes = Set.of(UserType.STUDENT.getValue());
+        }
+
+        List<Role> roles = roleRepository.findAllByCodes(roleCodes);
+
+        if (roles.size() != roleCodes.size()) {
+            Set<String> foundCodes = roles.stream()
+                    .map(Role::getCode)
+                    .collect(Collectors.toSet());
+            Set<String> notFoundCodes = roleCodes.stream()
+                    .filter(code -> !foundCodes.contains(code))
+                    .collect(Collectors.toSet());
+
+            throw new IllegalArgumentException(
+                    "Roles not found: " + notFoundCodes
+            );
+        }
+
         User user = User.builder()
                 .fullName(req.getFullName())
                 .gender(req.getGender())
@@ -199,17 +223,11 @@ public class UserServiceImpl implements UserService {
                 .type(UserType.valueOf(req.getType().toUpperCase()))
                 .build();
 
-        Role studentRole = roleRepository.findByCode(UserType.STUDENT.getValue())
-                .orElseThrow(() -> new RuntimeException("Default role STUDENT not found"));
-
-        //user.setRoles(Set.of(studentRole));
-
-        user.setAddresses(convertToAddress(req.getAddresses(), user));
-        userRepository.save(user);
+        user.setRoles(new HashSet<>(roles));
 
         log.info("User has added successfully, userId={}", user.getId());
 
-        return user;
+        return userResponseMapper.toDto(user);
     }
 
     private Set<Address> convertToAddress(Set<AddressRequest> addresses, User user) {

@@ -28,7 +28,7 @@ import static com.truongsonkmhd.unetistudy.common.Gender.*;
 public class UserRequest implements Serializable {
 
     @NotBlank(message = "fullName must be not blank") // Khong cho phep gia tri blank
-        String fullName;
+    String fullName;
 
     @GenderSubset(anyOf = {MALE, FEMALE, OTHER})// cách 2 validation
     Gender gender;
@@ -57,4 +57,6 @@ public class UserRequest implements Serializable {
 
     @NotEmpty(message = "addresses can not empty")
     Set<AddressRequest> addresses;// home company
+
+    Set<String> roleCodes;
 }

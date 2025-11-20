@@ -1,13 +1,8 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.LogoutDTORequest;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.RefreshTokenDTORequest;
+import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
 import com.truongsonkmhd.unetistudy.dto.a_custom.ApiResponse;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.AuthenticationDTOResponse;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.IntrospectDTOResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
@@ -33,16 +28,21 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("")
-    @Operation(summary = "Đăng nhập tài khoan" +
-            "" +
-            "")
+    @Operation(summary = "Đăng nhập tài khoản")
     ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationDTORequest request){
         AuthenticationDTOResponse authenticateResponse = this.authenticationService.authenticate(request);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
+    @PostMapping("/register")
+    @Operation(summary = "Đăng ký tài khoản")
+    ResponseEntity<IResponseMessage> register(@RequestBody RegisterDTORequest req){
+        AuthenticationDTOResponse authenticationDTOResponse = this.authenticationService.register(req);
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationDTOResponse));
+    }
 
     @PostMapping("/login-with-token")
+    @Operation(summary = "Đăng nhập tài khoản với token")
     ResponseEntity<IResponseMessage> loginWithToken(@RequestBody RefreshTokenDTORequest req){
         AuthenticationDTOResponse authenticationDTOResponse = this.authenticationService.loginWithToken(req.getRefreshToken());
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationDTOResponse));
@@ -65,6 +65,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất tài khoản")
     ApiResponse<Void> logout(@RequestBody LogoutDTORequest request)
             throws ParseException, JOSEException {
         authenticationService.logout(request);

@@ -42,10 +42,6 @@ public class Role {
     Set<Permission> permissions;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
-    @JsonIgnoreProperties(
-            value = {"roles"},
-            allowSetters = true
-    )
     Set<User> users = new HashSet<>();
 
 }
