@@ -33,7 +33,7 @@ public class CodingSubmission {
     User user;
 
     // CODE ĐÃ NỘP
-    @Column(name = "code", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "code", columnDefinition = "text")
     String code;
 
     // NGÔN NGỮ LẬP TRÌNH SỬ DỤNG

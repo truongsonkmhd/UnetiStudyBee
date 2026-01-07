@@ -36,7 +36,7 @@ public class CourseModule {
     @Column(name = "title", nullable = false, length = 255)
     String title;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "text")
     String description;
 
     @Column(name = "order_index", nullable = false)

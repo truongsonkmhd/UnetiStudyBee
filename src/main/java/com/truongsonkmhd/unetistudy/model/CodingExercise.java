@@ -72,10 +72,10 @@ public class CodingExercise {
     @Column(name = "constraint_name", length = 50)
     String constraintName;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPT DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
     Date createdAt;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPT DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
     Date updatedAt;
 
 }

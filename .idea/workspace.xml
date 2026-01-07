@@ -4,29 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be29100d-f4ef-4210-bae9-ab17241b3c82" name="Changes" comment="update sign in">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/RegisterDTORequest.java" afterDir="false" />
+    <list default="true" id="be29100d-f4ef-4210-bae9-ab17241b3c82" name="Changes" comment="update api dang ki dang nhap">
+      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/controller/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/controller/AuthenticationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/repository/RoleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/repository/RoleRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/controller/AuthenticationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/controller/AuthenticationController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Role$RoleBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Role$RoleBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Role.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/repository/RoleRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/repository/RoleRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/repository/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/repository/UserRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/AuthenticationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/AuthenticationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/UserService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Address.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CodingExercise.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CodingExercise.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CodingSubmission.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CodingSubmission.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Course.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Course.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CourseLesson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CourseLesson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CourseModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/CourseModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/ExerciseTestCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/ExerciseTestCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/permission/PermissionRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/permission/PermissionRequestMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/permission/PermissionResponseMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/permission/PermissionResponseMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/role/RoleRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/role/RoleRequestMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/role/RoleResponseMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/role/RoleResponseMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,36 +86,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.UnetiStudyApplication (3).executor": "Run",
-    "Spring Boot.UnetiStudyApplication.executor": "Run",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "create__spring__base",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/GITHUB tham khảo/shopapp-backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.customizations",
-    "spring.configuration.checksum": "4f8b12bd89370e881dd65fb51c0772a0",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.UnetiStudyApplication (3).executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.UnetiStudyApplication.executor&quot;: &quot;Run&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;create__spring__base&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/GITHUB tham khảo/shopapp-backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.customizations&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;4f8b12bd89370e881dd65fb51c0772a0&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -211,6 +210,12 @@
       <workItem from="1763396942559" duration="613000" />
       <workItem from="1763400528164" duration="81000" />
       <workItem from="1763549152848" duration="3801000" />
+      <workItem from="1763999964508" duration="1676000" />
+      <workItem from="1764386815627" duration="10000" />
+      <workItem from="1764519829221" duration="1871000" />
+      <workItem from="1764832247836" duration="5040000" />
+      <workItem from="1765247962872" duration="1811000" />
+      <workItem from="1767751424093" duration="7826000" />
     </task>
     <task id="LOCAL-00001" summary="login - login-with-token - refresh-token">
       <created>1755707509316</created>
@@ -240,11 +245,21 @@
       <option name="project" value="LOCAL" />
       <updated>1757437837823</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="update api dang ki dang nhap">
+      <created>1763633181303</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1763633181303</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -273,7 +288,8 @@
     <MESSAGE value="login - login-with-token - refresh-token" />
     <MESSAGE value="done base spring security - jwt - role - permission" />
     <MESSAGE value="final" />
-    <option name="LAST_COMMIT_MESSAGE" value="final" />
+    <MESSAGE value="update api dang ki dang nhap" />
+    <option name="LAST_COMMIT_MESSAGE" value="update api dang ki dang nhap" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

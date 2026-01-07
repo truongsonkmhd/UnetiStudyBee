@@ -3,8 +3,6 @@ package com.truongsonkmhd.unetistudy.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,7 +32,7 @@ public class Course {
     @Column(name = "slug", unique = true, length = 255)
     String slug;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "text")
     String description;
 
     @Column(name = "shortDescription", length = 500)
@@ -86,13 +84,13 @@ public class Course {
     @Column(name = "videoUrl", length = 255)
     String videoUrl;
 
-    @Column(name = "requirements", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "requirements", columnDefinition = "text")
     String requirements;
 
-    @Column(name = "objectives", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "objectives", columnDefinition = "text")
     String objectives;
 
-    @Column(name = "syllabus", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "syllabus", columnDefinition = "text")
     String syllabus;
 
     @Column(name = "status", length = 20, nullable = false)
@@ -105,12 +103,8 @@ public class Course {
     LocalDateTime publishedAt;
 
     @Column(name = "created_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
     Date createdAt;
 
     @Column(name = "updated_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     Date updatedAt;
 }

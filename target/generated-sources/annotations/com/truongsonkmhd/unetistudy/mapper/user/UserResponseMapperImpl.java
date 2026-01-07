@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-17T14:24:55+0700",
+    date = "2025-11-24T23:01:42+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.17 (Microsoft)"
 )
 @Component
@@ -190,6 +190,7 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         address.street( addressDTO.getStreet() );
         address.city( addressDTO.getCity() );
         address.country( addressDTO.getCountry() );
+        address.addressType( addressDTO.getAddressType() );
 
         return address.build();
     }
@@ -271,6 +272,7 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         addressDTO.floor( address.getFloor() );
         addressDTO.building( address.getBuilding() );
         addressDTO.streetNumber( address.getStreetNumber() );
+        addressDTO.addressType( address.getAddressType() );
         addressDTO.street( address.getStreet() );
         addressDTO.city( address.getCity() );
         addressDTO.country( address.getCountry() );

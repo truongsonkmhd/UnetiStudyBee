@@ -1,12 +1,30 @@
 server:
-    port: 8097
+  port: ${SERVER_PORT:8097}
+
 spring:
   application:
     name: uneti-study
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
 
-# Health check
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prod}
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/uneti_study}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+# =========================
+# Health Check (EKS / Docker / K8s)
+# =========================
 management:
   endpoints:
     web:
@@ -16,7 +34,7 @@ management:
     health:
       probes:
         enabled: true
-  health: # config for EKS
+  health:
     livenessState:
       enabled: true
     readinessState:
@@ -27,7 +45,9 @@ management:
         step: 5s
         enabled: true
 
-# Logging
+# =========================
+# Logging tối ưu cho dự án
+# =========================
 logging:
   level:
     root: INFO

@@ -40,7 +40,7 @@ public class ExerciseTestCase {
     @Column(name = "score")
     Integer score;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPT DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
     Date createdAt;
 
 }

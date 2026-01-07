@@ -37,13 +37,13 @@ public class CourseLesson {
     @Column(name = "title", nullable = false, length = 255)
     String title;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "text")
     String description;
 
     @Column(name = "type", nullable = false, length = 50)
     String type;
 
-    @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", columnDefinition = "text")
     String content;
 
     @Column(name = "video_url", length = 255)
@@ -77,7 +77,7 @@ public class CourseLesson {
     @Column(name = "Slug", nullable = true)
     String slug;
 
-    @Column(name = "is_contest", nullable = true, columnDefinition = "BIT DEFAULT 0")
+    @Column(columnDefinition = "boolean default false", nullable = false)
     Boolean isContest;
 
     @Column(name = "total_points", columnDefinition = "INT DEFAULT 0")
