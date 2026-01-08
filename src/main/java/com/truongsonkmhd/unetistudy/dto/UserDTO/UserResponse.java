@@ -1,7 +1,6 @@
 package com.truongsonkmhd.unetistudy.dto.UserDTO;
 
 import com.truongsonkmhd.unetistudy.common.Gender;
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressDTO;
 import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +24,9 @@ public class UserResponse implements Serializable {
      String username;
      String email;
      String phone;
+     String contactAddress;
+     String currentResidence;
+     String studentID;
+     String classID;
      Set<RoleResponse> roles;
-     Set<AddressDTO> addresses;
 }

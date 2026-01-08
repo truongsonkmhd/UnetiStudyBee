@@ -9,10 +9,8 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface UserResponseMapper extends EntityMapper<UserResponse, User> {
     @Override
-    @Mapping(target = "addresses", source = "addresses")
     UserResponse toDto(User entity);
 
     @Override
-    @Mapping(target = "addresses", source = "addresses")
     User toEntity(UserResponse dto);
 }

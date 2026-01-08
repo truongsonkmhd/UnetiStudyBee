@@ -1,10 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressDTO;
 import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
 import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
 import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
-import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-24T23:01:42+0700",
+    date = "2026-01-09T00:04:21+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.17 (Microsoft)"
 )
 @Component
@@ -106,30 +104,23 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         if ( dto.getUsername() != null ) {
             entity.setUsername( dto.getUsername() );
         }
-        if ( entity.getAddresses() != null ) {
-            Set<Address> set = addressDTOSetToAddressSet( dto.getAddresses() );
-            if ( set != null ) {
-                entity.getAddresses().clear();
-                entity.getAddresses().addAll( set );
-            }
+        if ( dto.getContactAddress() != null ) {
+            entity.setContactAddress( dto.getContactAddress() );
         }
-        else {
-            Set<Address> set = addressDTOSetToAddressSet( dto.getAddresses() );
-            if ( set != null ) {
-                entity.setAddresses( set );
-            }
+        if ( dto.getCurrentResidence() != null ) {
+            entity.setCurrentResidence( dto.getCurrentResidence() );
         }
         if ( entity.getRoles() != null ) {
-            Set<Role> set1 = roleResponseSetToRoleSet( dto.getRoles() );
-            if ( set1 != null ) {
+            Set<Role> set = roleResponseSetToRoleSet( dto.getRoles() );
+            if ( set != null ) {
                 entity.getRoles().clear();
-                entity.getRoles().addAll( set1 );
+                entity.getRoles().addAll( set );
             }
         }
         else {
-            Set<Role> set1 = roleResponseSetToRoleSet( dto.getRoles() );
-            if ( set1 != null ) {
-                entity.setRoles( set1 );
+            Set<Role> set = roleResponseSetToRoleSet( dto.getRoles() );
+            if ( set != null ) {
+                entity.setRoles( set );
             }
         }
     }
@@ -142,7 +133,6 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         UserResponse.UserResponseBuilder userResponse = UserResponse.builder();
 
-        userResponse.addresses( addressSetToAddressDTOSet( entity.getAddresses() ) );
         userResponse.id( entity.getId() );
         userResponse.fullName( entity.getFullName() );
         userResponse.gender( entity.getGender() );
@@ -150,6 +140,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         userResponse.username( entity.getUsername() );
         userResponse.email( entity.getEmail() );
         userResponse.phone( entity.getPhone() );
+        userResponse.contactAddress( entity.getContactAddress() );
+        userResponse.currentResidence( entity.getCurrentResidence() );
         userResponse.roles( roleSetToRoleResponseSet( entity.getRoles() ) );
 
         return userResponse.build();
@@ -163,7 +155,6 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         User.UserBuilder user = User.builder();
 
-        user.addresses( addressDTOSetToAddressSet1( dto.getAddresses() ) );
         user.id( dto.getId() );
         user.fullName( dto.getFullName() );
         user.gender( dto.getGender() );
@@ -171,41 +162,11 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         user.email( dto.getEmail() );
         user.phone( dto.getPhone() );
         user.username( dto.getUsername() );
+        user.contactAddress( dto.getContactAddress() );
+        user.currentResidence( dto.getCurrentResidence() );
         user.roles( roleResponseSetToRoleSet( dto.getRoles() ) );
 
         return user.build();
-    }
-
-    protected Address addressDTOToAddress(AddressDTO addressDTO) {
-        if ( addressDTO == null ) {
-            return null;
-        }
-
-        Address.AddressBuilder address = Address.builder();
-
-        address.apartmentNumber( addressDTO.getApartmentNumber() );
-        address.floor( addressDTO.getFloor() );
-        address.building( addressDTO.getBuilding() );
-        address.streetNumber( addressDTO.getStreetNumber() );
-        address.street( addressDTO.getStreet() );
-        address.city( addressDTO.getCity() );
-        address.country( addressDTO.getCountry() );
-        address.addressType( addressDTO.getAddressType() );
-
-        return address.build();
-    }
-
-    protected Set<Address> addressDTOSetToAddressSet(Set<AddressDTO> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<Address> set1 = new LinkedHashSet<Address>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( AddressDTO addressDTO : set ) {
-            set1.add( addressDTOToAddress( addressDTO ) );
-        }
-
-        return set1;
     }
 
     protected Permission permissionResponseToPermission(PermissionResponse permissionResponse) {
@@ -261,38 +222,6 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         return set1;
     }
 
-    protected AddressDTO addressToAddressDTO(Address address) {
-        if ( address == null ) {
-            return null;
-        }
-
-        AddressDTO.AddressDTOBuilder addressDTO = AddressDTO.builder();
-
-        addressDTO.apartmentNumber( address.getApartmentNumber() );
-        addressDTO.floor( address.getFloor() );
-        addressDTO.building( address.getBuilding() );
-        addressDTO.streetNumber( address.getStreetNumber() );
-        addressDTO.addressType( address.getAddressType() );
-        addressDTO.street( address.getStreet() );
-        addressDTO.city( address.getCity() );
-        addressDTO.country( address.getCountry() );
-
-        return addressDTO.build();
-    }
-
-    protected Set<AddressDTO> addressSetToAddressDTOSet(Set<Address> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<AddressDTO> set1 = new LinkedHashSet<AddressDTO>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( Address address : set ) {
-            set1.add( addressToAddressDTO( address ) );
-        }
-
-        return set1;
-    }
-
     protected PermissionResponse permissionToPermissionResponse(Permission permission) {
         if ( permission == null ) {
             return null;
@@ -341,19 +270,6 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         Set<RoleResponse> set1 = new LinkedHashSet<RoleResponse>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
         for ( Role role : set ) {
             set1.add( roleToRoleResponse( role ) );
-        }
-
-        return set1;
-    }
-
-    protected Set<Address> addressDTOSetToAddressSet1(Set<AddressDTO> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<Address> set1 = new LinkedHashSet<Address>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( AddressDTO addressDTO : set ) {
-            set1.add( addressDTOToAddress( addressDTO ) );
         }
 
         return set1;

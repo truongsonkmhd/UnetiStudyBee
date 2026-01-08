@@ -19,6 +19,7 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\contr
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\CourseLessonController.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\CourseModuleController.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\JudgeController.java
+D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\ManagementController.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\PermissionController.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\RoleController.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\controller\UserController.java
@@ -29,8 +30,6 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\a
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\a_common\SuccessResponseMessage.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\a_custom\ApiResponse.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\a_custom\PageResponseAbstract.java
-D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AddressDTO\AddressDTO.java
-D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AddressDTO\AddressRequest.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\AuthenticationDTORequest.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\AuthenticationDTOResponse.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\AuthenticationUser.java
@@ -38,6 +37,7 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\A
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\IntrospectDTOResponse.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\LogoutDTORequest.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\RefreshTokenDTORequest.java
+D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\RegisterDTORequest.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\SignInDTORequest.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\AuthDTO\TokenDTOResponse.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\dto\CodingExerciseDTO\CodingExerciseDetailDTO.java
@@ -83,7 +83,6 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\excep
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\exception\ResourceNotFoundException.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\management\package-info.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\management\SecurityMetersService.java
-D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\address\AddressDTOMapper.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\coding_submission\CodingExerciseDetailMapper.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\coding_submission\CodingExerciseMapper.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\coding_submission\CodingSubmissionMapper.java
@@ -106,7 +105,6 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mappe
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\user\UserResponseMapper.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\mapper\user\UserUpdateRequestMapper.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\AbstractEntity.java
-D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\Address.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\CodingExercise.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\CodingSubmission.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\ContestExerciseAttempt.java
@@ -119,7 +117,6 @@ D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\Role.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\Token.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\model\User.java
-D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\repository\AddressRepository.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\repository\CodingExerciseRepository.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\repository\CodingSubmissionRepository.java
 D:\IMPORTANT\DATN\UnetiStudyBee\src\main\java\com\truongsonkmhd\unetistudy\repository\ContestExerciseAttemptRepository.java
