@@ -7,7 +7,6 @@ import com.nimbusds.jwt.SignedJWT;
 import com.truongsonkmhd.unetistudy.common.UserType;
 import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
 import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.AppException;
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
@@ -145,7 +144,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenRepository.save(token);
 
         // 8. Trả về giống login → FE auto login luôn
-        return createAuthenticationResponse(accessToken, refreshToken, detail ,rolesSet );
+        return createAuthenticationResponse(accessToken, refreshToken);
     }
 
     @Transactional
@@ -193,7 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dbToken.setExpired(false);
         tokenRepository.save(dbToken);
 
-        return createAuthenticationResponse(accessToken, refreshToken, myUserDetail , roleResponseMapper.toDto(user.getRoles()));
+        return createAuthenticationResponse(accessToken, refreshToken);
     }
 
     @Transactional
@@ -201,7 +200,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationDTOResponse loginWithToken(String token) {
         String userName = jwtService.extractUsername(token);
         User user = this.userRepository.getByUsernameAndIsDeletedWithRoles(userName, false).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user) , roleResponseMapper.toDto(user.getRoles()));
+        return createAuthenticationResponse(token, user.getToken().getRefreshToken());
     }
 
     @Transactional
@@ -228,31 +227,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         tokenRepository.save(token);
 
-        return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail,roleResponseMapper.toDto(user.getRoles()));
+        return createAuthenticationResponse(newAccessToken, newRefreshToken);
     }
 
-
-    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail , Set<RoleResponse> roles ) {
+        private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken) {
         return AuthenticationDTOResponse.builder()
                 .isAuthenticated(true)
                 .token(token)
                 .refreshToken(refreshToken)
-                .user(UserResponse.builder()
-                        .id(myUserDetail.user().getId())
-                        .fullName(myUserDetail.user().getFullName())
-                        .username(myUserDetail.user().getUsername())
-                        .email(myUserDetail.user().getEmail())
-                        .phone(myUserDetail.user().getPhone())
-                        .birthday(myUserDetail.user().getBirthday())
-                        .studentID(myUserDetail.user().getStudentId())
-                        .gender(myUserDetail.user().getGender())
-                        .classID(myUserDetail.user().getClassId())
-                        .contactAddress(myUserDetail.user().getContactAddress())
-                        .currentResidence(myUserDetail.user().getCurrentResidence())
-                        .roles(roles)
-                        .build())
                 .build();
     }
+
+
+//    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail , Set<RoleResponse> roles ) {
+//        return AuthenticationDTOResponse.builder()
+//                .isAuthenticated(true)
+//                .token(token)
+//                .refreshToken(refreshToken)
+//                .user(UserResponse.builder()
+//                        .id(myUserDetail.user().getId())
+//                        .fullName(myUserDetail.user().getFullName())
+//                        .username(myUserDetail.user().getUsername())
+//                        .email(myUserDetail.user().getEmail())
+//                        .phone(myUserDetail.user().getPhone())
+//                        .birthday(myUserDetail.user().getBirthday())
+//                        .studentID(myUserDetail.user().getStudentId())
+//                        .gender(myUserDetail.user().getGender())
+//                        .classID(myUserDetail.user().getClassId())
+//                        .contactAddress(myUserDetail.user().getContactAddress())
+//                        .currentResidence(myUserDetail.user().getCurrentResidence())
+//                        .roles(roles)
+//                        .build())
+//                .build();
+//    }
 
     public Token verifyRefreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken)

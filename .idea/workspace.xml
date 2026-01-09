@@ -4,66 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be29100d-f4ef-4210-bae9-ab17241b3c82" name="Changes" comment="setup docker">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
+    <list default="true" id="be29100d-f4ef-4210-bae9-ab17241b3c82" name="Changes" comment="update: address, classId, studentId">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/configuration/SecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/configuration/SecurityConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTORequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTORequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/RegisterDTORequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/AuthDTO/RegisterDTORequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/dto/UserDTO/UserUpdateRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/mapper/address/AddressDTOMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/Address.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/repository/AddressRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/security/impl/JwtServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/security/impl/JwtServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/utils/DockerCodeExecutionUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/utils/DockerCodeExecutionUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/configuration/SecurityConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/configuration/SecurityConfiguration.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressDTO$AddressDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressRequest$AddressRequestBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AddressDTO/AddressRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTORequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTORequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse$AuthenticationDTOResponseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse$AuthenticationDTOResponseBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/AuthenticationDTOResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/RegisterDTORequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/AuthDTO/RegisterDTORequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse$UserResponseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse$UserResponseBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserUpdateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/dto/UserDTO/UserUpdateRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/address/AddressDTOMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/address/AddressDTOMapperImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Address$AddressBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Address.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CodingExercise.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CodingExercise.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CodingSubmission.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CodingSubmission.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Course$CourseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Course$CourseBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Course.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/Course.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CourseLesson.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CourseLesson.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CourseModule.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/CourseModule.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/ExerciseTestCase.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/ExerciseTestCase.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/User$UserBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/User$UserBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/model/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/repository/AddressRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/security/impl/JwtServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/security/impl/JwtServiceImpl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/sevice/impl/UserServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/utils/DockerCodeExecutionUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/truongsonkmhd/unetistudy/utils/DockerCodeExecutionUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/address/AddressDTOMapperImpl.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingExerciseDetailMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingExerciseDetailMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingExerciseMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingExerciseMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingSubmissionMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/coding_submission/CodingSubmissionMapperImpl.java" afterDir="false" />
@@ -84,8 +35,6 @@
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserRequestMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserResponseMapperImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/truongsonkmhd/unetistudy/mapper/user/UserUpdateRequestMapperImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -280,6 +229,7 @@
       <workItem from="1767839351764" duration="648000" />
       <workItem from="1767840466498" duration="7861000" />
       <workItem from="1767888626106" duration="4151000" />
+      <workItem from="1767969947440" duration="834000" />
     </task>
     <task id="LOCAL-00001" summary="login - login-with-token - refresh-token">
       <created>1755707509316</created>
@@ -367,6 +317,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/CodingExerciseServiceImpl.java</url>
           <line>35</line>
           <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/truongsonkmhd/unetistudy/sevice/impl/AuthenticationServiceImpl.java</url>
+          <line>152</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

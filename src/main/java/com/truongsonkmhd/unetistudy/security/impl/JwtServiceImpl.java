@@ -42,6 +42,10 @@ public class JwtServiceImpl implements JwtService {
 
     public static final String CLAIM_USER_FULL_NAME = "fullName";
 
+    public static final String CLAIM_USER_AVATAR = "avatar";
+
+    public static final String CLAIM_USER_CLASS_ID = "classId";
+
     public static final String SCOPE = "scope";
 
     private final TokenRepository tokenRepository;
@@ -69,12 +73,16 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateToken(MyUserDetail myUserDetail, boolean isRememberMe) {
         User user = myUserDetail.user();
-        Map<String, Object> extractClaims = Map.ofEntries(
-                Map.entry(CLAIM_USER_ID, user.getId()),
-                Map.entry(CLAIM_USER_FULL_NAME, user.getFullName()),
-                Map.entry(SCOPE, buildScope(myUserDetail))
-        );
-        return generateToken(extractClaims, myUserDetail, isRememberMe);
+
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put(CLAIM_USER_ID, user.getId()); // id nên bắt buộc, không default
+        claims.put(CLAIM_USER_FULL_NAME, Optional.ofNullable(user.getFullName()).orElse(""));
+        claims.put(CLAIM_USER_AVATAR, Optional.ofNullable(user.getAvatar()).orElse(""));
+        claims.put(CLAIM_USER_CLASS_ID, Optional.ofNullable(user.getClassId()).orElse(""));
+        claims.put(SCOPE, buildScope(myUserDetail));
+
+        return generateToken(claims, myUserDetail, isRememberMe);
     }
 
     public String generateToken(
