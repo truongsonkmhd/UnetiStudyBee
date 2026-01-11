@@ -213,7 +213,6 @@ public class UserServiceImpl implements UserService {
                 .contactAddress(req.getContactAddress())
                 .status(UserStatus.ACTIVE)
                 .isDeleted(false)
-                .type(UserType.valueOf(req.getType().toUpperCase()))
                 .build();
 
         user.setRoles(new HashSet<>(roles));

@@ -90,6 +90,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Phone already exists");
         }
 
+        if (userRepository.findByStudentId(request.getStudentId()).isPresent()) {
+            throw new RuntimeException("Student already exists");
+        }
+
         // 3. Lấy danh sách role theo roleCodes
         List<Role> roles = roleRepository.findAllByCodes(request.getRoleCodes());
 
@@ -115,7 +119,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .currentResidence(request.getCurrentResidence())
                 .contactAddress(request.getContactAddress())
                 .roles(new HashSet<>(roles))
-                .type(UserType.valueOf(request.getType().toUpperCase()))
                 .isDeleted(false)
                 .status(ACTIVE)
                 .build();

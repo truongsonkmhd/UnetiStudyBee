@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.security.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
+import com.truongsonkmhd.unetistudy.dto.JwtUserInfo;
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.security.Key;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 
@@ -40,7 +42,7 @@ public class JwtServiceImpl implements JwtService {
 
     public static final String CLAIM_USER_ID = "id";
 
-    public static final String CLAIM_USER_FULL_NAME = "fullName";
+    public static final String CLAIM_USER_USER_INFOR = "userInfor";
 
     public static final String CLAIM_USER_AVATAR = "avatar";
 
@@ -76,10 +78,27 @@ public class JwtServiceImpl implements JwtService {
 
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put(CLAIM_USER_ID, user.getId()); // id nên bắt buộc, không default
-        claims.put(CLAIM_USER_FULL_NAME, Optional.ofNullable(user.getFullName()).orElse(""));
-        claims.put(CLAIM_USER_AVATAR, Optional.ofNullable(user.getAvatar()).orElse(""));
-        claims.put(CLAIM_USER_CLASS_ID, Optional.ofNullable(user.getClassId()).orElse(""));
+        JwtUserInfo userInfo = JwtUserInfo.builder()
+                .userId(user.getId() != null ? user.getId().toString() : null)
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .avatar(user.getAvatar())
+                .classId(user.getClassId())
+                .email(user.getEmail())
+                .studentId(user.getStudentId())
+                .gender(user.getGender() != null ? user.getGender().name() : null)
+                .birthday(user.getBirthday() != null
+                        ? user.getBirthday().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .toString()
+                        : null)
+                .contactAddress(user.getContactAddress())
+                .currentResidence(user.getCurrentResidence())
+                .build();
+
+
+        claims.put(CLAIM_USER_USER_INFOR,userInfo);
         claims.put(SCOPE, buildScope(myUserDetail));
 
         return generateToken(claims, myUserDetail, isRememberMe);
