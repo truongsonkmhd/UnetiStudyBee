@@ -19,6 +19,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
 
+security:
+  jwt:
+    signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+    token-validity-in-seconds: 900000
+    refresh-token-validity-in-seconds: 259200000
+    refresh-token-validity-in-seconds-for-remember-me: 2592000000
+
+
 jhipster:
   security:
     authentication:
@@ -27,10 +35,6 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
 
-security:
-  jwt:
-    refresh-token-validity-in-seconds: 604800
-    refresh-token-validity-in-seconds-for-remember-me: 5184000
 
 management:
   endpoints:
