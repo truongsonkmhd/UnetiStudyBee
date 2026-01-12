@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-12T15:37:22+0700",
+    date = "2026-01-13T00:25:40+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -117,10 +117,10 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
             entity.setIsPublished( dto.getIsPublished() );
         }
         if ( dto.getCreatedAt() != null ) {
-            entity.setCreatedAt( dto.getCreatedAt() );
+            entity.setCreatedAt( dto.getCreatedAt().toInstant() );
         }
         if ( dto.getUpdatedAt() != null ) {
-            entity.setUpdatedAt( dto.getUpdatedAt() );
+            entity.setUpdatedAt( dto.getUpdatedAt().toInstant() );
         }
     }
 
@@ -139,8 +139,12 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
         courseModuleResponse.duration( entity.getDuration() );
         courseModuleResponse.isPublished( entity.getIsPublished() );
         courseModuleResponse.lessons( courseLessonListToLessonResponseList( entity.getLessons() ) );
-        courseModuleResponse.createdAt( entity.getCreatedAt() );
-        courseModuleResponse.updatedAt( entity.getUpdatedAt() );
+        if ( entity.getCreatedAt() != null ) {
+            courseModuleResponse.createdAt( Date.from( entity.getCreatedAt() ) );
+        }
+        if ( entity.getUpdatedAt() != null ) {
+            courseModuleResponse.updatedAt( Date.from( entity.getUpdatedAt() ) );
+        }
 
         return courseModuleResponse.build();
     }
@@ -160,8 +164,12 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
         courseModule.orderIndex( dto.getOrderIndex() );
         courseModule.duration( dto.getDuration() );
         courseModule.isPublished( dto.getIsPublished() );
-        courseModule.createdAt( dto.getCreatedAt() );
-        courseModule.updatedAt( dto.getUpdatedAt() );
+        if ( dto.getCreatedAt() != null ) {
+            courseModule.createdAt( dto.getCreatedAt().toInstant() );
+        }
+        if ( dto.getUpdatedAt() != null ) {
+            courseModule.updatedAt( dto.getUpdatedAt().toInstant() );
+        }
 
         return courseModule.build();
     }
