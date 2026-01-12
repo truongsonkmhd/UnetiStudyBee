@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"   # host:container
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -17,12 +17,12 @@ services:
   redis:
     image: redis:7
     container_name: redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
-    restart: unless-stopped
     networks:
       - spring_net
 
@@ -33,15 +33,14 @@ services:
       - postgres
       - redis
     ports:
-      - "${SERVER_PORT}:8097"
+      - "${SERVER_PORT:-8097}:8097"
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
 
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-
-      SERVER_PORT: ${SERVER_PORT}
+      # Spring chạy trong Docker → dùng tên service
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - spring_net
 

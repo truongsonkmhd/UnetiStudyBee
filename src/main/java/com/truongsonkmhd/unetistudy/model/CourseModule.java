@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,17 +49,15 @@ public class CourseModule {
     @Column(name = "is_published", nullable = false)
     Boolean isPublished = false;
 
-    @Column(name = "created_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    Date createdAt;
+    Instant createdAt;
 
-    @Column(name = "updated_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
     @UpdateTimestamp
-    Date updatedAt;
+    Instant updatedAt;
 
     @Column(name = "slug", nullable = true)
-    private String slug;
+    String slug;
 
 }

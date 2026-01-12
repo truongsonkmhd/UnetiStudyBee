@@ -3,8 +3,11 @@ package com.truongsonkmhd.unetistudy.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
@@ -72,10 +75,12 @@ public class CodingExercise {
     @Column(name = "constraint_name", length = 50)
     String constraintName;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
-    Date createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
-    Date updatedAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    Instant updatedAt;
 
 }

@@ -43,6 +43,6 @@ public class ContestExerciseAttempt {
     String exerciseType;
 
     @Column(name = "attempt_number")
-    private Integer attemptNumber;
+    Integer attemptNumber;
 
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,7 +41,7 @@ public class ExerciseTestCase {
     @Column(name = "score")
     Integer score;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME DEFAULT GETDATE()")
-    Date createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    Instant createdAt;
 
 }

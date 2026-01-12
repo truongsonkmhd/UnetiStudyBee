@@ -11,12 +11,13 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://postgres:5432/uneti_study}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123456}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
+jhipster:
   jpa:
     hibernate:
-      ddl-auto: update
+        ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

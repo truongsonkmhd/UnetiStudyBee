@@ -3,8 +3,11 @@ package com.truongsonkmhd.unetistudy.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -99,12 +102,14 @@ public class Course {
     @Column(name = "isPublished", nullable = false)
     Boolean isPublished = false;
 
-    @Column(name = "publishedAt")
+    @Column(name = "published_at")
     LocalDateTime publishedAt;
 
-    @Column(name = "created_at", length = 255)
-    Date createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    Instant createdAt;
 
-    @Column(name = "updated_at", length = 255)
-    Date updatedAt;
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    Instant updatedAt;
 }
