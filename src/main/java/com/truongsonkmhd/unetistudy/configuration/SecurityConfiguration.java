@@ -33,7 +33,6 @@ import static com.truongsonkmhd.unetistudy.security.AuthoritiesConstants.ADMIN;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     private final AuthenticationProvider authenticationProvider;

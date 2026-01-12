@@ -1,13 +1,11 @@
 package com.truongsonkmhd.unetistudy.dto.UserDTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.truongsonkmhd.unetistudy.common.Gender;
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressRequest;
 import com.truongsonkmhd.unetistudy.validator.GenderSubset;
 import com.truongsonkmhd.unetistudy.validator.PhoneNumber;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import static com.truongsonkmhd.unetistudy.common.Gender.*;
 
@@ -44,8 +41,31 @@ public class UserUpdateRequest implements Serializable {
     @PhoneNumber(message = "phone invalid format")
     String phone;
 
-    @NotEmpty(message = "addresses can not empty")
-    Set<AddressRequest> addresses;
+    // Địa chỉ liên hệ (không bắt buộc, nhưng nếu có thì không được rỗng)
+    @NotBlank(message = "contactAddress must not be blank")
+    String contactAddress;
 
+    // Hộ khẩu thường trú (không bắt buộc, nhưng nếu có thì không được rỗng)
+    @NotBlank(message = "currentResidence must not be blank")
+    String currentResidence;
+
+    // Mã sinh viên UNETI – bắt buộc – đúng 11 chữ số
+    @NotBlank(message = "studentID must not be blank")
+    @jakarta.validation.constraints.Pattern(
+            regexp = "^\\d{11}$",
+            message = "studentID must be exactly 11 digits"
+    )
+    String studentID;
+
+    // Mã lớp UNETI – bắt buộc – ví dụ: DHTI16A3HN
+    @NotBlank(message = "classID must not be blank")
+    @jakarta.validation.constraints.Pattern(
+            regexp = "^(DH|CD|LT|VB2|VLVH|TX)"
+                    + "(TI|KT|QTKD|TC|CK|DD|OT|XD|TM)"
+                    + "\\d{2}[A-Z]\\d"
+                    + "(HN|ND|TH)$",
+            message = "Invalid UNETI classID format (e.g. DHTI16A3HN)"
+    )
+    String classID;
     List<String> roles;
 }

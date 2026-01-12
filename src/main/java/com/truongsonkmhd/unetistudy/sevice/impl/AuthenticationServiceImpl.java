@@ -5,24 +5,23 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressDTO;
 import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
 import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
 import com.truongsonkmhd.unetistudy.exception.AppException;
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
-import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleResponseMapper;
-import com.truongsonkmhd.unetistudy.model.*;
+import com.truongsonkmhd.unetistudy.model.InvalidatedToken;
+import com.truongsonkmhd.unetistudy.model.Role;
+import com.truongsonkmhd.unetistudy.model.Token;
+import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.InvalidatedTokenRepository;
 import com.truongsonkmhd.unetistudy.repository.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
+import com.truongsonkmhd.unetistudy.security.JwtService;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.sevice.AuthenticationService;
-import com.truongsonkmhd.unetistudy.security.JwtService;
-import com.truongsonkmhd.unetistudy.sevice.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -71,8 +70,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final RoleResponseMapper roleResponseMapper;
 
-    private final AddressDTOMapper addressDTOMapper;
-
     InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Transactional
@@ -93,21 +90,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Phone already exists");
         }
 
-        // 3. Tạo user entity
-        User user = User.builder()
-                .fullName(request.getFullName())
-                .username(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .gender(request.getGender())
-                .birthday(request.getBirthday())
-                .type(UserType.valueOf(request.getType().toUpperCase()))
-                .isDeleted(false)
-                .status(ACTIVE)
-                .build();
+        if (userRepository.findByStudentId(request.getStudentId()).isPresent()) {
+            throw new RuntimeException("Student already exists");
+        }
 
-        // 4. Lấy danh sách role theo roleCodes
+        // 3. Lấy danh sách role theo roleCodes
         List<Role> roles = roleRepository.findAllByCodes(request.getRoleCodes());
 
         Set<RoleResponse> rolesSet = roles.stream()
@@ -118,12 +105,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("No roles found from roleCodes");
         }
 
-        // 5. Convert danh sách address theo request
+        // 4. Tạo user entity
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .username(request.getUserName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .gender(request.getGender())
+                .birthday(request.getBirthday())
+                .studentId(request.getStudentId())
+                .classId(request.getClassId())
+                .currentResidence(request.getCurrentResidence())
+                .contactAddress(request.getContactAddress())
+                .roles(new HashSet<>(roles))
+                .isDeleted(false)
+                .status(ACTIVE)
+                .build();
 
-        // 6. Save user
+        // 5. Save user
         userRepository.save(user);
 
-        // 7. AUTO LOGIN – tạo token
+        // 6. AUTO LOGIN – tạo token
         MyUserDetail detail = new MyUserDetail(user);
 
         String accessToken = jwtService.generateToken(detail, false);
@@ -144,31 +147,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenRepository.save(token);
 
         // 8. Trả về giống login → FE auto login luôn
-        return createAuthenticationResponse(accessToken, refreshToken, detail ,rolesSet ,request.getAddresses());
+        return createAuthenticationResponse(accessToken, refreshToken);
     }
-
-    private Set<Address> convertToAddress(List<AddressDTO> dtos, User user) {
-        Set<Address> addresses = new HashSet<>();
-
-        for (AddressDTO dto : dtos) {
-            Address address = Address.builder()
-                    .apartmentNumber(dto.getApartmentNumber())
-                    .building(dto.getBuilding())
-                    .city(dto.getCity())
-                    .addressType(dto.getAddressType())
-                    .country(dto.getCountry())
-                    .floor(dto.getFloor())
-                    .street(dto.getStreet())
-                    .streetNumber(dto.getStreetNumber())
-                    .user(user)
-                    .build();
-
-            addresses.add(address);
-        }
-
-        return addresses;
-    }
-
 
     @Transactional
     @Override
@@ -215,7 +195,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dbToken.setExpired(false);
         tokenRepository.save(dbToken);
 
-        return createAuthenticationResponse(accessToken, refreshToken, myUserDetail , roleResponseMapper.toDto(user.getRoles()), addressDTOMapper.toDto(user.getAddresses()));
+        return createAuthenticationResponse(accessToken, refreshToken);
     }
 
     @Transactional
@@ -223,7 +203,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationDTOResponse loginWithToken(String token) {
         String userName = jwtService.extractUsername(token);
         User user = this.userRepository.getByUsernameAndIsDeletedWithRoles(userName, false).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        return createAuthenticationResponse(token, user.getToken().getRefreshToken(), new MyUserDetail(user) , roleResponseMapper.toDto(user.getRoles()),addressDTOMapper.toDto(user.getAddresses()));
+        return createAuthenticationResponse(token, user.getToken().getRefreshToken());
     }
 
     @Transactional
@@ -250,28 +230,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         tokenRepository.save(token);
 
-        return createAuthenticationResponse(newAccessToken, newRefreshToken, myUserDetail,roleResponseMapper.toDto(user.getRoles()),addressDTOMapper.toDto(user.getAddresses()));
+        return createAuthenticationResponse(newAccessToken, newRefreshToken);
     }
 
-
-    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail , Set<RoleResponse> roles , Set<AddressDTO> addressDTOS) {
+        private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken) {
         return AuthenticationDTOResponse.builder()
                 .isAuthenticated(true)
                 .token(token)
                 .refreshToken(refreshToken)
-                .user(UserResponse.builder()
-                        .id(myUserDetail.user().getId())
-                        .fullName(myUserDetail.user().getFullName())
-                        .username(myUserDetail.user().getUsername())
-                        .email(myUserDetail.user().getEmail())
-                        .phone(myUserDetail.user().getPhone())
-                        .birthday(myUserDetail.user().getBirthday())
-                        .gender(myUserDetail.user().getGender())
-                        .addresses(addressDTOS)
-                        .roles(roles)
-                        .build())
                 .build();
     }
+
+
+//    private AuthenticationDTOResponse createAuthenticationResponse(String token, String refreshToken, MyUserDetail myUserDetail , Set<RoleResponse> roles ) {
+//        return AuthenticationDTOResponse.builder()
+//                .isAuthenticated(true)
+//                .token(token)
+//                .refreshToken(refreshToken)
+//                .user(UserResponse.builder()
+//                        .id(myUserDetail.user().getId())
+//                        .fullName(myUserDetail.user().getFullName())
+//                        .username(myUserDetail.user().getUsername())
+//                        .email(myUserDetail.user().getEmail())
+//                        .phone(myUserDetail.user().getPhone())
+//                        .birthday(myUserDetail.user().getBirthday())
+//                        .studentID(myUserDetail.user().getStudentId())
+//                        .gender(myUserDetail.user().getGender())
+//                        .classID(myUserDetail.user().getClassId())
+//                        .contactAddress(myUserDetail.user().getContactAddress())
+//                        .currentResidence(myUserDetail.user().getCurrentResidence())
+//                        .roles(roles)
+//                        .build())
+//                .build();
+//    }
 
     public Token verifyRefreshToken(String refreshToken) {
         Token token = tokenRepository.findByRefreshToken(refreshToken)

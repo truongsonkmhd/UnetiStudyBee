@@ -4,6 +4,8 @@ import com.truongsonkmhd.unetistudy.common.Gender;
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -54,13 +56,32 @@ public class User implements Serializable {
     @Column(name = "avatar")
     String avatar;
 
+    @NotBlank
+    @Pattern(regexp = "\\d{11}", message = "Student ID must be exactly 11 digits")
+    @Column(name = "student_id", length = 11, nullable = false, unique = true)
+    String studentId;
+
+    @Column(name = "contactAddress")
+    String contactAddress;
+
+    @Column(name = "currentResidence")
+    String currentResidence;
+
+    @NotBlank
+    @Pattern(
+            regexp = "^(DH|CD|LT|VB2|VLVH|TX)(TI|KT|QTKD|TC|CK|DD|OT|XD|TM)\\d{2}[A-Z]\\d(HN|ND|TH)$",
+            message = "Invalid UNETI classID format (e.g. DHTI16A3HN)"
+    )
+    @Column(
+            name = "class_id",
+            length = 10,
+            nullable = false
+    )
+    String classId;
+
+
     @Column(name = "is_deleted")
     Boolean isDeleted;
-
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "type", length = 255)
-    UserType type;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -68,8 +89,8 @@ public class User implements Serializable {
     //insertable = false → Hibernate sẽ không đưa cột status vào câu lệnh insert nếu bạn không set ⇒ DB dùng DEFAULT 'ACTIVE'.
     UserStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true) //orphanRemoval: nếu xóa user => address cũng sẽ mất
-    Set<Address> addresses = new HashSet<>();
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true) //orphanRemoval: nếu xóa user => address cũng sẽ mất
+//    Set<Address> addresses = new HashSet<>();
 
     @ManyToMany
     @JoinTable(

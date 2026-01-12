@@ -27,13 +27,11 @@ public interface UserUpdateRequestMapper extends EntityMapper<UserUpdateRequest,
     @Mapping(target = "status", ignore = true) // UserStatus is not updated
     @Mapping(target = "token", ignore = true) // Token is not updated
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "addresses", source = "addresses") // Handled by AddressMapper
     User toEntity(UserUpdateRequest dto);
 
     // Map User entity to UserUpdateRequest DTO
     @Override
     @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToDto")
-    @Mapping(target = "addresses", source = "addresses") // Handled by AddressMapper
     UserUpdateRequest toDto(User entity);
 
     @Override
@@ -46,7 +44,6 @@ public interface UserUpdateRequestMapper extends EntityMapper<UserUpdateRequest,
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "addresses", source = "addresses")
     void partialUpdate(@MappingTarget User user, UserUpdateRequest userUpdateRequest);
 
     // Custom mapping for roles (Set<Role> to List<String>)

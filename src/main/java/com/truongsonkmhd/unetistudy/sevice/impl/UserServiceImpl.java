@@ -2,21 +2,13 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.UserDTO.*;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
-import com.truongsonkmhd.unetistudy.mapper.address.AddressDTOMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
-import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
-import com.truongsonkmhd.unetistudy.repository.AddressRepository;
 import com.truongsonkmhd.unetistudy.repository.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
@@ -48,14 +40,11 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
 
-    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final UserResponseMapper userResponseMapper;
 
     private final UserRequestMapper userRequestMapper;
-
-    private final AddressDTOMapper addressDTOMapper;
 
     private final UserUpdateRequestMapper userUpdateRequestMapper;
 
@@ -145,6 +134,10 @@ public class UserServiceImpl implements UserService {
                 .birthday(entity.getBirthday())
                 .username(entity.getUsername())
                 .phone(entity.getPhone())
+                .classID(entity.getClassId())
+                .currentResidence(entity.getCurrentResidence())
+                .contactAddress(entity.getContactAddress())
+                .studentID(entity.getStudentId())
                 .email(entity.getEmail())
                 .build()
         ).toList();
@@ -161,15 +154,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse findByIdResponse(UUID id) {
 
-        log.info("Find user by id: {}", getUserEntity(id).getAddresses().size());
-
         return userResponseMapper.toDto(getUserEntity(id));
     }
 
     @Override
     public User findById(UUID id) {
-
-        log.info("Find user by id: {}", getUserEntity(id).getAddresses().size());
 
         return getUserEntity(id);
     }
@@ -218,9 +207,12 @@ public class UserServiceImpl implements UserService {
                 .phone(req.getPhone())
                 .username(req.getUserName())
                 .password(passwordEncoder.encode(req.getPassword()))
+                .classId(req.getClassID())
+                .studentId(req.getStudentID())
+                .currentResidence(req.getCurrentResidence())
+                .contactAddress(req.getContactAddress())
                 .status(UserStatus.ACTIVE)
                 .isDeleted(false)
-                .type(UserType.valueOf(req.getType().toUpperCase()))
                 .build();
 
         user.setRoles(new HashSet<>(roles));
@@ -228,26 +220,6 @@ public class UserServiceImpl implements UserService {
         log.info("User has added successfully, userId={}", user.getId());
 
         return userResponseMapper.toDto(user);
-    }
-
-    private Set<Address> convertToAddress(Set<AddressRequest> addresses, User user) {
-        Set<Address> result = new HashSet<>();
-        addresses.forEach(a -> {
-            Address address = Address.builder()
-                    .apartmentNumber(a.getApartmentNumber())
-                    .floor(a.getFloor())
-                    .building(a.getBuilding())
-                    .streetNumber(a.getStreetNumber())
-                    .street(a.getStreet())
-                    .city(a.getCity())
-                    .country(a.getCountry())
-                    .addressType(a.getAddressType())
-                    .build();
-         //   address.setUser(user);
-
-            result.add(address);
-        });
-        return result;
     }
 
 
@@ -263,7 +235,6 @@ public class UserServiceImpl implements UserService {
         user.setRoles(new HashSet<>(roles));
 
         log.info("Updated user: {}", req);
-        user.setAddresses(convertToAddress(req.getAddresses() , user));
         log.info("Updated address: {}", req);
 
         return userResponseMapper.toDto(userRepository.save(user));

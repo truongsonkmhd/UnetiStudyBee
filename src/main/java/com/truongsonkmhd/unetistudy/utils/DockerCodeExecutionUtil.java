@@ -76,7 +76,7 @@ public class DockerCodeExecutionUtil {
         String containerId = "code-exec-" + UUID.randomUUID().toString().substring(0, 8);
         String dockerImage = getDockerImage(language);
 
-        List<String> command = new ArrayList<>();
+        List<String> command;
         switch (language.toLowerCase()) {
             case "java":
                 command = Arrays.asList("java", "Main");
