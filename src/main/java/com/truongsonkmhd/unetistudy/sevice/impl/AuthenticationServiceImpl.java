@@ -123,6 +123,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .status(ACTIVE)
                 .build();
 
+        System.out.println(user.toString());
+
         // 5. Save user
         userRepository.save(user);
 

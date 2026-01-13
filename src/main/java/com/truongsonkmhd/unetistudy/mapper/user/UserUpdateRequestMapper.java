@@ -23,7 +23,6 @@ public interface UserUpdateRequestMapper extends EntityMapper<UserUpdateRequest,
     @Mapping(target = "password", ignore = true) // Password is not updated
     @Mapping(target = "avatar", ignore = true) // Avatar is not in UserUpdateRequest
     @Mapping(target = "isDeleted", ignore = true) // isDeleted is not updated
-    @Mapping(target = "type", ignore = true) // UserType is not in UserUpdateRequest
     @Mapping(target = "status", ignore = true) // UserStatus is not updated
     @Mapping(target = "token", ignore = true) // Token is not updated
     @Mapping(target = "roles", ignore = true)
@@ -40,7 +39,6 @@ public interface UserUpdateRequestMapper extends EntityMapper<UserUpdateRequest,
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "isDeleted", ignore = true)
-    @Mapping(target = "type", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "roles", ignore = true)

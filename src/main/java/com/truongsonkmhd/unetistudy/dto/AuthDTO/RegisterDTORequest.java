@@ -2,7 +2,6 @@ package com.truongsonkmhd.unetistudy.dto.AuthDTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.truongsonkmhd.unetistudy.common.Gender;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: uneti-study
+    name: uneti_study
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://postgres:5432/uneti_study}
@@ -13,11 +13,25 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: "uneti:"
 
 security:
   jwt:
