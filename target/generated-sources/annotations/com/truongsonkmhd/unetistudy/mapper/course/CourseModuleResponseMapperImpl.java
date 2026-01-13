@@ -2,8 +2,8 @@ package com.truongsonkmhd.unetistudy.mapper.course;
 
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
-import com.truongsonkmhd.unetistudy.model.CourseModule;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;

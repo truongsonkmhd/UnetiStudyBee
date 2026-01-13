@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,16 +21,15 @@ public class CourseShowRequest {
     String level;             // Trình độ
     String category;          // Danh mục chính
     String subCategory;       // Danh mục phụ
-    String language;          // Ngôn ngữ
     Integer duration;         // Thời lượng (phút)
     Integer capacity;         // Sức chứa
-    BigDecimal price;         // Giá gốc
-    BigDecimal discountPrice; // Giá khuyến mãi (nếu có)
     String imageUrl;          // Ảnh đại diện
     String videoUrl;          // Video giới thiệu
     String requirements;      // Yêu cầu đầu vào
     String objectives;        // Mục tiêu học tập
+    String status;
     String syllabus;          // Đề cương
     Boolean isPublished;      // Có xuất bản ngay không
+    LocalDateTime publishedAt;
     List<CourseModuleRequest> modules;
 }

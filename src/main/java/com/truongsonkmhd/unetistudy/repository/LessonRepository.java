@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.repository;
 
 import com.truongsonkmhd.unetistudy.dto.CourseModule.CourseModuleFILLDTO;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.*;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

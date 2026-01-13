@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model;
+package com.truongsonkmhd.unetistudy.model.lesson;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,8 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,9 +17,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tbl_coding_exercise")
+@Table(
+        name = "tbl_coding_exercise",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_exercise_lesson_slug", columnNames = {"lesson_id", "slug"})
+        },
+        indexes = {
+                @Index(name = "idx_exercise_lesson", columnList = "lesson_id"),
+                @Index(name = "idx_exercise_lesson_difficulty", columnList = "lesson_id,difficulty")
+        }
+)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-
 public class CodingExercise {
 
     @Id
@@ -74,6 +80,9 @@ public class CodingExercise {
 
     @Column(name = "constraint_name", length = 50)
     String constraintName;
+
+    @Column(name = "is_published", nullable = false, columnDefinition = "boolean default false")
+    Boolean isPublished = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

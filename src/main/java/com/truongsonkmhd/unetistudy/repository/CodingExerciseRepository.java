@@ -1,8 +1,7 @@
 package com.truongsonkmhd.unetistudy.repository;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDTO;
-import com.truongsonkmhd.unetistudy.model.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

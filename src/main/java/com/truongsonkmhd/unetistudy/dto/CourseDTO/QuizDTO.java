@@ -3,17 +3,17 @@ package com.truongsonkmhd.unetistudy.dto.CourseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
+import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CourseShowResponse {
+public class QuizDTO {
+    UUID quizId;
+    UUID lessonId;
     String title;
-    String description;
-    Integer duration;
+    Integer totalQuestions;
+    Double passScore;
     Boolean isPublished;
-    private List<CourseModuleResponse> modules;
 }

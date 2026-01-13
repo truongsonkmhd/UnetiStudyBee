@@ -5,7 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDT
 import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingExerciseDetailMapper;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMapper;
-import com.truongsonkmhd.unetistudy.model.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.repository.CodingExerciseRepository;
 import com.truongsonkmhd.unetistudy.repository.ExerciseTestCaseRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingExerciseService;

@@ -1,5 +1,6 @@
-package com.truongsonkmhd.unetistudy.model;
+package com.truongsonkmhd.unetistudy.model.course;
 
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +10,6 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 @Getter

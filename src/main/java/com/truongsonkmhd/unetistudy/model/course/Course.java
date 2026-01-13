@@ -1,5 +1,6 @@
-package com.truongsonkmhd.unetistudy.model;
+package com.truongsonkmhd.unetistudy.model.course;
 
+import com.truongsonkmhd.unetistudy.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,11 +20,17 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tbl_course")
+@Table(
+        name = "tbl_course",
+        indexes = {
+                @Index(name = "idx_course_instructor", columnList = "instructor_id"),
+                @Index(name = "idx_course_publish", columnList = "is_published,status"),
+                @Index(name = "idx_course_category", columnList = "category,subCategory"),
+                @Index(name = "idx_course_created", columnList = "created_at")
+        }
+)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "course_id")
@@ -57,9 +63,6 @@ public class Course {
     @Column(name = "subCategory", length = 50)
     String subCategory;
 
-    @Column(name = "language", length = 20, nullable = false)
-    String language = "vi"; // Giá trị mặc định
-
     @Column(name = "duration")
     Integer duration;
 
@@ -74,12 +77,6 @@ public class Course {
 
     @Column(name = "ratingCount", nullable = false)
     Integer ratingCount = 0;
-
-    @Column(name = "price", precision = 10, scale = 2, nullable = false)
-    BigDecimal price = BigDecimal.ZERO;
-
-    @Column(name = "discountPrice", precision = 10, scale = 2)
-    BigDecimal discountPrice;
 
     @Column(name = "imageUrl", length = 255)
     String imageUrl;

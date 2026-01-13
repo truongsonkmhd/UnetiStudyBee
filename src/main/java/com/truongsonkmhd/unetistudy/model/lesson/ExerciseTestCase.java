@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model;
+package com.truongsonkmhd.unetistudy.model.lesson;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 @Getter

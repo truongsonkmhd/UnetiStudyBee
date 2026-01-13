@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.controller;
+package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/course-lesson")
+@RequestMapping("/api/course_lesson")
 @Slf4j(topic = "LESSON-CONTROLLER")
 @Tag(name = "lesson Controller")
 @RequiredArgsConstructor

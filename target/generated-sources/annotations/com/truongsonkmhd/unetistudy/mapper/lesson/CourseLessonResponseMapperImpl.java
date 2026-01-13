@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.lesson;
 
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;

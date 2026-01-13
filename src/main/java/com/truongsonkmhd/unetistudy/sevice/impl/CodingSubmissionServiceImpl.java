@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionShowDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingSubmissionShowMapper;
-import com.truongsonkmhd.unetistudy.model.CodingSubmission;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.repository.CodingSubmissionRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingSubmissionService;
 import jakarta.transaction.Transactional;

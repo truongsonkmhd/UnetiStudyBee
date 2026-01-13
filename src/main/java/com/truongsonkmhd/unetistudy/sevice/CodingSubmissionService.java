@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice;
 
 
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionShowDTO;
-import com.truongsonkmhd.unetistudy.model.CodingSubmission;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 
 import java.util.List;
 

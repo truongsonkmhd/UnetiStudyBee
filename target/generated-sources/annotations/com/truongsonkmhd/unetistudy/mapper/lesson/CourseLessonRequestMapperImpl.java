@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.lesson;
 
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

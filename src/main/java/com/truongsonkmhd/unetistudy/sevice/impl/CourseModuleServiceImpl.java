@@ -5,7 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
-import com.truongsonkmhd.unetistudy.model.CourseModule;
+import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.CourseRepository;
 import com.truongsonkmhd.unetistudy.sevice.CourseModuleService;

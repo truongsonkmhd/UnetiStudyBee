@@ -1,12 +1,13 @@
 package com.truongsonkmhd.unetistudy.repository;
 
-import com.truongsonkmhd.unetistudy.model.CodingSubmission;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface CodingSubmissionRepository extends JpaRepository<CodingSubmission, Long> {
@@ -25,4 +26,20 @@ public interface CodingSubmissionRepository extends JpaRepository<CodingSubmissi
             ORDER BY cb.submittedAt DESC
             """)
     List<CodingSubmission> getCodingSubmissionShowBySlugExercise(@Param("theSlug") String theSlug);
+
+    @Query("""
+        select
+            case when count(cs) = 0 then null
+                 else sum(
+                        case when cs.passedTestcases = cs.totalTestcases then 1 else 0 end
+                      ) * 1.0 / count(cs)
+            end
+        from CodingSubmission cs
+        where cs.user.id = :userId
+          and cs.exercise.lesson.lessonId = :lessonId
+    """)
+    Double acRate(
+            @Param("userId") UUID userId,
+            @Param("lessonId") UUID lessonId
+    );
 }

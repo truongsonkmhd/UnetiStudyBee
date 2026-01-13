@@ -3,6 +3,7 @@ package com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -11,12 +12,26 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CodingExerciseDTO {
-    UUID exerciseID;
-    String lessonTitle;
+    UUID exerciseId;
+    UUID lessonId;
+
     String title;
     String description;
-    String programLanguage;
+
+    String programmingLanguage;
     String difficulty;
+
     Integer points;
+    Boolean isPublished;
+
+    Integer timeLimitMs;
+    Integer memoryLimitMb;
+
     String slug;
+    String inputFormat;
+    String outputFormat;
+    String constraintName;
+
+    Instant createdAt;
+    Instant updatedAt;
 }

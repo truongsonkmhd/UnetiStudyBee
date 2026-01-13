@@ -70,7 +70,7 @@ public class UserController {
     public ResponseEntity<IResponseMessage> getUserDetail(@PathVariable UUID userId) {
         log.info("Get user detail by ID: {}", userId);
         var userDetailById = userService.findByIdResponse(userId);
-        return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userDetailById));
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userDetailById));
     }
 
     @Operation(summary = "Create User", description = "API add new user to database")

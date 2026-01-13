@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDTO;
-import com.truongsonkmhd.unetistudy.model.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 
 import java.util.List;
 import java.util.UUID;

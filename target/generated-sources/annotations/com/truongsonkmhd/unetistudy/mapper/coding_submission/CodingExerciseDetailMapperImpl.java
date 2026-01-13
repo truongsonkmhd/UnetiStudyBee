@@ -1,9 +1,9 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDTO;
-import com.truongsonkmhd.unetistudy.model.CodingExercise;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
-import com.truongsonkmhd.unetistudy.model.ExerciseTestCase;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.ExerciseTestCase;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

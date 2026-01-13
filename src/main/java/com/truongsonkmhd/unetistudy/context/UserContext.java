@@ -10,7 +10,7 @@ public class UserContext {
         usernameHolder.set(username);
     }
 
-    public static String getUsername() {
+    public static String getUsetUserIDsername() {
         return usernameHolder.get();
     }
 

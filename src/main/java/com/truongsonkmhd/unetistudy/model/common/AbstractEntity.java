@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model;
+package com.truongsonkmhd.unetistudy.model.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;

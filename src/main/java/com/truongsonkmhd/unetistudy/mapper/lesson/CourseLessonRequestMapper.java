@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.mapper.lesson;
 
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

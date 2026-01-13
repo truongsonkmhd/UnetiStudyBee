@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
-import com.truongsonkmhd.unetistudy.model.ContestExerciseAttempt;
-import com.truongsonkmhd.unetistudy.model.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

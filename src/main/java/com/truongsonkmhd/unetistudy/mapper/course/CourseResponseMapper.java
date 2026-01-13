@@ -1,17 +1,17 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowResponse;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseTreeResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
-import com.truongsonkmhd.unetistudy.model.Course;
+import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring",uses = {CourseModuleResponseMapper.class})
-public interface CourseResponseMapper extends EntityMapper<CourseShowResponse, Course> {
+public interface CourseResponseMapper extends EntityMapper<CourseTreeResponse, Course> {
 
     @Override
     @Mapping(target = "modules", source = "modules")
-    CourseShowResponse toDto(Course entity);
+    CourseTreeResponse toDto(Course entity);
     @Override
     @Mapping(target = "courseId", ignore = true)
     @Mapping(target = "slug", ignore = true)
@@ -36,5 +36,5 @@ public interface CourseResponseMapper extends EntityMapper<CourseShowResponse, C
     @Mapping(target = "publishedAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Course toEntity(CourseShowResponse dto);
+    Course toEntity(CourseTreeResponse dto);
 }

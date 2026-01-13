@@ -5,10 +5,11 @@ import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
-import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
-import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingSubmissionMapper;
 import com.truongsonkmhd.unetistudy.model.*;
-import com.truongsonkmhd.unetistudy.repository.ExerciseTestCaseRepository;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
+import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
 import com.truongsonkmhd.unetistudy.sevice.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/judge")
