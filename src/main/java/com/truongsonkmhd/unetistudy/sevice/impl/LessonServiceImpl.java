@@ -3,8 +3,8 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.*;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.LessonShowMapper;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.LessonRepository;
 import com.truongsonkmhd.unetistudy.sevice.LessonService;
@@ -19,11 +19,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
+
     private final LessonRepository lessonRepository;
-
     private final CourseModuleRepository courseModuleRepository;
-
     private final LessonShowMapper lessonShowMapper;
+    private final Slugify slugify;
 
     @Override
     public List<LessonShowDTO> getLessonShowDTO(UUID theID) {
@@ -32,9 +32,10 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonShowDTO> getLessonShowDTOByModuleIDAndSlug(UUID moduleID, String search) {
-        String processed = search.replace("++", "-plus-plus");
-        String newSlug = new Slugify().slugify(processed);
-        return lessonShowMapper.toDto(lessonRepository.getLessonShowDTOByModuleIDAndSlug(moduleID, newSlug));
+        String newSlug = normalizeSlugInput(search);
+        return lessonShowMapper.toDto(
+                lessonRepository.getLessonShowDTOByModuleIDAndSlug(moduleID, newSlug)
+        );
     }
 
     @Override
@@ -44,15 +45,18 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<ContestShowDTO> getEssayContestShowDTOByIsContest(UUID moduleID) {
-        return null;
+        // TODO: implement repository query tương ứng
+        return List.of();
     }
 
     @Override
     @Transactional
     public CourseLesson save(CourseLesson theLesson) {
-        String baseSlug = new Slugify().slugify(theLesson.getTitle());
-        String uniqueSlug = generateUniqueSlug(baseSlug);
-        theLesson.setSlug(uniqueSlug);
+        // nếu update lesson cũ thì không nên đổi slug (tuỳ business)
+        if (theLesson.getLessonId() == null) {
+            String uniqueSlug = generateUniqueSlug(slugify.slugify(theLesson.getTitle()));
+            theLesson.setSlug(uniqueSlug);
+        }
         return lessonRepository.save(theLesson);
     }
 
@@ -66,57 +70,38 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.findById(id);
     }
 
-    public String generateUniqueSlug(String baseSlug) {
-        String slug = baseSlug;
-        int counter = 1;
-        while (lessonRepository.existsBySlug(slug)) {
-            slug = baseSlug + "-" + counter;
-            counter++;
-        }
-        return slug;
-    }
-
     @Override
     public List<LessonShowDTOA> getLessonShowDTOA() {
-//        String userName = UserContext.getUsername();
-//        List<String> roleName = lessonRepository.findRoleNameByUserName(userName);
-//        UUID UserID = lessonRepository.findUserIdByUsername(userName);
-//        if (roleName.contains("ADMIN")){
-//            return lessonRepository.findLessonByRoleName("ADMIN");
-//
-//        }else {
-//            return lessonRepository.findLessonByUserID(UserID);
-//        }
-
-        return null;
-
+        // TODO: implement theo quyền như comment (hoặc move sang lớp khác)
+        return List.of();
     }
 
     @Override
+    @Transactional
     public CourseLesson addLesson(CreateLessonsDTO dto) {
-//        System.out.println(dto);
-        Slugify slugify = new Slugify();
-        String Slug = slugify.slugify(dto.getTitle());
-//        System.out.println(dto.getCourseName());
-        String courseName = dto.getCourseName();
-        CourseModule module = courseModuleRepository.findBySlug(courseName)
+        // Validate tối thiểu (tuỳ bạn có dùng validation annotations hay không)
+        if (dto == null || dto.getTitle() == null || dto.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Title không được để trống");
+        }
+        if (dto.getCourseName() == null || dto.getCourseName().isBlank()) {
+            throw new IllegalArgumentException("CourseName không được để trống");
+        }
+
+        CourseModule module = courseModuleRepository.findBySlug(dto.getCourseName())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy module"));
-//        System.out.println(module);
-//        khởi tạo
+
         CourseLesson courseLesson = new CourseLesson();
         courseLesson.setModule(module);
         courseLesson.setTitle(dto.getTitle());
         courseLesson.setDescription(dto.getDescription());
-        courseLesson.setType(dto.getType());
         courseLesson.setContent(dto.getContent());
-        courseLesson.setImage(dto.getImage());
         courseLesson.setDuration(dto.getDuration());
-        courseLesson.setSlug(Slug);
         courseLesson.setOrderIndex(dto.getOrderIndex());
 
-        lessonRepository.save(courseLesson);
+        String uniqueSlug = generateUniqueSlug(slugify.slugify(dto.getTitle()));
+        courseLesson.setSlug(uniqueSlug);
 
-        return courseLesson;
+        return lessonRepository.save(courseLesson);
     }
 
     @Override
@@ -124,4 +109,31 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.getContestManagementShowDTO(moduleID, userName);
     }
 
+    // =========================
+    // Helpers
+    // =========================
+
+    /**
+     * Normalize input slug, đặc biệt case C++ / ++
+     */
+    private String normalizeSlugInput(String raw) {
+        if (raw == null) return null;
+        String processed = raw.replace("++", "-plus-plus");
+        return slugify.slugify(processed);
+    }
+
+    /**
+     * Best-effort unique slug by checking DB.
+     * Nên kết hợp thêm UNIQUE constraint ở DB để chống race-condition.
+     */
+    private String generateUniqueSlug(String baseSlug) {
+        String slug = baseSlug;
+        int counter = 1;
+
+        while (lessonRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + counter;
+            counter++;
+        }
+        return slug;
+    }
 }

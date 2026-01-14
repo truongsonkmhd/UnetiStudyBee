@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
+import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
@@ -17,9 +18,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -112,88 +115,113 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CodingSubmissionResponseDTO submitUserCode(JudgeRequestDTO request , String language) {
+    public CodingSubmissionResponseDTO submitUserCode(JudgeRequestDTO request, String language) {
         Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request);
 
         String userName = UserContext.getUsername();
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        UUID userId = userService.findUserIDByUserName(userName);
+
+        String timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
         String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;
 
         Path workingDir = Paths.get("Code_Dir", folderName);
 
+        // default response values
+        int passed = 0;
+        int total = (exerciseTestCases == null) ? 0 : exerciseTestCases.size();
+        int score = 0;
+
+        // Nếu bạn chưa đo runtime/memory thật, có thể để null (hoặc 0)
+        Integer runtimeMs = null;
+        Integer memoryKb = null;
+
+        SubmissionVerdict verdict = SubmissionVerdict.PENDING;
+
         try {
-            // Tạo folder lưu code tạm Code_Dir nếu chưa tồn tại
             Files.createDirectories(Paths.get("Code_Dir"));
             Files.createDirectories(workingDir);
 
-            // Tạo và ghi file Main.java
-            Path sourceFile = workingDir.resolve("Main.java");
+            // TODO: tuỳ ngôn ngữ mà file name khác nhau (Main.java, main.py, main.cpp...)
+            Path sourceFile = workingDir.resolve(resolveSourceFileName(language));
             Files.writeString(sourceFile, request.getSourceCode());
 
-            // Biên dịch sử dụng Docker
-            DockerCodeExecutionUtil.compileInContainer(workingDir,language);
+            DockerCodeExecutionUtil.compileInContainer(workingDir, language);
 
-            // Tạo output để trả về alert kết quả testcase bên client
-            StringBuilder output = new StringBuilder();
+            // Không có test case -> chạy 1 lần
+            if (total == 0) {
+                DockerCodeExecutionUtil.runInContainer(workingDir, language, "");
+                verdict = SubmissionVerdict.ACCEPTED; // hoặc tuỳ logic bạn muốn
+                score = 0;
+            } else {
+                boolean allPassed = true;
 
-            // Kiểm tra xem bài tập có test case không, nếu không có thì không cần nhập testcase
-            if (exerciseTestCases.isEmpty()) {
-                output.append(DockerCodeExecutionUtil.runInContainer(workingDir,language, ""));
-            }
+                for (ExerciseTestCasesDTO tc : exerciseTestCases) {
+                    String outputRun = DockerCodeExecutionUtil.runInContainer(
+                            workingDir,
+                            language,
+                            tc.getInput()
+                    );
 
-            boolean allPassed = true;
+                    String expected = safeTrim(tc.getExpectedOutput());
+                    String actual = safeTrim(outputRun);
 
-            Integer testCasePassed = 0;
-            Integer totalScore = 0;
-            for (ExerciseTestCasesDTO testCase : exerciseTestCases) {
-                // Chạy với input của testcase trong Docker
-                String outputRun = DockerCodeExecutionUtil.runInContainer(
-                        workingDir,
-                        language,
-                        testCase.getInput()
-                );
-
-                // So sánh output thực tế và output mong đợi
-                String expected = testCase.getExpectedOutput().trim();
-                String actual = outputRun.trim();
-
-                boolean passed = expected.equals(actual);
-
-                if (!passed)
-                    allPassed = false;
-                else {
-                    testCasePassed += 1;
-                    totalScore += testCase.getScore();
+                    boolean ok = expected.equals(actual);
+                    if (!ok) {
+                        allPassed = false;
+                    } else {
+                        passed++;
+                        score += (tc.getScore() != null ? tc.getScore() : 0);
+                    }
                 }
 
-                // Ghi nhận kết quả từng test case
-                output.append("Test case: \n")
-                        .append("Input:\n").append(testCase.getInput()).append("\n")
-                        .append("Expected:\n").append(expected).append("\n")
-                        .append("Actual:\n").append(actual).append("\n")
-                        .append(passed ? "✅ Passed\n\n" : "❌ Failed\n\n");
+                verdict = allPassed ? SubmissionVerdict.ACCEPTED : SubmissionVerdict.WRONG_ANSWER;
             }
 
-            String status = allPassed ? "accepted" : "wrong_answer";
-            return new CodingSubmissionResponseDTO(null, userService.findUserIDByUserName(userName), request.getSourceCode(),
-                    request.getLanguage(), status, testCasePassed, exerciseTestCases.size(), totalScore);
-
-        } catch (IOException | InterruptedException e) {
-            return new CodingSubmissionResponseDTO(null, userService.findUserIDByUserName(userName), request.getSourceCode(),
-                    request.getLanguage(), "wrong_answer", null, exerciseTestCases.size(), null);
         } catch (DockerCodeExecutionUtil.CompilationException e) {
-            return new CodingSubmissionResponseDTO(null, userService.findUserIDByUserName(userName), request.getSourceCode(),
-                    request.getLanguage(), "wrong_answer", null, exerciseTestCases.size(), null);
-        } catch (RuntimeException e) {
-            return new CodingSubmissionResponseDTO(null, userService.findUserIDByUserName(userName), request.getSourceCode(),
-                    request.getLanguage(), "wrong_answer", null, exerciseTestCases.size(), null);
+            verdict = SubmissionVerdict.COMPILATION_ERROR;
+        } catch (IOException | InterruptedException | RuntimeException e) {
+            verdict = SubmissionVerdict.RUNTIME_ERROR;
         } finally {
-            // Dọn dẹp thư mục
             try {
                 DockerCodeExecutionUtil.deleteDirectoryRecursively(workingDir);
-            } catch (Exception e) {
-                // Bỏ qua lỗi khi dọn dẹp
-            }
+            } catch (Exception ignored) {}
         }
+
+        //  build DTO khớp entity
+        return CodingSubmissionResponseDTO.builder()
+                .exerciseID(request.getExerciseID())
+                .userID(userId)
+                .code(request.getSourceCode())
+                .language(language)
+                .verdict(verdict)
+                .passedTestcases(passed)
+                .totalTestcases(total)
+                .runtimeMs(runtimeMs)
+                .memoryKb(memoryKb)
+                .score(score)
+                .submittedAt(Instant.now())
+                .build();
     }
+
+    private static String safeTrim(String s) {
+        return s == null ? "" : s.trim();
+    }
+
+    /**
+     * Tùy language mà map ra đúng file name.
+     * Nếu hiện tại bạn chỉ hỗ trợ Java thì cứ return "Main.java".
+     */
+    private static String resolveSourceFileName(String language) {
+        if (language == null) return "Main.java";
+        return switch (language.toLowerCase()) {
+            case "java" -> "Main.java";
+            case "cpp", "c++" -> "main.cpp";
+            case "c" -> "main.c";
+            case "python", "py" -> "main.py";
+            case "javascript", "js" -> "main.js";
+            default -> "Main.java";
+        };
+    }
+
 }

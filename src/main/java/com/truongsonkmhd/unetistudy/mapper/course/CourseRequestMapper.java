@@ -10,15 +10,27 @@ import org.mapstruct.Mapping;
 public interface CourseRequestMapper extends EntityMapper<CourseShowRequest, Course> {
 
     @Override
-    @Mapping(target = "courseId", ignore = true)             // id sinh ra trong DB
-    @Mapping(target = "slug", ignore = true)           // slug tự generate từ title
-    @Mapping(target = "instructor", ignore = true)     // từ instructorId sẽ set ở service
-    @Mapping(target = "enrolledCount", ignore = true)  // hệ thống tự tăng
-    @Mapping(target = "rating", ignore = true)         // tính toán từ review
-    @Mapping(target = "ratingCount", ignore = true)    // tính toán từ review
-    @Mapping(target = "status", ignore = true)         // backend set mặc định ("draft"/"published")
-    @Mapping(target = "publishedAt", ignore = true)    // chỉ set khi publish
-    @Mapping(target = "createdAt", ignore = true)      // hệ thống tự set
-    @Mapping(target = "updatedAt", ignore = true)      // hệ thống tự set
+    @Mapping(target = "courseId", ignore = true)
+    @Mapping(target = "slug", ignore = true)
+
+    // instructor set trong service theo instructorId
+    @Mapping(target = "instructor", ignore = true)
+
+    // modules thường xử lý riêng (vì mapping nested + set course reference)
+    @Mapping(target = "modules", ignore = true)
+
+    //  set default hệ thống để KHÔNG bao giờ null
+    @Mapping(target = "enrolledCount", constant = "0")
+    @Mapping(target = "rating", expression = "java(java.math.BigDecimal.ZERO)")
+    @Mapping(target = "ratingCount", constant = "0")
+
+    // status/publish mặc định
+    @Mapping(target = "status", expression = "java(dto.getStatus() != null ? dto.getStatus() : \"draft\")")
+    @Mapping(target = "isPublished", expression = "java(dto.getIsPublished() != null ? dto.getIsPublished() : false)")
+    @Mapping(target = "publishedAt", expression = "java(dto.getIsPublished() != null && dto.getIsPublished() ? dto.getPublishedAt() : null)")
+
+    // timestamps DB tự set
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Course toEntity(CourseShowRequest dto);
 }

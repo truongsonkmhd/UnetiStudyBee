@@ -11,11 +11,15 @@ import java.util.List;
 public interface CourseModuleRequestMapper extends EntityMapper<CourseModuleRequest, CourseModule> {
 
     @Override
-    @Mapping(target = "moduleId", ignore = true)
-    @Mapping(target = "course", ignore = true)
-    @Mapping(target = "lessons", ignore = true)
+    @Mapping(target = "moduleId", ignore = true)     // create mới
+    @Mapping(target = "course", ignore = true)       // set ở service (course_id)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+
+    // DTO có lessonId nhưng entity không có -> ignore (hoặc xoá DTO)
+    // @Mapping(target = "...", ignore = true) // không cần vì entity không có field lessonId
+    // lessons: map nested
+    @Mapping(target = "lessons", source = "lessons")
     CourseModule toEntity(CourseModuleRequest dto);
 
     @Override

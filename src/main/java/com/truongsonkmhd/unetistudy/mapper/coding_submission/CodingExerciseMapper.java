@@ -10,18 +10,9 @@ import org.mapstruct.Mapping;
 public interface CodingExerciseMapper extends EntityMapper<CodingExerciseDTO, CodingExercise> {
 
     @Override
-    @Mapping(source = "exerciseId", target = "exerciseID")
-    @Mapping(source = "lesson.title", target = "lessonTitle")
-    @Mapping(source = "programmingLanguage", target = "programLanguage")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "difficulty", source = "difficulty")
-    @Mapping(target = "points", source = "points")
-    @Mapping(target = "slug", source = "slug")
     CodingExerciseDTO toDto(CodingExercise entity);
 
     @Override
-    @Mapping(source = "exerciseID", target = "exerciseId")
-    @Mapping(source = "programLanguage", target = "programmingLanguage")
     @Mapping(target = "lesson", ignore = true)
     @Mapping(target = "exerciseTestCases", ignore = true)
     @Mapping(target = "solutionCode", ignore = true)

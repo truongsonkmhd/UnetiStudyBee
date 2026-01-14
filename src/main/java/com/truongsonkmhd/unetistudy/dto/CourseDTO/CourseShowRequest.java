@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class CourseShowRequest {
     String subCategory;       // Danh mục phụ
     Integer duration;         // Thời lượng (phút)
     Integer capacity;         // Sức chứa
+    Integer enrolledCount = 0;
     String imageUrl;          // Ảnh đại diện
     String videoUrl;          // Video giới thiệu
     String requirements;      // Yêu cầu đầu vào
@@ -31,5 +33,7 @@ public class CourseShowRequest {
     String syllabus;          // Đề cương
     Boolean isPublished;      // Có xuất bản ngay không
     LocalDateTime publishedAt;
-    List<CourseModuleRequest> modules;
+
+    @Builder.Default // neu khong co ccai nay thi khi = new ArrayList<>() mac dinh van la null
+    List<CourseModuleRequest> modules = new ArrayList<>();
 }

@@ -23,7 +23,6 @@ public class CourseModuleRequest  {
      Boolean isPublished; // Trạng thái publish
      String slug;
 
-
      @Builder.Default
      List<LessonRequest> lessons = new ArrayList<>();
 }

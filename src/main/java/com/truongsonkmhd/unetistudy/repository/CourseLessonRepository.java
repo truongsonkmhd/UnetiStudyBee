@@ -27,14 +27,14 @@ public interface CourseLessonRepository extends JpaRepository<CourseLesson, UUID
     @Query("""
         SELECT cl
         FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.type = "coding"
+        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.lessonType = "CODE"
     """)
     List<CourseLesson> getCodingContest(@Param("moduleID") UUID moduleID);
 
     @Query("""
         SELECT cl
         FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.type = "multiple_choice"
+        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.lessonType = "CODE"
     """)
     List<CourseLesson> getMultipleChoiceContest(@Param("moduleID") UUID moduleID);
 

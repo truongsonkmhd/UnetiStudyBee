@@ -1,8 +1,10 @@
 package com.truongsonkmhd.unetistudy.dto.CodingSubmission;
 
+import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -15,8 +17,11 @@ public class CodingSubmissionResponseDTO {
     UUID userID;
     String code;
     String language;
-    String status;
-    Integer testCasesPassed;
-    Integer totalTestCases;
+    SubmissionVerdict verdict;
+    Integer passedTestcases;
+    Integer totalTestcases;
+    Integer runtimeMs;
+    Integer memoryKb;
     Integer score;
+    Instant submittedAt;
 }

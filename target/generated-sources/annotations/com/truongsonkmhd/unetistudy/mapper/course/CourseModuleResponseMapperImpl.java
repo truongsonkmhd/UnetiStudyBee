@@ -1,14 +1,14 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
+import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.QuizDTO;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:40+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -89,14 +89,14 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
             entity.setModuleId( dto.getModuleId() );
         }
         if ( entity.getLessons() != null ) {
-            List<CourseLesson> list = lessonResponseListToCourseLessonList( dto.getLessons() );
+            List<CourseLesson> list = courseLessonResponseListToCourseLessonList( dto.getLessons() );
             if ( list != null ) {
                 entity.getLessons().clear();
                 entity.getLessons().addAll( list );
             }
         }
         else {
-            List<CourseLesson> list = lessonResponseListToCourseLessonList( dto.getLessons() );
+            List<CourseLesson> list = courseLessonResponseListToCourseLessonList( dto.getLessons() );
             if ( list != null ) {
                 entity.setLessons( list );
             }
@@ -104,23 +104,11 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
         if ( dto.getTitle() != null ) {
             entity.setTitle( dto.getTitle() );
         }
-        if ( dto.getDescription() != null ) {
-            entity.setDescription( dto.getDescription() );
-        }
         if ( dto.getOrderIndex() != null ) {
             entity.setOrderIndex( dto.getOrderIndex() );
         }
-        if ( dto.getDuration() != null ) {
-            entity.setDuration( dto.getDuration() );
-        }
         if ( dto.getIsPublished() != null ) {
             entity.setIsPublished( dto.getIsPublished() );
-        }
-        if ( dto.getCreatedAt() != null ) {
-            entity.setCreatedAt( dto.getCreatedAt().toInstant() );
-        }
-        if ( dto.getUpdatedAt() != null ) {
-            entity.setUpdatedAt( dto.getUpdatedAt().toInstant() );
         }
     }
 
@@ -134,17 +122,9 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
 
         courseModuleResponse.moduleId( entity.getModuleId() );
         courseModuleResponse.title( entity.getTitle() );
-        courseModuleResponse.description( entity.getDescription() );
         courseModuleResponse.orderIndex( entity.getOrderIndex() );
-        courseModuleResponse.duration( entity.getDuration() );
         courseModuleResponse.isPublished( entity.getIsPublished() );
-        courseModuleResponse.lessons( courseLessonListToLessonResponseList( entity.getLessons() ) );
-        if ( entity.getCreatedAt() != null ) {
-            courseModuleResponse.createdAt( Date.from( entity.getCreatedAt() ) );
-        }
-        if ( entity.getUpdatedAt() != null ) {
-            courseModuleResponse.updatedAt( Date.from( entity.getUpdatedAt() ) );
-        }
+        courseModuleResponse.lessons( courseLessonListToCourseLessonResponseList( entity.getLessons() ) );
 
         return courseModuleResponse.build();
     }
@@ -158,91 +138,209 @@ public class CourseModuleResponseMapperImpl implements CourseModuleResponseMappe
         CourseModule.CourseModuleBuilder courseModule = CourseModule.builder();
 
         courseModule.moduleId( dto.getModuleId() );
-        courseModule.lessons( lessonResponseListToCourseLessonList( dto.getLessons() ) );
+        courseModule.lessons( courseLessonResponseListToCourseLessonList( dto.getLessons() ) );
         courseModule.title( dto.getTitle() );
-        courseModule.description( dto.getDescription() );
         courseModule.orderIndex( dto.getOrderIndex() );
-        courseModule.duration( dto.getDuration() );
         courseModule.isPublished( dto.getIsPublished() );
-        if ( dto.getCreatedAt() != null ) {
-            courseModule.createdAt( dto.getCreatedAt().toInstant() );
-        }
-        if ( dto.getUpdatedAt() != null ) {
-            courseModule.updatedAt( dto.getUpdatedAt().toInstant() );
-        }
 
         return courseModule.build();
     }
 
-    protected CourseLesson lessonResponseToCourseLesson(LessonResponse lessonResponse) {
-        if ( lessonResponse == null ) {
+    protected CodingExercise codingExerciseDTOToCodingExercise(CodingExerciseDTO codingExerciseDTO) {
+        if ( codingExerciseDTO == null ) {
             return null;
         }
 
-        CourseLesson.CourseLessonBuilder courseLesson = CourseLesson.builder();
+        CodingExercise.CodingExerciseBuilder codingExercise = CodingExercise.builder();
 
-        courseLesson.title( lessonResponse.getTitle() );
-        courseLesson.description( lessonResponse.getDescription() );
-        courseLesson.type( lessonResponse.getType() );
-        courseLesson.image( lessonResponse.getImage() );
-        courseLesson.duration( lessonResponse.getDuration() );
-        courseLesson.isPreview( lessonResponse.getIsPreview() );
-        courseLesson.slug( lessonResponse.getSlug() );
-        if ( lessonResponse.getContestStartTime() != null ) {
-            courseLesson.contestStartTime( Date.from( lessonResponse.getContestStartTime().toInstant( ZoneOffset.UTC ) ) );
-        }
-        if ( lessonResponse.getContestEndTime() != null ) {
-            courseLesson.contestEndTime( Date.from( lessonResponse.getContestEndTime().toInstant( ZoneOffset.UTC ) ) );
-        }
+        codingExercise.exerciseId( codingExerciseDTO.getExerciseId() );
+        codingExercise.title( codingExerciseDTO.getTitle() );
+        codingExercise.description( codingExerciseDTO.getDescription() );
+        codingExercise.programmingLanguage( codingExerciseDTO.getProgrammingLanguage() );
+        codingExercise.timeLimitMs( codingExerciseDTO.getTimeLimitMs() );
+        codingExercise.memoryLimitMb( codingExerciseDTO.getMemoryLimitMb() );
+        codingExercise.difficulty( codingExerciseDTO.getDifficulty() );
+        codingExercise.points( codingExerciseDTO.getPoints() );
+        codingExercise.slug( codingExerciseDTO.getSlug() );
+        codingExercise.inputFormat( codingExerciseDTO.getInputFormat() );
+        codingExercise.outputFormat( codingExerciseDTO.getOutputFormat() );
+        codingExercise.constraintName( codingExerciseDTO.getConstraintName() );
+        codingExercise.isPublished( codingExerciseDTO.getIsPublished() );
+        codingExercise.createdAt( codingExerciseDTO.getCreatedAt() );
+        codingExercise.updatedAt( codingExerciseDTO.getUpdatedAt() );
 
-        return courseLesson.build();
+        return codingExercise.build();
     }
 
-    protected List<CourseLesson> lessonResponseListToCourseLessonList(List<LessonResponse> list) {
+    protected List<CodingExercise> codingExerciseDTOListToCodingExerciseList(List<CodingExerciseDTO> list) {
         if ( list == null ) {
             return null;
         }
 
-        List<CourseLesson> list1 = new ArrayList<CourseLesson>( list.size() );
-        for ( LessonResponse lessonResponse : list ) {
-            list1.add( lessonResponseToCourseLesson( lessonResponse ) );
+        List<CodingExercise> list1 = new ArrayList<CodingExercise>( list.size() );
+        for ( CodingExerciseDTO codingExerciseDTO : list ) {
+            list1.add( codingExerciseDTOToCodingExercise( codingExerciseDTO ) );
         }
 
         return list1;
     }
 
-    protected LessonResponse courseLessonToLessonResponse(CourseLesson courseLesson) {
-        if ( courseLesson == null ) {
+    protected Quiz quizDTOToQuiz(QuizDTO quizDTO) {
+        if ( quizDTO == null ) {
             return null;
         }
 
-        LessonResponse.LessonResponseBuilder lessonResponse = LessonResponse.builder();
+        Quiz.QuizBuilder quiz = Quiz.builder();
 
-        lessonResponse.title( courseLesson.getTitle() );
-        lessonResponse.description( courseLesson.getDescription() );
-        lessonResponse.type( courseLesson.getType() );
-        lessonResponse.duration( courseLesson.getDuration() );
-        lessonResponse.image( courseLesson.getImage() );
-        lessonResponse.isPreview( courseLesson.getIsPreview() );
-        lessonResponse.slug( courseLesson.getSlug() );
-        if ( courseLesson.getContestStartTime() != null ) {
-            lessonResponse.contestStartTime( LocalDateTime.ofInstant( courseLesson.getContestStartTime().toInstant(), ZoneId.of( "UTC" ) ) );
-        }
-        if ( courseLesson.getContestEndTime() != null ) {
-            lessonResponse.contestEndTime( LocalDateTime.ofInstant( courseLesson.getContestEndTime().toInstant(), ZoneId.of( "UTC" ) ) );
-        }
+        quiz.quizId( quizDTO.getQuizId() );
+        quiz.title( quizDTO.getTitle() );
+        quiz.totalQuestions( quizDTO.getTotalQuestions() );
+        quiz.passScore( quizDTO.getPassScore() );
+        quiz.isPublished( quizDTO.getIsPublished() );
 
-        return lessonResponse.build();
+        return quiz.build();
     }
 
-    protected List<LessonResponse> courseLessonListToLessonResponseList(List<CourseLesson> list) {
+    protected List<Quiz> quizDTOListToQuizList(List<QuizDTO> list) {
         if ( list == null ) {
             return null;
         }
 
-        List<LessonResponse> list1 = new ArrayList<LessonResponse>( list.size() );
+        List<Quiz> list1 = new ArrayList<Quiz>( list.size() );
+        for ( QuizDTO quizDTO : list ) {
+            list1.add( quizDTOToQuiz( quizDTO ) );
+        }
+
+        return list1;
+    }
+
+    protected CourseLesson courseLessonResponseToCourseLesson(CourseLessonResponse courseLessonResponse) {
+        if ( courseLessonResponse == null ) {
+            return null;
+        }
+
+        CourseLesson.CourseLessonBuilder courseLesson = CourseLesson.builder();
+
+        courseLesson.lessonId( courseLessonResponse.getLessonId() );
+        courseLesson.title( courseLessonResponse.getTitle() );
+        courseLesson.lessonType( courseLessonResponse.getLessonType() );
+        courseLesson.orderIndex( courseLessonResponse.getOrderIndex() );
+        courseLesson.isPreview( courseLessonResponse.getIsPreview() );
+        courseLesson.isPublished( courseLessonResponse.getIsPublished() );
+        courseLesson.codingExercises( codingExerciseDTOListToCodingExerciseList( courseLessonResponse.getCodingExercises() ) );
+        courseLesson.quizzes( quizDTOListToQuizList( courseLessonResponse.getQuizzes() ) );
+
+        return courseLesson.build();
+    }
+
+    protected List<CourseLesson> courseLessonResponseListToCourseLessonList(List<CourseLessonResponse> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CourseLesson> list1 = new ArrayList<CourseLesson>( list.size() );
+        for ( CourseLessonResponse courseLessonResponse : list ) {
+            list1.add( courseLessonResponseToCourseLesson( courseLessonResponse ) );
+        }
+
+        return list1;
+    }
+
+    protected CodingExerciseDTO codingExerciseToCodingExerciseDTO(CodingExercise codingExercise) {
+        if ( codingExercise == null ) {
+            return null;
+        }
+
+        CodingExerciseDTO.CodingExerciseDTOBuilder codingExerciseDTO = CodingExerciseDTO.builder();
+
+        codingExerciseDTO.exerciseId( codingExercise.getExerciseId() );
+        codingExerciseDTO.title( codingExercise.getTitle() );
+        codingExerciseDTO.description( codingExercise.getDescription() );
+        codingExerciseDTO.programmingLanguage( codingExercise.getProgrammingLanguage() );
+        codingExerciseDTO.difficulty( codingExercise.getDifficulty() );
+        codingExerciseDTO.points( codingExercise.getPoints() );
+        codingExerciseDTO.isPublished( codingExercise.getIsPublished() );
+        codingExerciseDTO.timeLimitMs( codingExercise.getTimeLimitMs() );
+        codingExerciseDTO.memoryLimitMb( codingExercise.getMemoryLimitMb() );
+        codingExerciseDTO.slug( codingExercise.getSlug() );
+        codingExerciseDTO.inputFormat( codingExercise.getInputFormat() );
+        codingExerciseDTO.outputFormat( codingExercise.getOutputFormat() );
+        codingExerciseDTO.constraintName( codingExercise.getConstraintName() );
+        codingExerciseDTO.createdAt( codingExercise.getCreatedAt() );
+        codingExerciseDTO.updatedAt( codingExercise.getUpdatedAt() );
+
+        return codingExerciseDTO.build();
+    }
+
+    protected List<CodingExerciseDTO> codingExerciseListToCodingExerciseDTOList(List<CodingExercise> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CodingExerciseDTO> list1 = new ArrayList<CodingExerciseDTO>( list.size() );
+        for ( CodingExercise codingExercise : list ) {
+            list1.add( codingExerciseToCodingExerciseDTO( codingExercise ) );
+        }
+
+        return list1;
+    }
+
+    protected QuizDTO quizToQuizDTO(Quiz quiz) {
+        if ( quiz == null ) {
+            return null;
+        }
+
+        QuizDTO.QuizDTOBuilder quizDTO = QuizDTO.builder();
+
+        quizDTO.quizId( quiz.getQuizId() );
+        quizDTO.title( quiz.getTitle() );
+        quizDTO.totalQuestions( quiz.getTotalQuestions() );
+        quizDTO.passScore( quiz.getPassScore() );
+        quizDTO.isPublished( quiz.getIsPublished() );
+
+        return quizDTO.build();
+    }
+
+    protected List<QuizDTO> quizListToQuizDTOList(List<Quiz> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<QuizDTO> list1 = new ArrayList<QuizDTO>( list.size() );
+        for ( Quiz quiz : list ) {
+            list1.add( quizToQuizDTO( quiz ) );
+        }
+
+        return list1;
+    }
+
+    protected CourseLessonResponse courseLessonToCourseLessonResponse(CourseLesson courseLesson) {
+        if ( courseLesson == null ) {
+            return null;
+        }
+
+        CourseLessonResponse.CourseLessonResponseBuilder courseLessonResponse = CourseLessonResponse.builder();
+
+        courseLessonResponse.lessonId( courseLesson.getLessonId() );
+        courseLessonResponse.title( courseLesson.getTitle() );
+        courseLessonResponse.orderIndex( courseLesson.getOrderIndex() );
+        courseLessonResponse.lessonType( courseLesson.getLessonType() );
+        courseLessonResponse.isPreview( courseLesson.getIsPreview() );
+        courseLessonResponse.isPublished( courseLesson.getIsPublished() );
+        courseLessonResponse.codingExercises( codingExerciseListToCodingExerciseDTOList( courseLesson.getCodingExercises() ) );
+        courseLessonResponse.quizzes( quizListToQuizDTOList( courseLesson.getQuizzes() ) );
+
+        return courseLessonResponse.build();
+    }
+
+    protected List<CourseLessonResponse> courseLessonListToCourseLessonResponseList(List<CourseLesson> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CourseLessonResponse> list1 = new ArrayList<CourseLessonResponse>( list.size() );
         for ( CourseLesson courseLesson : list ) {
-            list1.add( courseLessonToLessonResponse( courseLesson ) );
+            list1.add( courseLessonToCourseLessonResponse( courseLesson ) );
         }
 
         return list1;

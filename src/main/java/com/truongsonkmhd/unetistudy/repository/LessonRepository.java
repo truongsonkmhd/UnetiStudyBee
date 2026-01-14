@@ -33,17 +33,9 @@ public interface LessonRepository extends JpaRepository<CourseLesson, UUID> {
     @Query("""
         SELECT cl
         FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.type = "coding"
+        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.lessonType = "CODE"
     """)
     List<ContestShowDTO> getContestShowDTOByIsContest(@Param("moduleID") UUID moduleID);
-
-    //Lấy ra những lesson là contest và có type = essay
-    @Query("""
-        SELECT cl
-        FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.type = "essay"
-    """)
-    List<ContestShowDTO> getEssayContestShowDTOByIsContest(@Param("moduleID") UUID moduleID);
 
     //Lấy ra những lesson/contest với username
     @Query("""

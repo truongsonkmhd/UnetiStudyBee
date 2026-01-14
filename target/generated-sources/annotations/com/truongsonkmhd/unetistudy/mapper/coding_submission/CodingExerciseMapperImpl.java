@@ -2,7 +2,6 @@ package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:40+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -80,11 +79,23 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
             return;
         }
 
+        if ( dto.getExerciseId() != null ) {
+            entity.setExerciseId( dto.getExerciseId() );
+        }
         if ( dto.getTitle() != null ) {
             entity.setTitle( dto.getTitle() );
         }
         if ( dto.getDescription() != null ) {
             entity.setDescription( dto.getDescription() );
+        }
+        if ( dto.getProgrammingLanguage() != null ) {
+            entity.setProgrammingLanguage( dto.getProgrammingLanguage() );
+        }
+        if ( dto.getTimeLimitMs() != null ) {
+            entity.setTimeLimitMs( dto.getTimeLimitMs() );
+        }
+        if ( dto.getMemoryLimitMb() != null ) {
+            entity.setMemoryLimitMb( dto.getMemoryLimitMb() );
         }
         if ( dto.getDifficulty() != null ) {
             entity.setDifficulty( dto.getDifficulty() );
@@ -94,6 +105,24 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
         }
         if ( dto.getSlug() != null ) {
             entity.setSlug( dto.getSlug() );
+        }
+        if ( dto.getInputFormat() != null ) {
+            entity.setInputFormat( dto.getInputFormat() );
+        }
+        if ( dto.getOutputFormat() != null ) {
+            entity.setOutputFormat( dto.getOutputFormat() );
+        }
+        if ( dto.getConstraintName() != null ) {
+            entity.setConstraintName( dto.getConstraintName() );
+        }
+        if ( dto.getIsPublished() != null ) {
+            entity.setIsPublished( dto.getIsPublished() );
+        }
+        if ( dto.getCreatedAt() != null ) {
+            entity.setCreatedAt( dto.getCreatedAt() );
+        }
+        if ( dto.getUpdatedAt() != null ) {
+            entity.setUpdatedAt( dto.getUpdatedAt() );
         }
     }
 
@@ -105,14 +134,21 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
 
         CodingExerciseDTO.CodingExerciseDTOBuilder codingExerciseDTO = CodingExerciseDTO.builder();
 
-        codingExerciseDTO.exerciseID( entity.getExerciseId() );
-        codingExerciseDTO.lessonTitle( entityLessonTitle( entity ) );
-        codingExerciseDTO.programLanguage( entity.getProgrammingLanguage() );
+        codingExerciseDTO.exerciseId( entity.getExerciseId() );
+        codingExerciseDTO.title( entity.getTitle() );
         codingExerciseDTO.description( entity.getDescription() );
+        codingExerciseDTO.programmingLanguage( entity.getProgrammingLanguage() );
         codingExerciseDTO.difficulty( entity.getDifficulty() );
         codingExerciseDTO.points( entity.getPoints() );
+        codingExerciseDTO.isPublished( entity.getIsPublished() );
+        codingExerciseDTO.timeLimitMs( entity.getTimeLimitMs() );
+        codingExerciseDTO.memoryLimitMb( entity.getMemoryLimitMb() );
         codingExerciseDTO.slug( entity.getSlug() );
-        codingExerciseDTO.title( entity.getTitle() );
+        codingExerciseDTO.inputFormat( entity.getInputFormat() );
+        codingExerciseDTO.outputFormat( entity.getOutputFormat() );
+        codingExerciseDTO.constraintName( entity.getConstraintName() );
+        codingExerciseDTO.createdAt( entity.getCreatedAt() );
+        codingExerciseDTO.updatedAt( entity.getUpdatedAt() );
 
         return codingExerciseDTO.build();
     }
@@ -125,29 +161,15 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
 
         CodingExercise.CodingExerciseBuilder codingExercise = CodingExercise.builder();
 
-        codingExercise.exerciseId( dto.getExerciseID() );
-        codingExercise.programmingLanguage( dto.getProgramLanguage() );
+        codingExercise.exerciseId( dto.getExerciseId() );
         codingExercise.title( dto.getTitle() );
         codingExercise.description( dto.getDescription() );
+        codingExercise.programmingLanguage( dto.getProgrammingLanguage() );
         codingExercise.difficulty( dto.getDifficulty() );
         codingExercise.points( dto.getPoints() );
         codingExercise.slug( dto.getSlug() );
+        codingExercise.isPublished( dto.getIsPublished() );
 
         return codingExercise.build();
-    }
-
-    private String entityLessonTitle(CodingExercise codingExercise) {
-        if ( codingExercise == null ) {
-            return null;
-        }
-        CourseLesson lesson = codingExercise.getLesson();
-        if ( lesson == null ) {
-            return null;
-        }
-        String title = lesson.getTitle();
-        if ( title == null ) {
-            return null;
-        }
-        return title;
     }
 }

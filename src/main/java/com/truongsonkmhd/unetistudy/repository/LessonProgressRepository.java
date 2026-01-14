@@ -21,9 +21,4 @@ public interface LessonProgressRepository extends JpaRepository<LessonProgress, 
             @Param("courseId") UUID courseId
     );
 
-    Optional<LessonProgress> findByUser_UserIdAndLesson_LessonId(
-            UUID userId,
-            UUID lessonId
-    );
-
 }

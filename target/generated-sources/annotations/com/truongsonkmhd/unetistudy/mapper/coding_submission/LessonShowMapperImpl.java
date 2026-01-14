@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonShowDTO;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:40+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -87,14 +87,8 @@ public class LessonShowMapperImpl implements LessonShowMapper {
         if ( dto.getDescription() != null ) {
             entity.setDescription( dto.getDescription() );
         }
-        if ( dto.getType() != null ) {
-            entity.setType( dto.getType() );
-        }
         if ( dto.getContent() != null ) {
             entity.setContent( dto.getContent() );
-        }
-        if ( dto.getImage() != null ) {
-            entity.setImage( dto.getImage() );
         }
         if ( dto.getDuration() != null ) {
             entity.setDuration( dto.getDuration() );
@@ -125,9 +119,7 @@ public class LessonShowMapperImpl implements LessonShowMapper {
         lessonShowDTO.moduleID( entityModuleModuleId( entity ) );
         lessonShowDTO.title( entity.getTitle() );
         lessonShowDTO.description( entity.getDescription() );
-        lessonShowDTO.type( entity.getType() );
         lessonShowDTO.content( entity.getContent() );
-        lessonShowDTO.image( entity.getImage() );
         lessonShowDTO.duration( entity.getDuration() );
         lessonShowDTO.orderIndex( entity.getOrderIndex() );
         lessonShowDTO.isPreview( entity.getIsPreview() );
@@ -149,9 +141,7 @@ public class LessonShowMapperImpl implements LessonShowMapper {
         courseLesson.lessonId( dto.getLessonID() );
         courseLesson.title( dto.getTitle() );
         courseLesson.description( dto.getDescription() );
-        courseLesson.type( dto.getType() );
         courseLesson.content( dto.getContent() );
-        courseLesson.image( dto.getImage() );
         courseLesson.duration( dto.getDuration() );
         courseLesson.orderIndex( dto.getOrderIndex() );
         courseLesson.isPreview( dto.getIsPreview() );

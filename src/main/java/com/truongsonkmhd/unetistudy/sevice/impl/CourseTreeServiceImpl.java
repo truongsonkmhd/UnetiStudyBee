@@ -10,12 +10,14 @@ import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseResponseMapper;
+import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
+import com.truongsonkmhd.unetistudy.repository.CourseLessonRepository;
 import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.CourseRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
@@ -45,9 +47,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     private final CourseModuleResponseMapper courseModuleResponseMapper;
 
     private final CourseModuleRepository courseModuleRepository;
+    private final CourseLessonRepository courseLessonRepository;
+
+    private final Slugify slugify;
 
     private static final Comparator<Integer> NULL_SAFE_INT =
             Comparator.nullsLast(Integer::compareTo);
+    private final CourseLessonRequestMapper courseLessonRequestMapper;
 
     // =========================
     // BASIC CRUD
@@ -68,10 +74,26 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         Course course = courseRequestMapper.toEntity(req);
         course.setInstructor(instructor);
 
-        String baseSlug = new Slugify().slugify(req.getTitle());
+        String baseSlug = slugify.slugify(req.getTitle());
         course.setSlug(generateUniqueSlug(baseSlug));
 
-        course.setModules(convertToCourseModule(req.getModules(), course));
+        if (course.getEnrolledCount() == null) course.setEnrolledCount(0);
+        if (course.getRating() == null) course.setRating(java.math.BigDecimal.ZERO);
+        if (course.getRatingCount() == null) course.setRatingCount(0);
+
+        if (course.getStatus() == null) course.setStatus(req.getStatus() != null ? req.getStatus() : "draft");
+        if (course.getIsPublished() == null) course.setIsPublished(req.getIsPublished() != null ? req.getIsPublished() : false);
+
+        // publishedAt chỉ set khi publish
+        if (Boolean.TRUE.equals(course.getIsPublished())) {
+            if (course.getPublishedAt() == null) {
+                course.setPublishedAt(req.getPublishedAt() != null ? req.getPublishedAt() : java.time.LocalDateTime.now());
+            }
+        } else {
+            course.setPublishedAt(null);
+        }
+
+        course.setModules(courseModuleRequestMapper.toEntity(req.getModules()));
 
         courseRepository.save(course);
         return courseResponseMapper.toDto(course);
@@ -111,7 +133,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         course.setPublishedAt(req.getPublishedAt());
 
         // slug update (optional)
-        String newBaseSlug = new Slugify().slugify(req.getTitle());
+        String newBaseSlug = slugify.slugify(req.getTitle());
         if (newBaseSlug != null && !newBaseSlug.isBlank()) {
             if (!newBaseSlug.equals(course.getSlug())) {
                 course.setSlug(generateUniqueSlugForUpdate(newBaseSlug, course.getCourseId()));
@@ -215,8 +237,8 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         return new CourseLessonResponse(
                 l.getLessonId(),
                 l.getTitle(),
-                l.getType(),
                 l.getOrderIndex(),
+                l.getLessonType(),
                 l.getIsPreview(),
                 l.getIsPublished(),
                 coding,
@@ -325,7 +347,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
             // set/update fields
             lesson.setTitle(lr.getTitle());
             lesson.setDescription(lr.getDescription());
-            lesson.setType(lr.getType());
+            lesson.setLessonType(lr.getLessonType());
             lesson.setContent(lr.getContent());
             lesson.setVideoUrl(lr.getVideoUrl());
             lesson.setDuration(lr.getDuration());
@@ -343,22 +365,6 @@ public class CourseTreeServiceImpl implements CourseTreeService {
 
         module.getLessons().clear();
         module.getLessons().addAll(newList);
-    }
-
-    // =========================
-    // CREATE HELPERS
-    // =========================
-
-    private @NonNull List<CourseModule> convertToCourseModule(List<CourseModuleRequest> courseModules, Course course) {
-        if (courseModules == null) return new ArrayList<>();
-
-        List<CourseModule> result = new ArrayList<>();
-        courseModules.forEach(a -> {
-            var courseModule = courseModuleRequestMapper.toEntity(a);
-            courseModule.setCourse(course);
-            result.add(courseModule);
-        });
-        return result;
     }
 
     // =========================

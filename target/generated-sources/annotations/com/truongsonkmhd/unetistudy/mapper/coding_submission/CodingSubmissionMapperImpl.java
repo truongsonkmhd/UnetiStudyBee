@@ -1,20 +1,17 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
-import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
-import com.truongsonkmhd.unetistudy.model.User;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:39+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -88,17 +85,26 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
         if ( dto.getLanguage() != null ) {
             entity.setLanguage( dto.getLanguage() );
         }
-        if ( dto.getStatus() != null ) {
-            entity.setStatus( dto.getStatus() );
+        if ( dto.getVerdict() != null ) {
+            entity.setVerdict( dto.getVerdict() );
         }
-        if ( dto.getTestCasesPassed() != null ) {
-            entity.setTestCasesPassed( dto.getTestCasesPassed() );
+        if ( dto.getPassedTestcases() != null ) {
+            entity.setPassedTestcases( dto.getPassedTestcases() );
         }
-        if ( dto.getTotalTestCases() != null ) {
-            entity.setTotalTestCases( dto.getTotalTestCases() );
+        if ( dto.getTotalTestcases() != null ) {
+            entity.setTotalTestcases( dto.getTotalTestcases() );
+        }
+        if ( dto.getRuntimeMs() != null ) {
+            entity.setRuntimeMs( dto.getRuntimeMs() );
+        }
+        if ( dto.getMemoryKb() != null ) {
+            entity.setMemoryKb( dto.getMemoryKb() );
         }
         if ( dto.getScore() != null ) {
             entity.setScore( dto.getScore() );
+        }
+        if ( dto.getSubmittedAt() != null ) {
+            entity.setSubmittedAt( dto.getSubmittedAt() );
         }
     }
 
@@ -110,14 +116,15 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
 
         CodingSubmissionResponseDTO.CodingSubmissionResponseDTOBuilder codingSubmissionResponseDTO = CodingSubmissionResponseDTO.builder();
 
-        codingSubmissionResponseDTO.exerciseID( entityExerciseExerciseId( entity ) );
-        codingSubmissionResponseDTO.userID( entityUserId( entity ) );
         codingSubmissionResponseDTO.code( entity.getCode() );
         codingSubmissionResponseDTO.language( entity.getLanguage() );
-        codingSubmissionResponseDTO.status( entity.getStatus() );
-        codingSubmissionResponseDTO.testCasesPassed( entity.getTestCasesPassed() );
-        codingSubmissionResponseDTO.totalTestCases( entity.getTotalTestCases() );
+        codingSubmissionResponseDTO.verdict( entity.getVerdict() );
+        codingSubmissionResponseDTO.passedTestcases( entity.getPassedTestcases() );
+        codingSubmissionResponseDTO.totalTestcases( entity.getTotalTestcases() );
+        codingSubmissionResponseDTO.runtimeMs( entity.getRuntimeMs() );
+        codingSubmissionResponseDTO.memoryKb( entity.getMemoryKb() );
         codingSubmissionResponseDTO.score( entity.getScore() );
+        codingSubmissionResponseDTO.submittedAt( entity.getSubmittedAt() );
 
         return codingSubmissionResponseDTO.build();
     }
@@ -130,69 +137,16 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
 
         CodingSubmission.CodingSubmissionBuilder codingSubmission = CodingSubmission.builder();
 
-        codingSubmission.exercise( codingSubmissionResponseDTOToCodingExercise( dto ) );
-        codingSubmission.user( codingSubmissionResponseDTOToUser( dto ) );
         codingSubmission.code( dto.getCode() );
         codingSubmission.language( dto.getLanguage() );
-        codingSubmission.status( dto.getStatus() );
-        codingSubmission.testCasesPassed( dto.getTestCasesPassed() );
-        codingSubmission.totalTestCases( dto.getTotalTestCases() );
+        codingSubmission.verdict( dto.getVerdict() );
+        codingSubmission.passedTestcases( dto.getPassedTestcases() );
+        codingSubmission.totalTestcases( dto.getTotalTestcases() );
+        codingSubmission.runtimeMs( dto.getRuntimeMs() );
+        codingSubmission.memoryKb( dto.getMemoryKb() );
         codingSubmission.score( dto.getScore() );
+        codingSubmission.submittedAt( dto.getSubmittedAt() );
 
         return codingSubmission.build();
-    }
-
-    private UUID entityExerciseExerciseId(CodingSubmission codingSubmission) {
-        if ( codingSubmission == null ) {
-            return null;
-        }
-        CodingExercise exercise = codingSubmission.getExercise();
-        if ( exercise == null ) {
-            return null;
-        }
-        UUID exerciseId = exercise.getExerciseId();
-        if ( exerciseId == null ) {
-            return null;
-        }
-        return exerciseId;
-    }
-
-    private UUID entityUserId(CodingSubmission codingSubmission) {
-        if ( codingSubmission == null ) {
-            return null;
-        }
-        User user = codingSubmission.getUser();
-        if ( user == null ) {
-            return null;
-        }
-        UUID id = user.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
-    }
-
-    protected CodingExercise codingSubmissionResponseDTOToCodingExercise(CodingSubmissionResponseDTO codingSubmissionResponseDTO) {
-        if ( codingSubmissionResponseDTO == null ) {
-            return null;
-        }
-
-        CodingExercise.CodingExerciseBuilder codingExercise = CodingExercise.builder();
-
-        codingExercise.exerciseId( codingSubmissionResponseDTO.getExerciseID() );
-
-        return codingExercise.build();
-    }
-
-    protected User codingSubmissionResponseDTOToUser(CodingSubmissionResponseDTO codingSubmissionResponseDTO) {
-        if ( codingSubmissionResponseDTO == null ) {
-            return null;
-        }
-
-        User.UserBuilder user = User.builder();
-
-        user.id( codingSubmissionResponseDTO.getUserID() );
-
-        return user.build();
     }
 }

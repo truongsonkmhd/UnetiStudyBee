@@ -4,10 +4,12 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CourseCardResponse {
     private UUID courseId;
@@ -16,10 +18,7 @@ public class CourseCardResponse {
     private String shortDescription;
     private String imageUrl;
 
-    private BigDecimal price;
-    private BigDecimal discountPrice;
-
     private Boolean isPublished;
     private Integer totalModules;
-    private Instant publishedAt;
+    private LocalDateTime publishedAt;
 }

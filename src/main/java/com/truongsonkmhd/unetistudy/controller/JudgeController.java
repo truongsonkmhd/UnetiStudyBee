@@ -42,65 +42,79 @@ public class JudgeController {
         return  judgeService.runUserCode(request,language);
     }
     @PostMapping("/submit")
-    public CodingSubmissionResponseDTO handleSubmitCode(@RequestBody JudgeRequestDTO request, @PathVariable String language){
-        // lấy ra submission để lưu vào DB và trả ra cho client
-        CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request,language);
-        submission.setExerciseID(request.getExerciseID());
+    public CodingSubmissionResponseDTO handleSubmitCode(
+            @RequestBody JudgeRequestDTO request,
+            @RequestParam String language
+    ) {
+        // 1) Call judge -> nhận kết quả
+        CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request, language);
 
-        // Lưu Submission vào DB
+        // 2) Ensure IDs (nếu judgeService chưa set)
+        submission.setExerciseID(request.getExerciseID());
+        submission.setUserID(UserContext.getUserID());
+
+        // 3) Load entities
         User userEntity = userService.findById(submission.getUserID());
         CodingExercise codingExercise = codingExerciseService.getExerciseEntityByID(request.getExerciseID());
 
+        // 4) Build entity để lưu DB (đúng theo entity CodingSubmission của UNETI)
         CodingSubmission codingSubmission = CodingSubmission.builder()
-                .code(submission.getCode())
-                .language(submission.getLanguage())
-                .status(submission.getStatus())
-                .testCasesPassed(submission.getTestCasesPassed())
-                .totalTestCases(submission.getTotalTestCases())
-                .score(submission.getScore())
                 .exercise(codingExercise)
                 .user(userEntity)
-                .executionTime(1)
-                .memoryUsed(10)
-                .submittedAt(LocalDateTime.now())
+                .code(submission.getCode())
+                .language(submission.getLanguage() != null ? submission.getLanguage() : language)
+                .verdict(submission.getVerdict())
+                .passedTestcases(submission.getPassedTestcases() != null ? submission.getPassedTestcases() : 0)
+                .totalTestcases(submission.getTotalTestcases() != null ? submission.getTotalTestcases() : 0)
+                .runtimeMs(submission.getRuntimeMs())
+                .memoryKb(submission.getMemoryKb())
+                .score(submission.getScore() != null ? submission.getScore() : 0)
+                // Không set submittedAt ở đây nếu entity dùng @CreationTimestamp (Instant)
                 .build();
 
-        codingSubmissionService.save(codingSubmission);
+        CodingSubmission saved = codingSubmissionService.save(codingSubmission);
 
+        // 5) Trả submissionId + submittedAt về client (nếu cần)
+        submission.setSubmittedAt(saved.getSubmittedAt());
 
-        // Kiểm tra nếu là contest thì cho vào attempt
-        if(codingExerciseService.isExerciseInContestLesson(request.getExerciseID())){
-            // CHECK SỐ LẦN NỘP BÀI VÀ LƯU VÀO ContestAttempt
-            AttemptInfoDTO attemptInfo = contestExerciseAttemptService.getAttemptInfoDTOByUserIDAndExerciseID(UserContext.getUserID(), request.getExerciseID(), "coding");
+        // 6) Contest attempt (fix time type theo entity Attempt của bạn)
+        if (codingExerciseService.isExerciseInContestLesson(request.getExerciseID())) {
 
-            if(attemptInfo != null && attemptInfo.getAttemptNumber() != null && attemptInfo.getAttemptNumber() >0){
-                System.out.println("Lần làm bài thứ " + (attemptInfo.getAttemptNumber() + 1));
-            }
+            AttemptInfoDTO attemptInfo = contestExerciseAttemptService
+                    .getAttemptInfoDTOByUserIDAndExerciseID(UserContext.getUserID(), request.getExerciseID(), "coding");
 
-            if (attemptInfo == null){
+            if (attemptInfo == null) {
                 attemptInfo = new AttemptInfoDTO();
                 attemptInfo.setAttemptNumber(0);
                 attemptInfo.setExerciseType("coding");
                 attemptInfo.setLessonID(codingExerciseService.getLessonIDByExerciseID(request.getExerciseID()));
             }
 
+            int currentAttempt = attemptInfo.getAttemptNumber() == null ? 0 : attemptInfo.getAttemptNumber();
+
             ContestExerciseAttempt exerciseAttempt = new ContestExerciseAttempt();
             exerciseAttempt.setExerciseID(request.getExerciseID());
-            CourseLesson lesson = lessonService.findById(attemptInfo.getLessonID()).orElseThrow(() -> new RuntimeException("Lesson not found"));
+
+            CourseLesson lesson = lessonService.findById(attemptInfo.getLessonID())
+                    .orElseThrow(() -> new RuntimeException("Lesson not found"));
             exerciseAttempt.setLesson(lesson);
+
             User user = new User();
             user.setId(UserContext.getUserID());
             exerciseAttempt.setUser(user);
+
+            // Nếu ContestExerciseAttempt.submittedAt là LocalDateTime thì giữ LocalDateTime.now()
+            // Nếu là Instant thì dùng Instant.now()
             exerciseAttempt.setSubmittedAt(LocalDateTime.now());
+
             exerciseAttempt.setExerciseType(attemptInfo.getExerciseType());
-            int currentAttempt = attemptInfo.getAttemptNumber() == null ? 0 : attemptInfo.getAttemptNumber();
             exerciseAttempt.setAttemptNumber(currentAttempt + 1);
-            Number score = submission.getScore();
-            exerciseAttempt.setScore(score != null ? score.doubleValue() : 0.0);
+            exerciseAttempt.setScore(submission.getScore() != null ? submission.getScore().doubleValue() : 0.0);
 
             contestExerciseAttemptService.save(exerciseAttempt);
         }
 
         return submission;
     }
+
 }

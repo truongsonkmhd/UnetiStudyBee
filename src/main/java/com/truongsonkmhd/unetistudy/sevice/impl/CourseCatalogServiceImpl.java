@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.List;
 
@@ -76,9 +77,16 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
 
         if (!items.isEmpty() && hasNext) {
             CourseCardResponse last = items.get(items.size() - 1);
-            long epoch = (last.getPublishedAt() != null ? last.getPublishedAt() : Instant.now()).toEpochMilli();
+
+            Instant instant = (last.getPublishedAt() != null)
+                    ? last.getPublishedAt().atZone(ZoneId.systemDefault()).toInstant()
+                    : Instant.now();
+
+            long epoch = instant.toEpochMilli();
+
             String raw = epoch + "|" + last.getCourseId();
-            nextCursor = Base64.getUrlEncoder().withoutPadding()
+            nextCursor = Base64.getUrlEncoder()
+                    .withoutPadding()
                     .encodeToString(raw.getBytes(StandardCharsets.UTF_8));
         }
 

@@ -1,12 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionShowDTO;
-import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
-import com.truongsonkmhd.unetistudy.model.User;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -17,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:40+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -91,20 +86,11 @@ public class CodingSubmissionShowMapperImpl implements CodingSubmissionShowMappe
         if ( dto.getLanguage() != null ) {
             entity.setLanguage( dto.getLanguage() );
         }
-        if ( dto.getStatus() != null ) {
-            entity.setStatus( dto.getStatus() );
-        }
-        if ( dto.getTestCasesPassed() != null ) {
-            entity.setTestCasesPassed( dto.getTestCasesPassed() );
-        }
-        if ( dto.getTotalTestCases() != null ) {
-            entity.setTotalTestCases( dto.getTotalTestCases() );
-        }
         if ( dto.getScore() != null ) {
             entity.setScore( dto.getScore() );
         }
         if ( dto.getSubmittedAt() != null ) {
-            entity.setSubmittedAt( LocalDateTime.ofInstant( dto.getSubmittedAt().toInstant(), ZoneId.of( "UTC" ) ) );
+            entity.setSubmittedAt( dto.getSubmittedAt().toInstant() );
         }
     }
 
@@ -116,16 +102,11 @@ public class CodingSubmissionShowMapperImpl implements CodingSubmissionShowMappe
 
         CodingSubmissionShowDTO.CodingSubmissionShowDTOBuilder codingSubmissionShowDTO = CodingSubmissionShowDTO.builder();
 
-        codingSubmissionShowDTO.exerciseName( entityExerciseTitle( entity ) );
-        codingSubmissionShowDTO.userName( entityUserUsername( entity ) );
         codingSubmissionShowDTO.code( entity.getCode() );
         codingSubmissionShowDTO.language( entity.getLanguage() );
-        codingSubmissionShowDTO.status( entity.getStatus() );
-        codingSubmissionShowDTO.testCasesPassed( entity.getTestCasesPassed() );
-        codingSubmissionShowDTO.totalTestCases( entity.getTotalTestCases() );
         codingSubmissionShowDTO.score( entity.getScore() );
         if ( entity.getSubmittedAt() != null ) {
-            codingSubmissionShowDTO.submittedAt( Date.from( entity.getSubmittedAt().toInstant( ZoneOffset.UTC ) ) );
+            codingSubmissionShowDTO.submittedAt( Date.from( entity.getSubmittedAt() ) );
         }
 
         return codingSubmissionShowDTO.build();
@@ -141,44 +122,11 @@ public class CodingSubmissionShowMapperImpl implements CodingSubmissionShowMappe
 
         codingSubmission.code( dto.getCode() );
         codingSubmission.language( dto.getLanguage() );
-        codingSubmission.status( dto.getStatus() );
-        codingSubmission.testCasesPassed( dto.getTestCasesPassed() );
-        codingSubmission.totalTestCases( dto.getTotalTestCases() );
         codingSubmission.score( dto.getScore() );
         if ( dto.getSubmittedAt() != null ) {
-            codingSubmission.submittedAt( LocalDateTime.ofInstant( dto.getSubmittedAt().toInstant(), ZoneId.of( "UTC" ) ) );
+            codingSubmission.submittedAt( dto.getSubmittedAt().toInstant() );
         }
 
         return codingSubmission.build();
-    }
-
-    private String entityExerciseTitle(CodingSubmission codingSubmission) {
-        if ( codingSubmission == null ) {
-            return null;
-        }
-        CodingExercise exercise = codingSubmission.getExercise();
-        if ( exercise == null ) {
-            return null;
-        }
-        String title = exercise.getTitle();
-        if ( title == null ) {
-            return null;
-        }
-        return title;
-    }
-
-    private String entityUserUsername(CodingSubmission codingSubmission) {
-        if ( codingSubmission == null ) {
-            return null;
-        }
-        User user = codingSubmission.getUser();
-        if ( user == null ) {
-            return null;
-        }
-        String username = user.getUsername();
-        if ( username == null ) {
-            return null;
-        }
-        return username;
     }
 }

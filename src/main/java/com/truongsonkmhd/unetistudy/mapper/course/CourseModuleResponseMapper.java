@@ -10,13 +10,6 @@ import org.mapstruct.Mapping;
 public interface CourseModuleResponseMapper extends EntityMapper<CourseModuleResponse, CourseModule> {
 
     @Override
-    @Mapping(source = "moduleId", target = "moduleId")
-    @Mapping(source = "title", target = "title")
-    @Mapping(source = "description", target = "description")
-    @Mapping(source = "orderIndex", target = "orderIndex")
-    @Mapping(source = "duration", target = "duration")
-    @Mapping(source = "isPublished", target = "isPublished")
-    @Mapping(source = "lessons", target = "lessons")
     CourseModuleResponse toDto(CourseModule entity);
 
     @Override

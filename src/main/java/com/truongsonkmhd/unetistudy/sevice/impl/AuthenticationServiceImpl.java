@@ -86,10 +86,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Email already exists");
         }
 
-        if (userRepository.findByPhone(request.getPhone()).isPresent()) {
-            throw new RuntimeException("Phone already exists");
-        }
-
         if (userRepository.findByStudentId(request.getStudentId()).isPresent()) {
             throw new RuntimeException("Student already exists");
         }

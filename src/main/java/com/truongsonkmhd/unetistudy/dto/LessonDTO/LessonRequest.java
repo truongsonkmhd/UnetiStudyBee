@@ -6,6 +6,7 @@ import com.truongsonkmhd.unetistudy.dto.CourseDTO.QuizDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,9 @@ public class LessonRequest {
      Date contestStartTime; // thời gian bắt đầu contest
      Date contestEndTime;   // thời gian kết thúc contest
 
-     List<CodingExerciseDTO> codingExercises;
-     List<QuizDTO> quizzes;
+     @Builder.Default // neu khong co ccai nay thi khi = new ArrayList<>() mac dinh van la null
+     List<CodingExerciseDTO> codingExercises = new  ArrayList<>();
+
+     @Builder.Default
+     List<QuizDTO> quizzes =  new  ArrayList<>();
 }

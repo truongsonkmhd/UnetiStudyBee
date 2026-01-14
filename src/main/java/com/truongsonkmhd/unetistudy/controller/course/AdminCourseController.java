@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminCourseController {
 
-
     private final CourseTreeService courseTreeService;
 
     @GetMapping("/{slug}/tree")

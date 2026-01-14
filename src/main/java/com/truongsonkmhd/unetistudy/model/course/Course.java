@@ -38,6 +38,7 @@ public class Course {
 
     @Column(name = "title", nullable = false, length = 255)
     String title;
+
     @Column(name = "slug", unique = true, length = 255)
     String slug;
 
@@ -69,7 +70,7 @@ public class Course {
     @Column(name = "capacity")
     Integer capacity;
 
-    @Column(name = "enrolledCount", nullable = false)
+    @Column(name = "enrolled_count", nullable = false)
     Integer enrolledCount = 0;
 
     @Column(name = "rating", precision = 3, scale = 2, nullable = false)

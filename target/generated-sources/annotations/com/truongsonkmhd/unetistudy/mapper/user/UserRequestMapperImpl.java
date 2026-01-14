@@ -1,9 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.AddressDTO.AddressRequest;
 import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
-import com.truongsonkmhd.unetistudy.model.Address;
 import com.truongsonkmhd.unetistudy.model.User;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -14,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-13T00:25:39+0700",
+    date = "2026-01-14T16:27:04+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -34,10 +31,8 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         user.email( dto.getEmail() );
         user.phone( dto.getPhone() );
         user.password( dto.getPassword() );
-        if ( dto.getType() != null ) {
-            user.type( Enum.valueOf( UserType.class, dto.getType() ) );
-        }
-        user.addresses( addressRequestSetToAddressSet( dto.getAddresses() ) );
+        user.contactAddress( dto.getContactAddress() );
+        user.currentResidence( dto.getCurrentResidence() );
 
         return user.build();
     }
@@ -49,13 +44,6 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         }
 
         UserRequest userRequest = new UserRequest();
-
-        if ( userRequest.getAddresses() != null ) {
-            Set<AddressRequest> set = addressSetToAddressRequestSet( entity.getAddresses() );
-            if ( set != null ) {
-                userRequest.getAddresses().addAll( set );
-            }
-        }
 
         return userRequest;
     }
@@ -140,85 +128,11 @@ public class UserRequestMapperImpl implements UserRequestMapper {
         if ( dto.getPassword() != null ) {
             entity.setPassword( dto.getPassword() );
         }
-        if ( dto.getType() != null ) {
-            entity.setType( Enum.valueOf( UserType.class, dto.getType() ) );
+        if ( dto.getContactAddress() != null ) {
+            entity.setContactAddress( dto.getContactAddress() );
         }
-        if ( entity.getAddresses() != null ) {
-            Set<Address> set = addressRequestSetToAddressSet( dto.getAddresses() );
-            if ( set != null ) {
-                entity.getAddresses().clear();
-                entity.getAddresses().addAll( set );
-            }
+        if ( dto.getCurrentResidence() != null ) {
+            entity.setCurrentResidence( dto.getCurrentResidence() );
         }
-        else {
-            Set<Address> set = addressRequestSetToAddressSet( dto.getAddresses() );
-            if ( set != null ) {
-                entity.setAddresses( set );
-            }
-        }
-    }
-
-    protected Address addressRequestToAddress(AddressRequest addressRequest) {
-        if ( addressRequest == null ) {
-            return null;
-        }
-
-        Address.AddressBuilder address = Address.builder();
-
-        address.apartmentNumber( addressRequest.getApartmentNumber() );
-        address.floor( addressRequest.getFloor() );
-        address.building( addressRequest.getBuilding() );
-        address.streetNumber( addressRequest.getStreetNumber() );
-        address.street( addressRequest.getStreet() );
-        address.city( addressRequest.getCity() );
-        address.country( addressRequest.getCountry() );
-        address.addressType( addressRequest.getAddressType() );
-
-        return address.build();
-    }
-
-    protected Set<Address> addressRequestSetToAddressSet(Set<AddressRequest> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<Address> set1 = new LinkedHashSet<Address>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( AddressRequest addressRequest : set ) {
-            set1.add( addressRequestToAddress( addressRequest ) );
-        }
-
-        return set1;
-    }
-
-    protected AddressRequest addressToAddressRequest(Address address) {
-        if ( address == null ) {
-            return null;
-        }
-
-        AddressRequest.AddressRequestBuilder addressRequest = AddressRequest.builder();
-
-        addressRequest.apartmentNumber( address.getApartmentNumber() );
-        addressRequest.floor( address.getFloor() );
-        addressRequest.building( address.getBuilding() );
-        addressRequest.streetNumber( address.getStreetNumber() );
-        addressRequest.street( address.getStreet() );
-        addressRequest.city( address.getCity() );
-        addressRequest.country( address.getCountry() );
-        addressRequest.addressType( address.getAddressType() );
-
-        return addressRequest.build();
-    }
-
-    protected Set<AddressRequest> addressSetToAddressRequestSet(Set<Address> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<AddressRequest> set1 = new LinkedHashSet<AddressRequest>( Math.max( (int) ( set.size() / .75f ) + 1, 16 ) );
-        for ( Address address : set ) {
-            set1.add( addressToAddressRequest( address ) );
-        }
-
-        return set1;
     }
 }

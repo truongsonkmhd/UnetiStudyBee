@@ -27,8 +27,6 @@ import java.util.*;
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseLesson {
-
-
     @Id
     @UuidGenerator
     @Column(name = "lesson_id", nullable = false, updatable = false)
@@ -85,7 +83,7 @@ public class CourseLesson {
     @Column(name = "updated_at")
     Instant updatedAt;
 
-    @Column(name = "Slug")
+    @Column(name = "slug", unique = true, nullable = false)
     String slug;
 
     @Column(columnDefinition = "boolean default false", nullable = false)

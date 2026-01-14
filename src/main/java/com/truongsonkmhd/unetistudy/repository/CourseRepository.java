@@ -26,27 +26,52 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     })
     Optional<Course> findBySlug(String slug);
 
-    @Query("""
+    @Query(
+            value = """
         select new com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl,
-            c.price, c.discountPrice, c.isPublished, null, c.publishedAt
+            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, size(c.modules) ,c.publishedAt
         )
         from Course c
         where c.isPublished = true
-        order by c.publishedAt desc nulls last, c.createdAt desc
-    """)
+        order by
+            case when c.publishedAt is null then 1 else 0 end,
+            c.publishedAt desc,
+            c.createdAt desc
+    """,
+            countQuery = """
+        select count(c)
+        from Course c
+        where c.isPublished = true
+    """
+    )
     Page<CourseCardResponse> findPublishedCourseCards(Pageable pageable);
 
-    @Query("""
+    @Query(
+            value = """
         select new com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl,
-            c.price, c.discountPrice, c.isPublished, null, c.publishedAt
+            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished,  size(c.modules), c.publishedAt
         )
         from Course c
         where c.isPublished = true
-          and (lower(c.title) like lower(concat('%', :q, '%'))
-               or lower(c.slug) like lower(concat('%', :q, '%')))
-        order by c.publishedAt desc nulls last, c.createdAt desc
-    """)
+          and (
+               lower(c.title) like lower(concat('%', :q, '%'))
+            or lower(c.slug)  like lower(concat('%', :q, '%'))
+          )
+        order by
+            case when c.publishedAt is null then 1 else 0 end,
+            c.publishedAt desc,
+            c.createdAt desc
+    """,
+            countQuery = """
+        select count(c)
+        from Course c
+        where c.isPublished = true
+          and (
+               lower(c.title) like lower(concat('%', :q, '%'))
+            or lower(c.slug)  like lower(concat('%', :q, '%'))
+          )
+    """
+    )
     Page<CourseCardResponse> searchPublishedCourseCards(String q, Pageable pageable);
+
 }
