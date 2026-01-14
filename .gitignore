@@ -1,2 +1,29 @@
+# ===== Maven =====
+target/
+*.log
+
+# ===== Java =====
+*.class
+
+# ===== IntelliJ IDEA =====
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ===== VS Code =====
+.vscode/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Lombok / MapStruct generated =====
+target/generated-sources/
+target/generated-test-sources/
+
+# ===== Env =====
 .env
-workspace.xml
+application-local.yml
+application-dev.yml
