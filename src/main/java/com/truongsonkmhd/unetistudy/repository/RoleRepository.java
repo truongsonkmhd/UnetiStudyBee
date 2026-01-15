@@ -16,5 +16,4 @@ public interface RoleRepository extends JpaRepository<Role,Long> {
     @Query("SELECT r FROM Role r WHERE r.code IN :codes AND r.isDeleted = false AND r.isActivated = true")
     List<Role> findAllByCodes(@Param("codes") Collection<String> codes);
 
-    Optional<Role> findByCode(String code);
 }

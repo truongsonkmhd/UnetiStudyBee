@@ -1,7 +1,6 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.CourseTreeService;
@@ -51,7 +50,7 @@ public class CourseController {
     public ResponseEntity<IResponseMessage> getCourseTreeForStudent(@PathVariable String slug) {
         return ResponseEntity.ok(
                 SuccessResponseMessage.LoadedSuccess(
-                        courseTreeService.getCourseTreeStudentDetailPublished(slug)
+                        courseTreeService.getCourseTreeDetailPublished(slug)
                 )
         );
     }

@@ -20,6 +20,7 @@ public class LessonRequest {
 
      UUID lessonId;          // tham chiếu đến module chứa bài học
      UUID moduleId;          // tham chiếu đến module chứa bài học
+     UUID creatorId;          // tham chiếu đến module chứa bài học
 
      String title;           // tiêu đề bài học
      String description;     // mô tả bài học

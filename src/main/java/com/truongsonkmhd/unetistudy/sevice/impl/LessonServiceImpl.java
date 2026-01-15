@@ -78,7 +78,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public CourseLesson addLesson(CreateLessonsDTO dto) {
+    public CourseLesson addLesson(CourseCreateLessonsDTO dto) {
         // Validate tối thiểu (tuỳ bạn có dùng validation annotations hay không)
         if (dto == null || dto.getTitle() == null || dto.getTitle().isBlank()) {
             throw new IllegalArgumentException("Title không được để trống");

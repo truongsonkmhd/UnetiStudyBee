@@ -13,6 +13,15 @@ import java.util.UUID;
 
 @Repository
 public interface LessonRepository extends JpaRepository<CourseLesson, UUID> {
+    @Query("""
+    select l
+    from CourseLesson l
+    join fetch l.module m
+    where m.moduleId in :moduleIds
+""")
+    List<CourseLesson> findLessonsByModuleIds(List<UUID> moduleIds);
+
+
     // lấy ra lesson luyện tập
     @Query("""
         SELECT cl

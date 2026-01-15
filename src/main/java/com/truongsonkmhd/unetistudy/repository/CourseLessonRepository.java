@@ -11,6 +11,13 @@ import java.util.UUID;
 @Repository
 public interface CourseLessonRepository extends JpaRepository<CourseLesson, UUID> {
     @Query("""
+        select l
+        from CourseLesson l
+        where l.module.course.courseId = :courseId
+    """)
+    List<CourseLesson> findLessonsByCourseId(UUID courseId);
+
+    @Query("""
         SELECT cl
         FROM CourseLesson cl
         WHERE cl.module.moduleId = :moduleID AND cl.isContest = false

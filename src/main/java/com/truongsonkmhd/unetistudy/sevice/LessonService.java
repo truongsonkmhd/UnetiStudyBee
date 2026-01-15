@@ -14,7 +14,7 @@ public interface LessonService {
     List<ContestShowDTO> getContestShowDTOByIsContest(UUID moduleID);
     List<ContestShowDTO> getEssayContestShowDTOByIsContest(UUID moduleID);
     List<LessonShowDTOA> getLessonShowDTOA();
-    CourseLesson addLesson(CreateLessonsDTO dto);
+    CourseLesson addLesson(CourseCreateLessonsDTO dto);
     List<ContestManagementShowDTO> getContestManagementShowDTO(UUID moduleID, String userName);
     CourseLesson save(CourseLesson theLesson);
     EditLessonDTO getEditLessonDTO(UUID moduleID, String theSlug);

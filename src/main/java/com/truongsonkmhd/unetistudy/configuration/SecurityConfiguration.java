@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
@@ -42,7 +44,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // cấu hình cors
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authz ->
                                 authz
@@ -51,11 +53,17 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/admin/courses")).hasAnyAuthority(AuthoritiesConstants.ADMIN , AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/users/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/roles/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(HttpMethod.POST, "/api/courses/add").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/admin/courses/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN , AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/courses/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN , AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/course-module/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,  AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/course-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,  AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/practice/lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/judge/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/admin/courses/*/submit-approval")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/admin/courses/*/reject")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/admin/courses/*/approve")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/published/scroll")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
 
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

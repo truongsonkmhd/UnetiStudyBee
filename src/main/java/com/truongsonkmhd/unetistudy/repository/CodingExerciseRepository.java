@@ -11,7 +11,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface CodingExerciseRepository extends JpaRepository<CodingExercise, Long> {
+public interface CodingExerciseRepository extends JpaRepository<CodingExercise, UUID> {
+
+    @Query("""
+        select e
+        from CodingExercise e
+        where e.lesson.lessonId in :lessonIds
+        """)
+    List<CodingExercise> findExercisesByLessonIds(List<UUID> lessonIds);
+
 
     @Query("""
             SELECT new com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO

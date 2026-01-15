@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseCardResponse;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.springframework.data.domain.Page;
@@ -9,21 +10,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID> {
 
+    List<Course> findByStatus(CourseStatus status);
+
     //Hàm này tương đương: SELECT COUNT(*) > 0 FROM courses WHERE slug = :slug
     boolean existsBySlug(String slug);
 
-
-    @EntityGraph(attributePaths = {
-            "modules",
-            "modules.lessons",
-            "modules.lessons.codingExercises",
-            "modules.lessons.quizzes"
-    })
     Optional<Course> findBySlug(String slug);
 
     @Query(

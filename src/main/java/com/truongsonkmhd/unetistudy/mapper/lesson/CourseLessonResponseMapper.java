@@ -1,14 +1,15 @@
 package com.truongsonkmhd.unetistudy.mapper.lesson;
 
+import com.truongsonkmhd.unetistudy.common.LessonType;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
-public interface CourseLessonResponseMapper extends EntityMapper<LessonResponse, CourseLesson> {
+@Mapper(componentModel = "spring", imports = { LessonType.class })
+public interface CourseLessonResponseMapper extends EntityMapper<CourseLessonResponse, CourseLesson> {
 
 
     @Mapping(target = "lessonId", ignore = true)

@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.dto.CourseDTO;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,9 +28,9 @@ public class CourseShowRequest {
     Integer enrolledCount = 0;
     String imageUrl;          // Ảnh đại diện
     String videoUrl;          // Video giới thiệu
+    CourseStatus status;
     String requirements;      // Yêu cầu đầu vào
     String objectives;        // Mục tiêu học tập
-    String status;
     String syllabus;          // Đề cương
     Boolean isPublished;      // Có xuất bản ngay không
     LocalDateTime publishedAt;

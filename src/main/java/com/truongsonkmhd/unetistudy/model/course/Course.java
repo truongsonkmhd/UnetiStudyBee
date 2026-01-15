@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.course;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,8 @@ import java.util.UUID;
                 @Index(name = "idx_course_instructor", columnList = "instructor_id"),
                 @Index(name = "idx_course_publish", columnList = "is_published,status"),
                 @Index(name = "idx_course_category", columnList = "category,subCategory"),
-                @Index(name = "idx_course_created", columnList = "created_at")
+                @Index(name = "idx_course_created", columnList = "created_at"),
+                @Index(name = "idx_course_status", columnList = "status,submitted_at")
         }
 )
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -45,7 +47,7 @@ public class Course {
     @Column(name = "description", columnDefinition = "text")
     String description;
 
-    @Column(name = "shortDescription", length = 500)
+    @Column(name = "short_description", length = 500)
     String shortDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -61,7 +63,7 @@ public class Course {
     @Column(name = "category", length = 50)
     String category;
 
-    @Column(name = "subCategory", length = 50)
+    @Column(name = "sub_category", length = 50)
     String subCategory;
 
     @Column(name = "duration")
@@ -76,13 +78,13 @@ public class Course {
     @Column(name = "rating", precision = 3, scale = 2, nullable = false)
     BigDecimal rating = BigDecimal.ZERO;
 
-    @Column(name = "ratingCount", nullable = false)
+    @Column(name = "rating_count", nullable = false)
     Integer ratingCount = 0;
 
-    @Column(name = "imageUrl", length = 255)
+    @Column(name = "image_url", length = 255)
     String imageUrl;
 
-    @Column(name = "videoUrl", length = 255)
+    @Column(name = "video_url", length = 255)
     String videoUrl;
 
     @Column(name = "requirements", columnDefinition = "text")
@@ -94,14 +96,33 @@ public class Course {
     @Column(name = "syllabus", columnDefinition = "text")
     String syllabus;
 
-    @Column(name = "status", length = 20, nullable = false)
-    String status = "draft";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 30, nullable = false)
+    CourseStatus status = CourseStatus.DRAFT;
 
-    @Column(name = "isPublished", nullable = false)
+    @Column(name = "is_published", nullable = false)
     Boolean isPublished = false;
 
     @Column(name = "published_at")
     LocalDateTime publishedAt;
+
+    // ===== Approval flow fields =====
+    @Column(name = "submitted_at")
+    Instant submittedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "submitted_by")
+    User submittedBy;
+
+    @Column(name = "approved_at")
+    Instant approvedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by")
+    User approvedBy;
+
+    @Column(name = "rejected_reason", columnDefinition = "text")
+    String rejectedReason;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -110,4 +131,9 @@ public class Course {
     @Column(name = "updated_at")
     @UpdateTimestamp
     Instant updatedAt;
+
+    // helper (tuỳ bạn)
+    public boolean isOwner(UUID userId) {
+        return instructor != null && instructor.getId() != null && instructor.getId().equals(userId);
+    }
 }

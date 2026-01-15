@@ -11,8 +11,7 @@ public interface CourseTreeService {
     CourseTreeResponse findById(UUID theId);
     CourseTreeResponse save(CourseShowRequest theCourseRequest);
     CourseTreeResponse update(UUID courseId, CourseShowRequest req);
-    CourseTreeResponse getCourseTreeAdminDetail(String slug);
-    CourseTreeResponse getCourseTreeStudentDetailPublished(String slug);
+    CourseTreeResponse getCourseTreeDetailPublished(String slug);
 
     UUID deleteById(UUID theId);
     List<CourseModuleResponse> getCourseModuleByCourseSlug(String theSlug);

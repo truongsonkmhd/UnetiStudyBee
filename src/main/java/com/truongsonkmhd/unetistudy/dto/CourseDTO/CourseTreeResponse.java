@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.dto.CourseDTO;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +19,6 @@ public class CourseTreeResponse {
     String slug;
     String description;
     Boolean isPublished;
-    String status;
+    CourseStatus status;
     List<CourseModuleResponse> modules;
 }

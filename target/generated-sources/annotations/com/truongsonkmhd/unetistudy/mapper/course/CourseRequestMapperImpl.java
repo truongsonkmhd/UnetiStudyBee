@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T16:27:04+0700",
+    date = "2026-01-15T00:06:08+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -41,6 +41,7 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         courseShowRequest.subCategory( entity.getSubCategory() );
         courseShowRequest.duration( entity.getDuration() );
         courseShowRequest.capacity( entity.getCapacity() );
+        courseShowRequest.enrolledCount( entity.getEnrolledCount() );
         courseShowRequest.imageUrl( entity.getImageUrl() );
         courseShowRequest.videoUrl( entity.getVideoUrl() );
         courseShowRequest.requirements( entity.getRequirements() );
@@ -153,6 +154,9 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         if ( dto.getCapacity() != null ) {
             entity.setCapacity( dto.getCapacity() );
         }
+        if ( dto.getEnrolledCount() != null ) {
+            entity.setEnrolledCount( dto.getEnrolledCount() );
+        }
         if ( dto.getImageUrl() != null ) {
             entity.setImageUrl( dto.getImageUrl() );
         }
@@ -190,7 +194,6 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         course.title( dto.getTitle() );
         course.description( dto.getDescription() );
         course.shortDescription( dto.getShortDescription() );
-        course.modules( courseModuleRequestListToCourseModuleList( dto.getModules() ) );
         course.level( dto.getLevel() );
         course.category( dto.getCategory() );
         course.subCategory( dto.getSubCategory() );
@@ -201,7 +204,13 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         course.requirements( dto.getRequirements() );
         course.objectives( dto.getObjectives() );
         course.syllabus( dto.getSyllabus() );
-        course.isPublished( dto.getIsPublished() );
+
+        course.enrolledCount( 0 );
+        course.rating( java.math.BigDecimal.ZERO );
+        course.ratingCount( 0 );
+        course.status( dto.getStatus() != null ? dto.getStatus() : "draft" );
+        course.isPublished( dto.getIsPublished() != null ? dto.getIsPublished() : false );
+        course.publishedAt( dto.getIsPublished() != null && dto.getIsPublished() ? dto.getPublishedAt() : null );
 
         return course.build();
     }
@@ -302,17 +311,17 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         return lessonRequest.build();
     }
 
-    protected List<LessonRequest> courseLessonListToLessonRequestList(List<CourseLesson> list) {
-        if ( list == null ) {
+    protected List<LessonRequest> courseLessonSetToLessonRequestList(Set<CourseLesson> set) {
+        if ( set == null ) {
             return null;
         }
 
-        List<LessonRequest> list1 = new ArrayList<LessonRequest>( list.size() );
-        for ( CourseLesson courseLesson : list ) {
-            list1.add( courseLessonToLessonRequest( courseLesson ) );
+        List<LessonRequest> list = new ArrayList<LessonRequest>( set.size() );
+        for ( CourseLesson courseLesson : set ) {
+            list.add( courseLessonToLessonRequest( courseLesson ) );
         }
 
-        return list1;
+        return list;
     }
 
     protected CourseModuleRequest courseModuleToCourseModuleRequest(CourseModule courseModule) {
@@ -329,7 +338,7 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         courseModuleRequest.duration( courseModule.getDuration() );
         courseModuleRequest.isPublished( courseModule.getIsPublished() );
         courseModuleRequest.slug( courseModule.getSlug() );
-        courseModuleRequest.lessons( courseLessonListToLessonRequestList( courseModule.getLessons() ) );
+        courseModuleRequest.lessons( courseLessonSetToLessonRequestList( courseModule.getLessons() ) );
 
         return courseModuleRequest.build();
     }
@@ -443,17 +452,17 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         return courseLesson.build();
     }
 
-    protected List<CourseLesson> lessonRequestListToCourseLessonList(List<LessonRequest> list) {
+    protected Set<CourseLesson> lessonRequestListToCourseLessonSet(List<LessonRequest> list) {
         if ( list == null ) {
             return null;
         }
 
-        List<CourseLesson> list1 = new ArrayList<CourseLesson>( list.size() );
+        Set<CourseLesson> set = new LinkedHashSet<CourseLesson>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( LessonRequest lessonRequest : list ) {
-            list1.add( lessonRequestToCourseLesson( lessonRequest ) );
+            set.add( lessonRequestToCourseLesson( lessonRequest ) );
         }
 
-        return list1;
+        return set;
     }
 
     protected CourseModule courseModuleRequestToCourseModule(CourseModuleRequest courseModuleRequest) {
@@ -464,7 +473,7 @@ public class CourseRequestMapperImpl implements CourseRequestMapper {
         CourseModule.CourseModuleBuilder courseModule = CourseModule.builder();
 
         courseModule.moduleId( courseModuleRequest.getModuleId() );
-        courseModule.lessons( lessonRequestListToCourseLessonList( courseModuleRequest.getLessons() ) );
+        courseModule.lessons( lessonRequestListToCourseLessonSet( courseModuleRequest.getLessons() ) );
         courseModule.title( courseModuleRequest.getTitle() );
         courseModule.description( courseModuleRequest.getDescription() );
         courseModule.orderIndex( courseModuleRequest.getOrderIndex() );

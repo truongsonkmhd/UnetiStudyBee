@@ -1,14 +1,16 @@
 package com.truongsonkmhd.unetistudy.mapper.lesson;
 
+import com.truongsonkmhd.unetistudy.common.LessonType;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" , imports = {LessonType.class})
 public interface CourseLessonRequestMapper extends EntityMapper<LessonRequest, CourseLesson> {
 
+    @Override
     @Mapping(target = "lessonId", ignore = true)
     @Mapping(target = "module", ignore = true)     // set ở service
     @Mapping(target = "creator", ignore = true)    // set ở service

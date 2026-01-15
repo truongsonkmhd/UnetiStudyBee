@@ -1,21 +1,21 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CourseLessonService {
-    List<LessonResponse> getLessonByModuleId(UUID moduleId);
+    List<CourseLessonResponse> getLessonByModuleId(UUID moduleId);
 
-    List<LessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug);
-    List<LessonResponse> getCodingContest(UUID moduleID);
-    List<LessonResponse> getMultipleChoiceContest(UUID moduleID);
-    List<LessonResponse> getLessonAll();
-    LessonResponse addLesson(LessonRequest request);
+    List<CourseLessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug);
+    List<CourseLessonResponse> getCodingContest(UUID moduleID);
+    List<CourseLessonResponse> getMultipleChoiceContest(UUID moduleID);
+    List<CourseLessonResponse> getLessonAll();
+    CourseLessonResponse addLesson(LessonRequest request);
 
-    LessonResponse update(UUID theId, LessonRequest request);
+    CourseLessonResponse update(UUID theId, LessonRequest request);
 
     UUID delete(UUID theId);
 

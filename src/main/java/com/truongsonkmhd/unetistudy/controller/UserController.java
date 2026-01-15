@@ -34,15 +34,11 @@ public class UserController {
         this.userService = userService;
     }
     */
-
-    private static final String ERROR_MESSAGE = "errorMessage={}";
-
     // c3: sử dụng @Autowired
     /*
         @Autowired
         private final UserService userService;
     */
-
 
     @Operation(summary = "Get User Sorted", description = "API retrieve user sorted ")
     @GetMapping("/List")

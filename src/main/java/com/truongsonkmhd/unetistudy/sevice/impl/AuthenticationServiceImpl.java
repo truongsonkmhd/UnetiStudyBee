@@ -4,6 +4,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
+import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
 import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
 import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
@@ -68,8 +69,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final RoleResponseMapper roleResponseMapper;
-
     InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Transactional
@@ -93,9 +92,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // 3. Lấy danh sách role theo roleCodes
         List<Role> roles = roleRepository.findAllByCodes(request.getRoleCodes());
 
-        Set<RoleResponse> rolesSet = roles.stream()
-                .map(roleResponseMapper::toDto)
-                .collect(Collectors.toSet());
+//        Set<RoleResponse> rolesSet = roles.stream()
+//                .map(roleResponseMapper::toDto)
+//                .collect(Collectors.toSet());
 
         if (roles.isEmpty()) {
             throw new RuntimeException("No roles found from roleCodes");
@@ -116,10 +115,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .contactAddress(request.getContactAddress())
                 .roles(new HashSet<>(roles))
                 .isDeleted(false)
-                .status(ACTIVE)
+                .status(UserStatus.ACTIVE)
                 .build();
 
-        System.out.println(user.toString());
+        System.out.println(user.getStatus());
 
         // 5. Save user
         userRepository.save(user);

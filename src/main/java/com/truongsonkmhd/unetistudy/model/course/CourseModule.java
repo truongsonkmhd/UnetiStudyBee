@@ -24,14 +24,15 @@ public class CourseModule {
 
     @Id
     @UuidGenerator
-    @Column(name = "module_id", nullable = false, updatable = false)
+    @Column(name = "module_id", updatable = false, nullable = false)
     UUID moduleId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
     @JoinColumn(name = "course_id", nullable = false)
     Course course;
 
-    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     List<CourseLesson> lessons = new ArrayList<>();
 
     @Column(name = "title", nullable = false, length = 255)

@@ -1,16 +1,18 @@
 package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.github.slugify.Slugify;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonResponse;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonResponseMapper;
+import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.repository.CourseLessonRepository;
 import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
+import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,35 +35,37 @@ public class CourseLessonServiceImpl implements CourseLessonService {
 
     private final CourseModuleRepository courseModuleRepository;
 
+    private final UserRepository userRepository;
+
     @Override
-    public List<LessonResponse> getLessonByModuleId(UUID moduleId) {
+    public List<CourseLessonResponse> getLessonByModuleId(UUID moduleId) {
         return courseLessonResponseMapper.toDto(courseLessonRepository.getLessonByModuleId(moduleId)) ;
     }
 
     @Override
-    public List<LessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug) {
+    public List<CourseLessonResponse> getLessonByModuleIDAndSlug(UUID moduleID, String slug) {
         return courseLessonResponseMapper.toDto(courseLessonRepository.getLessonByModuleIdAndSlug(moduleID,slug));
     }
 
     @Override
-    public List<LessonResponse> getCodingContest(UUID moduleID) {
+    public List<CourseLessonResponse> getCodingContest(UUID moduleID) {
         return courseLessonResponseMapper.toDto(courseLessonRepository.getCodingContest(moduleID));
     }
 
     @Override
-    public List<LessonResponse> getMultipleChoiceContest(UUID moduleID) {
+    public List<CourseLessonResponse> getMultipleChoiceContest(UUID moduleID) {
         return courseLessonResponseMapper.toDto(courseLessonRepository.getMultipleChoiceContest(moduleID));
     }
 
     @Override
-    public List<LessonResponse> getLessonAll() {
+    public List<CourseLessonResponse> getLessonAll() {
         var listCourseLesson = courseLessonRepository.findAll();
         return courseLessonResponseMapper.toDto(listCourseLesson);
     }
 
     @Override
     @Transactional
-    public LessonResponse addLesson(LessonRequest request) {
+    public CourseLessonResponse addLesson(LessonRequest request) {
         CourseModule existsCourseModule = courseModuleRepository
                 .findById(request.getModuleId())
                 .orElseThrow(() ->
@@ -70,7 +74,14 @@ public class CourseLessonServiceImpl implements CourseLessonService {
                         )
                 );
 
+        User user = userRepository.findById(request.getCreatorId()) .orElseThrow(() ->
+                new DataNotFoundException(
+                        "User not found" + request.getModuleId()
+                )
+        );;
+
         CourseLesson courseLesson = courseLessonRequestMapper.toEntity(request);
+        courseLesson.setCreator(user);
         courseLesson.setModule(existsCourseModule);
 
         String baseSlug = new Slugify().slugify(request.getTitle());
@@ -82,7 +93,7 @@ public class CourseLessonServiceImpl implements CourseLessonService {
 
     @Override
     @Transactional
-    public LessonResponse update(UUID theId, LessonRequest request) {
+    public CourseLessonResponse update(UUID theId, LessonRequest request) {
         CourseLesson existing = courseLessonRepository.findById(theId).orElseThrow(() -> new ResourceNotFoundException("CourseLesson not found with id = " + theId));
         courseLessonRequestMapper.partialUpdate(existing, request);
         CourseLesson updated = courseLessonRepository.save(existing);

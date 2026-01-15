@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateLessonsDTO {
+public class CourseCreateLessonsDTO {
     String courseName;
     String title;
     String description;

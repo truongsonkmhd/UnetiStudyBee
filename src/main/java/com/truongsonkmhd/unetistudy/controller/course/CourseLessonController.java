@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/course_lesson")
+@RequestMapping("/api/course-lesson")
 @Slf4j(topic = "LESSON-CONTROLLER")
 @Tag(name = "lesson Controller")
 @RequiredArgsConstructor

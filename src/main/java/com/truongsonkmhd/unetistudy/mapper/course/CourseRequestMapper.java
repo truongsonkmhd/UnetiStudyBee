@@ -1,12 +1,14 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
+import com.truongsonkmhd.unetistudy.common.LessonType;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" )
 public interface CourseRequestMapper extends EntityMapper<CourseShowRequest, Course> {
 
     @Override
@@ -19,13 +21,14 @@ public interface CourseRequestMapper extends EntityMapper<CourseShowRequest, Cou
     // modules thường xử lý riêng (vì mapping nested + set course reference)
     @Mapping(target = "modules", ignore = true)
 
+    @Mapping(target = "status", ignore = true)
+
     //  set default hệ thống để KHÔNG bao giờ null
     @Mapping(target = "enrolledCount", constant = "0")
     @Mapping(target = "rating", expression = "java(java.math.BigDecimal.ZERO)")
     @Mapping(target = "ratingCount", constant = "0")
 
     // status/publish mặc định
-    @Mapping(target = "status", expression = "java(dto.getStatus() != null ? dto.getStatus() : \"draft\")")
     @Mapping(target = "isPublished", expression = "java(dto.getIsPublished() != null ? dto.getIsPublished() : false)")
     @Mapping(target = "publishedAt", expression = "java(dto.getIsPublished() != null && dto.getIsPublished() ? dto.getPublishedAt() : null)")
 

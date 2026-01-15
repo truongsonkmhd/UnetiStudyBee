@@ -1,12 +1,13 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
+import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseTreeResponse;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring",uses = {CourseModuleResponseMapper.class})
+@Mapper(componentModel = "spring",uses = {CourseModuleResponseMapper.class} )
 public interface CourseResponseMapper extends EntityMapper<CourseTreeResponse, Course> {
 
     @Override
