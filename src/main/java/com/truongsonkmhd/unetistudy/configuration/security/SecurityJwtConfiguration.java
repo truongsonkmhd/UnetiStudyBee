@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.configuration;
+package com.truongsonkmhd.unetistudy.configuration.security;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;

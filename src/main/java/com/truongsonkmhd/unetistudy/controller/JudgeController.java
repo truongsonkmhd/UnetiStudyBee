@@ -5,6 +5,8 @@ import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
+import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.model.*;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
@@ -14,6 +16,7 @@ import com.truongsonkmhd.unetistudy.sevice.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -37,17 +40,16 @@ public class JudgeController {
 
     private final LessonService lessonService;
 
-    @PostMapping("/run/{language}")
-    public JudgeRunResponseDTO handleRunCode(@RequestBody JudgeRequestDTO request, @PathVariable String language){
-        return  judgeService.runUserCode(request,language);
+    @PostMapping("/run")
+    public ResponseEntity<IResponseMessage>  handleRunCode(@RequestBody JudgeRequestDTO request){
+        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(judgeService.runUserCode(request)));
     }
     @PostMapping("/submit")
-    public CodingSubmissionResponseDTO handleSubmitCode(
-            @RequestBody JudgeRequestDTO request,
-            @RequestParam String language
+    public  ResponseEntity<IResponseMessage>  handleSubmitCode(
+            @RequestBody JudgeRequestDTO request
     ) {
         // 1) Call judge -> nhận kết quả
-        CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request, language);
+        CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request);
 
         // 2) Ensure IDs (nếu judgeService chưa set)
         submission.setExerciseID(request.getExerciseID());
@@ -62,14 +64,13 @@ public class JudgeController {
                 .exercise(codingExercise)
                 .user(userEntity)
                 .code(submission.getCode())
-                .language(submission.getLanguage() != null ? submission.getLanguage() : language)
+                .language(submission.getLanguage() != null ? submission.getLanguage() : request.getLanguage())
                 .verdict(submission.getVerdict())
                 .passedTestcases(submission.getPassedTestcases() != null ? submission.getPassedTestcases() : 0)
                 .totalTestcases(submission.getTotalTestcases() != null ? submission.getTotalTestcases() : 0)
                 .runtimeMs(submission.getRuntimeMs())
                 .memoryKb(submission.getMemoryKb())
                 .score(submission.getScore() != null ? submission.getScore() : 0)
-                // Không set submittedAt ở đây nếu entity dùng @CreationTimestamp (Instant)
                 .build();
 
         CodingSubmission saved = codingSubmissionService.save(codingSubmission);
@@ -113,8 +114,7 @@ public class JudgeController {
 
             contestExerciseAttemptService.save(exerciseAttempt);
         }
-
-        return submission;
+        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(submission));
     }
 
 }

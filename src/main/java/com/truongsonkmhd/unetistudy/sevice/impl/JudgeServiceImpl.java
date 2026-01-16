@@ -24,68 +24,94 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil.*;
+
 @Service
 @RequiredArgsConstructor
 public class JudgeServiceImpl implements JudgeService {
+
     private final UserService userService;
-
     private final ExerciseTestCaseMapper exerciseTestCaseMapper;
-
     private final ExerciseTestCaseRepository exerciseTestCaseRepository;
 
-    @Override
-    public JudgeRunResponseDTO runUserCode(JudgeRequestDTO request, String language) {
+    private static final String ENV_CONTAINER = "JUDGE_WORKDIR_CONTAINER";
+    private static final String ENV_HOST = "JUDGE_WORKDIR_HOST";
 
-        String userName = UserContext.getUsername();
+    /**
+     * Đường dẫn "nhìn từ trong container judge" (nếu util của bạn cần).
+     * Nếu bạn chỉ truyền workingDir (host) vào util và util tự map mount thì có thể không cần dùng.
+     */
+    private Path containerBaseDir() {
+        String v = System.getenv(ENV_CONTAINER);
+        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    }
+
+    /**
+     * Đường dẫn thực tế nơi app đang chạy và ghi file (host path đối với docker mount).
+     * Nếu app của bạn chạy trong container, "hostBaseDir" vẫn là path trong container app,
+     * nhưng phải đúng với volume mount mà container judge dùng.
+     */
+    private Path hostBaseDir() {
+        String v = System.getenv(ENV_HOST);
+        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    }
+
+    @Override
+    public JudgeRunResponseDTO runUserCode(JudgeRequestDTO request) {
+
+        String userName = safeFilePart(UserContext.getUsername());
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
         String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;
 
-        Path workingDir = Paths.get("Code_Dir", folderName);
+        // luôn dùng base dir (đừng hard-code "Code_Dir")
+        Path workingDir = hostBaseDir().resolve(folderName);
 
         try {
-            // Tạo folder lưu code tạm Code_Dir nếu chưa tồn tại
-            Files.createDirectories(Paths.get("Code_Dir"));
+            // (giữ để debug nếu bạn cần)
+            Path containerDir = containerBaseDir().resolve(folderName);
+
+            // Tạo folder base + folder bài làm
+            Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            // Tạo và ghi file Main.java
-            Path sourceFile = workingDir.resolve("Main.java");
+            // Tạo và ghi file source theo ngôn ngữ
+            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
             Files.writeString(sourceFile, request.getSourceCode());
 
-            // Biên dịch sử dụng Docker
-            DockerCodeExecutionUtil.compileInContainer(workingDir , language);
+            // Biên dịch trong Docker
+            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
-            // Tạo output để trả về alert kết quả testcase bên client
+            // Lấy testcases 1 lần
+            Set<ExerciseTestCasesDTO> testCases = getListExerciseTestCase(request);
+
             StringBuilder output = new StringBuilder();
 
-            // Kiểm tra xem bài tập có test case không, nếu không có thì không cần nhập testcase
-            if (getListExerciseTestCase(request).isEmpty()) {
-                output.append(DockerCodeExecutionUtil.runInContainer(workingDir,language, ""));
+            // Không có test case -> chạy 1 lần (không input)
+            if (testCases == null || testCases.isEmpty()) {
+                output.append(DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), ""));
+                return new JudgeRunResponseDTO(output.toString(), "SUCCESS", "");
             }
 
             boolean allPassed = true;
 
-            for (ExerciseTestCasesDTO testCase : getListExerciseTestCase(request)) {
-                // Bỏ qua test case ẩn (public = false)
-                if (!testCase.getIsPublic())
-                    continue;
+            for (ExerciseTestCasesDTO testCase : testCases) {
+                // Bỏ qua test case ẩn (public = false) khi "run"
+                if (Boolean.FALSE.equals(testCase.getIsPublic())) continue;
 
-                // Chạy với input của testcase public trong Docker
                 String outputRun = DockerCodeExecutionUtil.runInContainer(
-                        workingDir,language,
-                        testCase.getInput()
+                        workingDir,
+                        request.getLanguage(),
+                        safeString(testCase.getInput())
                 );
 
-                // So sánh output thực tế và output mong đợi
-                String expected = testCase.getExpectedOutput().trim();
-                String actual = outputRun.trim();
+                String expected = safeTrim(testCase.getExpectedOutput());
+                String actual = safeTrim(outputRun);
 
                 boolean passed = expected.equals(actual);
-                if (!passed)
-                    allPassed = false;
+                if (!passed) allPassed = false;
 
-                // Ghi nhận kết quả từng test case
-                output.append("Test case: \n")
-                        .append("Input:\n").append(testCase.getInput()).append("\n")
+                output.append("Test case:\n")
+                        .append("Input:\n").append(safeString(testCase.getInput())).append("\n")
                         .append("Expected:\n").append(expected).append("\n")
                         .append("Actual:\n").append(actual).append("\n")
                         .append(passed ? "✅ Passed\n\n" : "❌ Failed\n\n");
@@ -94,73 +120,71 @@ public class JudgeServiceImpl implements JudgeService {
             String status = allPassed ? "SUCCESS" : "FAIL";
             return new JudgeRunResponseDTO(output.toString(), status, "");
 
-        } catch (IOException | InterruptedException e) {
-            return new JudgeRunResponseDTO("", "ERROR", e.getMessage());
         } catch (DockerCodeExecutionUtil.CompilationException e) {
             return new JudgeRunResponseDTO(e.getOutput(), "COMPILATION_ERROR", "Lỗi biên dịch");
+        } catch (IOException | InterruptedException e) {
+            return new JudgeRunResponseDTO("", "ERROR", e.getMessage());
         } catch (RuntimeException e) {
             return new JudgeRunResponseDTO("", "ERROR", e.getMessage());
         } finally {
-            // Dọn dẹp thư mục
             try {
                 DockerCodeExecutionUtil.deleteDirectoryRecursively(workingDir);
-            } catch (Exception e) {
-                // Bỏ qua lỗi khi dọn dẹp
+            } catch (Exception ignored) {
             }
         }
     }
 
     private Set<ExerciseTestCasesDTO> getListExerciseTestCase(JudgeRequestDTO request) {
-        return exerciseTestCaseMapper.toDto(exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(request.getExerciseID()));
+        return exerciseTestCaseMapper.toDto(
+                exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(request.getExerciseID())
+        );
     }
 
     @Override
-    public CodingSubmissionResponseDTO submitUserCode(JudgeRequestDTO request, String language) {
+    public CodingSubmissionResponseDTO submitUserCode(JudgeRequestDTO request) {
+
         Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request);
 
-        String userName = UserContext.getUsername();
-        UUID userId = userService.findUserIDByUserName(userName);
+        String userName = safeFilePart(UserContext.getUsername());
+        UUID userId = userService.findUserIDByUserName(UserContext.getUsername());
 
-        String timestamp = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
         String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;
 
-        Path workingDir = Paths.get("Code_Dir", folderName);
+        Path workingDir = hostBaseDir().resolve(folderName);
 
-        // default response values
         int passed = 0;
         int total = (exerciseTestCases == null) ? 0 : exerciseTestCases.size();
         int score = 0;
 
-        // Nếu bạn chưa đo runtime/memory thật, có thể để null (hoặc 0)
-        Integer runtimeMs = null;
-        Integer memoryKb = null;
+        Integer runtimeMs = null; // TODO đo thật
+        Integer memoryKb = null;  // TODO đo thật
 
         SubmissionVerdict verdict = SubmissionVerdict.PENDING;
 
         try {
-            Files.createDirectories(Paths.get("Code_Dir"));
+            Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            // TODO: tuỳ ngôn ngữ mà file name khác nhau (Main.java, main.py, main.cpp...)
-            Path sourceFile = workingDir.resolve(resolveSourceFileName(language));
+            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
             Files.writeString(sourceFile, request.getSourceCode());
 
-            DockerCodeExecutionUtil.compileInContainer(workingDir, language);
+            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
             // Không có test case -> chạy 1 lần
             if (total == 0) {
-                DockerCodeExecutionUtil.runInContainer(workingDir, language, "");
-                verdict = SubmissionVerdict.ACCEPTED; // hoặc tuỳ logic bạn muốn
+                DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
+                verdict = SubmissionVerdict.ACCEPTED;
                 score = 0;
             } else {
                 boolean allPassed = true;
 
+                // submit thường chấm cả public + hidden (không filter)
                 for (ExerciseTestCasesDTO tc : exerciseTestCases) {
                     String outputRun = DockerCodeExecutionUtil.runInContainer(
                             workingDir,
-                            language,
-                            tc.getInput()
+                            request.getLanguage(),
+                            safeString(tc.getInput())
                     );
 
                     String expected = safeTrim(tc.getExpectedOutput());
@@ -185,15 +209,16 @@ public class JudgeServiceImpl implements JudgeService {
         } finally {
             try {
                 DockerCodeExecutionUtil.deleteDirectoryRecursively(workingDir);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
-        //  build DTO khớp entity
+
         return CodingSubmissionResponseDTO.builder()
                 .exerciseID(request.getExerciseID())
                 .userID(userId)
                 .code(request.getSourceCode())
-                .language(language)
+                .language(request.getLanguage())
                 .verdict(verdict)
                 .passedTestcases(passed)
                 .totalTestcases(total)
@@ -208,18 +233,32 @@ public class JudgeServiceImpl implements JudgeService {
         return s == null ? "" : s.trim();
     }
 
+    private static String safeString(String s) {
+        return s == null ? "" : s;
+    }
+
+    /**
+     * Chống username chứa ký tự lạ làm hỏng path.
+     */
+    private static String safeFilePart(String s) {
+        if (s == null || s.isBlank()) return "user";
+        return s.replaceAll("[^a-zA-Z0-9._-]", "_");
+    }
+
     /**
      * Tùy language mà map ra đúng file name.
-     * Nếu hiện tại bạn chỉ hỗ trợ Java thì cứ return "Main.java".
      */
     private static String resolveSourceFileName(String language) {
-        if (language == null) return "Main.java";
+        if (language == null || language.isBlank()) {
+            return "Main.java";
+        }
+
         return switch (language.toLowerCase()) {
-            case "java" -> "Main.java";
-            case "cpp", "c++" -> "main.cpp";
-            case "c" -> "main.c";
-            case "python", "py" -> "main.py";
-            case "javascript", "js" -> "main.js";
+            case LANG_JAVA -> "Main.java";
+            case LANG_PYTHON -> "main.py";
+            case LANG_CPP -> "main.cpp";
+            case LANG_CSHARP -> "Main.cs";
+            case LANG_GO -> "main.go";
             default -> "Main.java";
         };
     }

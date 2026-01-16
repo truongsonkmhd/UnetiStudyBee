@@ -30,7 +30,7 @@ public class CourseCatalogController {
 
     @GetMapping("/published/scroll")
     @Transactional
-    public ResponseEntity<IResponseMessage> scrollPublished( @RequestParam(required = false) String cursor,
+    public ResponseEntity<IResponseMessage> scrollPublished(@RequestParam(required = false) String cursor,
                                                             @RequestParam(defaultValue = "12") int size,
                                                             @RequestParam(required = false) String q){
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(courseCatalogService.getPublishedCoursesCursor(cursor, size, q)));

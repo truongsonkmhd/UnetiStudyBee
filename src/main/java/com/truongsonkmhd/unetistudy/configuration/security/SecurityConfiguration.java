@@ -1,12 +1,8 @@
-package com.truongsonkmhd.unetistudy.configuration;
+package com.truongsonkmhd.unetistudy.configuration.security;
 
 import com.truongsonkmhd.unetistudy.security.AuthoritiesConstants;
 import com.truongsonkmhd.unetistudy.security.impl.JwtServiceImpl;
-import com.truongsonkmhd.unetistudy.sevice.UserServiceDetail;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,12 +20,9 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
-
-import static com.truongsonkmhd.unetistudy.security.AuthoritiesConstants.ADMIN;
 
 @Configuration
 @RequiredArgsConstructor
@@ -60,6 +53,7 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/course-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,  AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/practice/lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/judge/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/course_catalog/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/admin/courses/*/submit-approval")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/admin/courses/*/reject")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/admin/courses/*/approve")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
