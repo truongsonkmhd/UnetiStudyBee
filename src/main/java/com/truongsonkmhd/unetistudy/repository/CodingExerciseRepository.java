@@ -22,29 +22,12 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
 
 
     @Query("""
-            SELECT new com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO
-            (
-              ce.exerciseId,
-                    ce.lesson.lessonId,
-                    ce.title,
-                    ce.description,
-                    ce.programmingLanguage,
-                    ce.difficulty,
-                    ce.points,
-                    ce.isPublished,
-                    ce.timeLimitMs,
-                    ce.memoryLimitMb,
-                    ce.slug,
-                    ce.inputFormat,
-                    ce.outputFormat,
-                    ce.constraintName,
-                    ce.createdAt,
-                    ce.updatedAt
-              )
-            FROM CodingExercise ce
-            WHERE ce.lesson.slug = :theSlug
-            """)
-    List<CodingExerciseDTO> getCodingExerciseDTOByLessonSlug(@Param("theSlug") String theSlug);
+       SELECT ce
+       FROM CodingExercise ce
+       LEFT JOIN FETCH ce.exerciseTestCases tc
+       WHERE ce.lesson.slug = :theSlug
+        """)
+    List<CodingExerciseDTO> getCodingExerciseByLessonSlug(@Param("theSlug") String theSlug);
 
     @Query("""
        SELECT ce

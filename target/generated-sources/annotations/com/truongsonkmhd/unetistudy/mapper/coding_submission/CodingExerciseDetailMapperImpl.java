@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDTO;
+import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.lesson.ExerciseTestCase;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T16:27:04+0700",
+    date = "2026-01-17T22:23:59+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -87,16 +88,16 @@ public class CodingExerciseDetailMapperImpl implements CodingExerciseDetailMappe
         }
 
         if ( entity.getExerciseTestCases() != null ) {
-            Set<ExerciseTestCase> set = exerciseTestCaseMapper.toEntity( dto.getExerciseTestCases() );
-            if ( set != null ) {
+            List<ExerciseTestCase> list = exerciseTestCasesDTOSetToExerciseTestCaseList( dto.getExerciseTestCases() );
+            if ( list != null ) {
                 entity.getExerciseTestCases().clear();
-                entity.getExerciseTestCases().addAll( set );
+                entity.getExerciseTestCases().addAll( list );
             }
         }
         else {
-            Set<ExerciseTestCase> set = exerciseTestCaseMapper.toEntity( dto.getExerciseTestCases() );
-            if ( set != null ) {
-                entity.setExerciseTestCases( set );
+            List<ExerciseTestCase> list = exerciseTestCasesDTOSetToExerciseTestCaseList( dto.getExerciseTestCases() );
+            if ( list != null ) {
+                entity.setExerciseTestCases( list );
             }
         }
         if ( dto.getTitle() != null ) {
@@ -146,7 +147,7 @@ public class CodingExerciseDetailMapperImpl implements CodingExerciseDetailMappe
         }
         codingExerciseDetailDTO.timeLimit( entity.getTimeLimitMs() );
         codingExerciseDetailDTO.memoryLimit( entity.getMemoryLimitMb() );
-        codingExerciseDetailDTO.exerciseTestCases( exerciseTestCaseMapper.toDto( entity.getExerciseTestCases() ) );
+        codingExerciseDetailDTO.exerciseTestCases( exerciseTestCaseListToExerciseTestCasesDTOSet( entity.getExerciseTestCases() ) );
         codingExerciseDetailDTO.title( entity.getTitle() );
         codingExerciseDetailDTO.description( entity.getDescription() );
         codingExerciseDetailDTO.programmingLanguage( entity.getProgrammingLanguage() );
@@ -172,7 +173,7 @@ public class CodingExerciseDetailMapperImpl implements CodingExerciseDetailMappe
         codingExercise.exerciseId( dto.getExerciseID() );
         codingExercise.timeLimitMs( dto.getTimeLimit() );
         codingExercise.memoryLimitMb( dto.getMemoryLimit() );
-        codingExercise.exerciseTestCases( exerciseTestCaseMapper.toEntity( dto.getExerciseTestCases() ) );
+        codingExercise.exerciseTestCases( exerciseTestCasesDTOSetToExerciseTestCaseList( dto.getExerciseTestCases() ) );
         codingExercise.title( dto.getTitle() );
         codingExercise.description( dto.getDescription() );
         codingExercise.programmingLanguage( dto.getProgrammingLanguage() );
@@ -185,6 +186,19 @@ public class CodingExerciseDetailMapperImpl implements CodingExerciseDetailMappe
         codingExercise.constraintName( dto.getConstraintName() );
 
         return codingExercise.build();
+    }
+
+    protected List<ExerciseTestCase> exerciseTestCasesDTOSetToExerciseTestCaseList(Set<ExerciseTestCasesDTO> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        List<ExerciseTestCase> list = new ArrayList<ExerciseTestCase>( set.size() );
+        for ( ExerciseTestCasesDTO exerciseTestCasesDTO : set ) {
+            list.add( exerciseTestCaseMapper.toEntity( exerciseTestCasesDTO ) );
+        }
+
+        return list;
     }
 
     private UUID entityLessonLessonId(CodingExercise codingExercise) {
@@ -200,5 +214,18 @@ public class CodingExerciseDetailMapperImpl implements CodingExerciseDetailMappe
             return null;
         }
         return lessonId;
+    }
+
+    protected Set<ExerciseTestCasesDTO> exerciseTestCaseListToExerciseTestCasesDTOSet(List<ExerciseTestCase> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        Set<ExerciseTestCasesDTO> set = new LinkedHashSet<ExerciseTestCasesDTO>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
+        for ( ExerciseTestCase exerciseTestCase : list ) {
+            set.add( exerciseTestCaseMapper.toDto( exerciseTestCase ) );
+        }
+
+        return set;
     }
 }

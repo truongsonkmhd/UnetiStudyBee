@@ -1,12 +1,11 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.course;
 
 import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
-import com.truongsonkmhd.unetistudy.common.UserType;
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.*;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonRequest;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
@@ -274,7 +273,6 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         if (e == null) return null;
 
         return CodingExerciseDTO.builder()
-                .exerciseId(e.getExerciseId())
                 .lessonId(e.getLesson() != null ? e.getLesson().getLessonId() : null)
                 .title(e.getTitle())
                 .description(e.getDescription())
@@ -345,8 +343,8 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         course.getModules().addAll(newList);
     }
 
-    private void syncLessons(CourseModule module, List<LessonRequest> lessonRequests) {
-        if (lessonRequests == null) lessonRequests = List.of();
+    private void syncLessons(CourseModule module, List<CourseLessonRequest> courseLessonRequests) {
+        if (courseLessonRequests == null) courseLessonRequests = List.of();
 
         Map<UUID, CourseLesson> existing = new HashMap<>();
         for (CourseLesson l : module.getLessons()) {
@@ -355,7 +353,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
 
         List<CourseLesson> newList = new ArrayList<>();
 
-        for (LessonRequest lr : lessonRequests) {
+        for (CourseLessonRequest lr : courseLessonRequests) {
             UUID lessonId = lr.getLessonId();
             CourseLesson lesson;
 

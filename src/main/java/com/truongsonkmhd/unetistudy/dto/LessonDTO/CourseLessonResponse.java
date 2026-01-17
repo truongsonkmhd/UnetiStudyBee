@@ -1,10 +1,13 @@
 package com.truongsonkmhd.unetistudy.dto.LessonDTO;
 
 import com.truongsonkmhd.unetistudy.common.LessonType;
+import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
+import com.truongsonkmhd.unetistudy.dto.CourseDTO.QuizDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,4 +26,7 @@ public class CourseLessonResponse {
 
      LocalDateTime contestStartTime;
      LocalDateTime contestEndTime;
+
+     List<CodingExerciseDTO> codingExercises;
+     List<QuizDTO> quizzes;
 }

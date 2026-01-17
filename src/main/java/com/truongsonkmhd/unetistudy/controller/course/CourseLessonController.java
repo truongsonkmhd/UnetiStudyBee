@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonRequest;
 import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -53,7 +53,7 @@ public class CourseLessonController {
     }
 
     @PostMapping("/add")
-    ResponseEntity<IResponseMessage> addLesson(@RequestBody LessonRequest request) {
+    ResponseEntity<IResponseMessage> addLesson(@RequestBody CourseLessonRequest request) {
         return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(lessonService.addLesson(request)));
     }
 
@@ -64,7 +64,7 @@ public class CourseLessonController {
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<IResponseMessage> update(@RequestBody LessonRequest request , @PathVariable UUID id){
+    ResponseEntity<IResponseMessage> update(@RequestBody CourseLessonRequest request , @PathVariable UUID id){
         return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id,request)));
     }
 

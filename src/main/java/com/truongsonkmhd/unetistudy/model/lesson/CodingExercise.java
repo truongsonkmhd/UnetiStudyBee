@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,8 +41,14 @@ public class CodingExercise {
     @JoinColumn(name = "lesson_id", nullable = false)
     CourseLesson lesson;
 
-    @OneToMany(mappedBy = "codingExercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<ExerciseTestCase> exerciseTestCases;
+    @OneToMany(
+            mappedBy = "codingExercise",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    List<ExerciseTestCase> exerciseTestCases = new ArrayList<>();
+
 
     @Column(name = "title", length = 255, nullable = false)
     String title;
@@ -91,5 +99,12 @@ public class CodingExercise {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     Instant updatedAt;
+
+
+    public void addTestCase(ExerciseTestCase testCase) {
+        exerciseTestCases.add(testCase);
+        testCase.setCodingExercise(this);
+    }
+
 
 }

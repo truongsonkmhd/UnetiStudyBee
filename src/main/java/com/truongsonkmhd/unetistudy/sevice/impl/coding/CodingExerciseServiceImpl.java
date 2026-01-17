@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDetailDTO;
@@ -19,7 +19,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CodingExerciseServiceImpl implements CodingExerciseService {
+
     private final CodingExerciseRepository codingExerciseRepository;
+
     private final ExerciseTestCaseRepository exerciseTestCaseRepository;
 
     private final ExerciseTestCaseMapper exerciseTestCaseMapper;
@@ -28,7 +30,7 @@ public class CodingExerciseServiceImpl implements CodingExerciseService {
 
     @Override
     public List<CodingExerciseDTO> getCodingExerciseDTOByLessonSlug(String theSlug) {
-        return codingExerciseRepository.getCodingExerciseDTOByLessonSlug(theSlug);
+        return codingExerciseRepository.getCodingExerciseByLessonSlug(theSlug);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
 import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
 import com.truongsonkmhd.unetistudy.context.UserContext;
@@ -146,7 +146,7 @@ public class JudgeServiceImpl implements JudgeService {
         Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request);
 
         String userName = safeFilePart(UserContext.getUsername());
-        UUID userId = userService.findUserIDByUserName(UserContext.getUsername());
+        UUID userId = userService.findUserIDByUserName("truongsonkmhd2");
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
         String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;

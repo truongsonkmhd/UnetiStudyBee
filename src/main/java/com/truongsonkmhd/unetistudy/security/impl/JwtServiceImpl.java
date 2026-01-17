@@ -1,7 +1,6 @@
 package com.truongsonkmhd.unetistudy.security.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
-import com.truongsonkmhd.unetistudy.dto.JwtUserInfo;
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.repository.TokenRepository;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.security.Key;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 
@@ -31,34 +29,40 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${jhipster.security.authentication.jwt.base64-secret}")
     private String secretKey;
+
     @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds}")
     private long jwtExpiration;
+
     @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me}")
     private long jwtExpirationRememberMe;
+
     @Value("${security.jwt.refresh-token-validity-in-seconds}")
     private long refreshExpiration;
+
     @Value("${security.jwt.refresh-token-validity-in-seconds-for-remember-me}")
     private long refreshExpirationRememberMe;
 
-    public static final String CLAIM_USER_ID = "id";
-
-    public static final String CLAIM_USER_USER_INFOR = "userInfor";
-
+    public static final String CLAIM_USER_ID = "userID";
+    public static final String CLAIM_USER_NAME = "userName";
     public static final String CLAIM_USER_AVATAR = "avatar";
-
     public static final String CLAIM_USER_CLASS_ID = "classId";
-
     public static final String SCOPE = "scope";
 
     private final TokenRepository tokenRepository;
 
-    public static final String[] WHITE_LIST_URL = { "/api/v1/auth/**" ,
+    public static final String[] WHITE_LIST_URL = {
+            "/api/v1/auth/**",
             "/api/authenticate/**",
             "/api/users/add",
     };
+
     @Override
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        Claims claims = extractAllClaims(token);
+        // Sửa: Lấy từ claim "userName" thay vì subject
+        String username = claims.get(CLAIM_USER_NAME, String.class);
+        // Fallback sang subject nếu userName null
+        return username != null ? username : claims.getSubject();
     }
 
     @Override
@@ -69,38 +73,19 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateRefreshToken(MyUserDetail myUserDetail, boolean isRememberMe) {
-        return buildToken(new HashMap<>(), myUserDetail, isRememberMe ? refreshExpirationRememberMe : refreshExpiration);
+        return buildToken(new HashMap<>(), myUserDetail,
+                isRememberMe ? refreshExpirationRememberMe : refreshExpiration);
     }
 
     @Override
     public String generateToken(MyUserDetail myUserDetail, boolean isRememberMe) {
         User user = myUserDetail.user();
-
         Map<String, Object> claims = new HashMap<>();
-
-        JwtUserInfo userInfo = JwtUserInfo.builder()
-                .userId(user.getId() != null ? user.getId().toString() : null)
-                .username(user.getUsername())
-                .fullName(user.getFullName())
-                .avatar(user.getAvatar())
-                .classId(user.getClassId())
-                .email(user.getEmail())
-                .studentId(user.getStudentId())
-                .gender(user.getGender() != null ? user.getGender().name() : null)
-                .birthday(user.getBirthday() != null
-                        ? user.getBirthday().toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                        .toString()
-                        : null)
-                .contactAddress(user.getContactAddress())
-                .currentResidence(user.getCurrentResidence())
-                .build();
-
-
-        claims.put(CLAIM_USER_USER_INFOR,userInfo);
+        claims.put(CLAIM_USER_ID, user.getId().toString()); // Chuyển UUID thành String
+        claims.put(CLAIM_USER_CLASS_ID, user.getClassId());
+        claims.put(CLAIM_USER_NAME, user.getUsername());
+        claims.put(CLAIM_USER_AVATAR, user.getAvatar());
         claims.put(SCOPE, buildScope(myUserDetail));
-
         return generateToken(claims, myUserDetail, isRememberMe);
     }
 
@@ -109,30 +94,29 @@ public class JwtServiceImpl implements JwtService {
             MyUserDetail myUserDetail,
             boolean isRememberMe
     ) {
-        return buildToken(extraClaims, myUserDetail, isRememberMe ? jwtExpirationRememberMe : jwtExpiration);
+        return buildToken(extraClaims, myUserDetail,
+                isRememberMe ? jwtExpirationRememberMe : jwtExpiration);
     }
 
-
-    // generate token using jwt utility class and return token as string
-    public String buildToken(Map<String, Object> extractClaims, MyUserDetail myUserDetail, long expiration) {
+    public String buildToken(Map<String, Object> extractClaims,
+                             MyUserDetail myUserDetail,
+                             long expiration) {
         try {
             return Jwts
                     .builder()
                     .setClaims(extractClaims)
                     .setSubject(myUserDetail.getUsername())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + (expiration + 2000000000)))
+                    .setExpiration(new Date(System.currentTimeMillis() + (expiration * 1000))) // Sửa: nhân 1000 để convert sang milliseconds
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Error building token: {}", e.getMessage());
             return null;
         }
     }
 
-    // decode and get the key
     private Key getSignInKey() {
-        // decode SECRET_KEY
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -150,67 +134,65 @@ public class JwtServiceImpl implements JwtService {
         return claimsResolver.apply(claims);
     }
 
-
-    // if token is valid by checking if token is expired for current user
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String phoneNumber = extractPhoneNumber(token);
+        final String username = extractUsername(token); // Sửa: dùng extractUsername thay vì extractPhoneNumber
         Token existingToken = tokenRepository.findByToken(token);
-        if (existingToken == null
-                || existingToken.isRevoked()
-                || !(existingToken.getUser().getStatus() == UserStatus.ACTIVE)
-        ) {
+
+        if (existingToken == null ||
+                existingToken.isRevoked() ||
+                !(existingToken.getUser().getStatus() == UserStatus.ACTIVE)) {
             return false;
         }
-        return phoneNumber.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    // extract user from token
+    // Giữ lại method này để backward compatible
     public String extractPhoneNumber(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractUsername(token);
     }
 
-    // if token expirated
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // get expiration data from token
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private String buildScope(MyUserDetail myUserDetail){
+    private String buildScope(MyUserDetail myUserDetail) {
         StringJoiner stringJoiner = new StringJoiner(" ");
-
-        if (!CollectionUtils.isEmpty(myUserDetail.user().getRoles()))
+        if (!CollectionUtils.isEmpty(myUserDetail.user().getRoles())) {
             myUserDetail.user().getRoles().forEach(role -> {
                 stringJoiner.add("ROLE_" + role.getCode());
-                if (!CollectionUtils.isEmpty(role.getPermissions()))
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
                     role.getPermissions()
                             .forEach(permission -> stringJoiner.add(permission.getName()));
+                }
             });
-
+        }
         return stringJoiner.toString();
     }
-    // Phương thức kiểm tra token có hợp lệ không
 
     @Override
     public boolean validateToken(String token) {
         try {
-            Claims claims = extractAllClaims(token); // Giải mã token
-            return claims.getExpiration().after(new Date()); // Kiểm tra token còn hạn không
+            Claims claims = extractAllClaims(token);
+            return claims.getExpiration().after(new Date());
         } catch (Exception e) {
-            return false; // Nếu có lỗi thì token không hợp lệ
+            log.error("Token validation failed: {}", e.getMessage());
+            return false;
         }
     }
 
-
-    // Phương thức lấy userID từ token
     @Override
     public UUID extractUserID(String token) {
-        Claims claims = extractAllClaims(token);
-        String userIdStr = claims.get("userID", String.class);
-        return userIdStr != null ? UUID.fromString(userIdStr) : null;
+        try {
+            Claims claims = extractAllClaims(token);
+            String userIdStr = claims.get(CLAIM_USER_ID, String.class);
+            return userIdStr != null ? UUID.fromString(userIdStr) : null;
+        } catch (Exception e) {
+            log.error("Error extracting userID: {}", e.getMessage());
+            return null;
+        }
     }
-
 }

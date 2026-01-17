@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
 import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ContestExerciseAttemptMapper;

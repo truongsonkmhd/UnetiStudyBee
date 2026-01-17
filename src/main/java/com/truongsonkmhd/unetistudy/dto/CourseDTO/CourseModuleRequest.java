@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.dto.CourseDTO;
 
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.LessonRequest;
+import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,5 +24,5 @@ public class CourseModuleRequest  {
      String slug;
 
      @Builder.Default
-     List<LessonRequest> lessons = new ArrayList<>();
+     List<CourseLessonRequest> lessons = new ArrayList<>();
 }

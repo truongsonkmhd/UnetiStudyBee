@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.course;
 
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.context.UserContext;

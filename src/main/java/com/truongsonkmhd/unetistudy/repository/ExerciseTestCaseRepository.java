@@ -17,5 +17,5 @@ public interface ExerciseTestCaseRepository extends JpaRepository<ExerciseTestCa
             FROM ExerciseTestCase et 
             WHERE et.codingExercise.exerciseId = :theID
             """)
-    Set<ExerciseTestCase> getExerciseTestCasesDTOByExerciseID(@Param("theID") UUID exerciseID);
+        Set<ExerciseTestCase> getExerciseTestCasesDTOByExerciseID(@Param("theID") UUID exerciseID);
 }

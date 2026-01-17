@@ -48,7 +48,15 @@ jhipster:
         base64-secret: ODFjYzVlMDQ2NDlhNjM2NDRiN2ZjYWRhNzlhY2ExODk2NzNiMWQzZmI1NDBiYzA2N2FhZWU4OGZjYTQyZjU1YjllY2YzNDQzNDg3MDkxYjhkMzc2YTcyNzhiMWY1OWRkYzUwN2FhNGQ4MjUxYzVjNGEzODU3MTA2MmU4MjcwODg=
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
-
+  cors:
+    allowed-origins:
+      - "http://localhost:3000"
+      - "http://localhost:5173"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+    allow-credentials: true
+    max-age: 1800
 
 management:
   endpoints:

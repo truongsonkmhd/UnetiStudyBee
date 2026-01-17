@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.course;
 
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleRequest;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleResponse;

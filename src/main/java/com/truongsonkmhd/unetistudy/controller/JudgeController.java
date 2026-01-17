@@ -38,7 +38,7 @@ public class JudgeController {
 
     private final ContestExerciseAttemptService contestExerciseAttemptService;
 
-    private final LessonService lessonService;
+    private final CourseLessonService lessonService;
 
     @PostMapping("/run")
     public ResponseEntity<IResponseMessage>  handleRunCode(@RequestBody JudgeRequestDTO request){
@@ -104,8 +104,6 @@ public class JudgeController {
             user.setId(UserContext.getUserID());
             exerciseAttempt.setUser(user);
 
-            // Nếu ContestExerciseAttempt.submittedAt là LocalDateTime thì giữ LocalDateTime.now()
-            // Nếu là Instant thì dùng Instant.now()
             exerciseAttempt.setSubmittedAt(LocalDateTime.now());
 
             exerciseAttempt.setExerciseType(attemptInfo.getExerciseType());

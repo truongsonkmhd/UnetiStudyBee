@@ -70,9 +70,11 @@ public class CourseLesson {
 
     // ====== BỔ SUNG: lesson chứa coding + quiz ======
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     List<CodingExercise> codingExercises = new ArrayList<>();
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     List<Quiz> quizzes = new ArrayList<>();
 
     @CreationTimestamp
@@ -99,3 +101,5 @@ public class CourseLesson {
     Date contestEndTime;
 
 }
+
+

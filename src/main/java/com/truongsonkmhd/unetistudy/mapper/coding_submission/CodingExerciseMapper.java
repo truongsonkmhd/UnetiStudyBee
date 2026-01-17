@@ -13,16 +13,10 @@ public interface CodingExerciseMapper extends EntityMapper<CodingExerciseDTO, Co
     CodingExerciseDTO toDto(CodingExercise entity);
 
     @Override
-    @Mapping(target = "lesson", ignore = true)
-    @Mapping(target = "exerciseTestCases", ignore = true)
-    @Mapping(target = "solutionCode", ignore = true)
-    @Mapping(target = "initialCode", ignore = true)
-    @Mapping(target = "timeLimitMs", ignore = true)
-    @Mapping(target = "memoryLimitMb", ignore = true)
-    @Mapping(target = "inputFormat", ignore = true)
-    @Mapping(target = "outputFormat", ignore = true)
-    @Mapping(target = "constraintName", ignore = true)
+    @Mapping(target = "lesson", ignore = true) // set trong service bằng lessonId
+    @Mapping(target = "solutionCode", ignore = true) // không nhận từ client
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "exerciseTestCases", ignore = true) // QUAN TRỌNG
     CodingExercise toEntity(CodingExerciseDTO dto);
 }

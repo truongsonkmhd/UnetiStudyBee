@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.Ai;
 
 import com.truongsonkmhd.unetistudy.common.ProgressStatus;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.AiLessonSuggestionDTO;

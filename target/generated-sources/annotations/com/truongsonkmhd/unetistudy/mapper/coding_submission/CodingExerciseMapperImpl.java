@@ -1,7 +1,9 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
+import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.ExerciseTestCase;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-15T00:06:08+0700",
+    date = "2026-01-17T22:23:58+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -82,6 +84,19 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
         if ( dto.getExerciseId() != null ) {
             entity.setExerciseId( dto.getExerciseId() );
         }
+        if ( entity.getExerciseTestCases() != null ) {
+            List<ExerciseTestCase> list = exerciseTestCasesDTOListToExerciseTestCaseList( dto.getExerciseTestCases() );
+            if ( list != null ) {
+                entity.getExerciseTestCases().clear();
+                entity.getExerciseTestCases().addAll( list );
+            }
+        }
+        else {
+            List<ExerciseTestCase> list = exerciseTestCasesDTOListToExerciseTestCaseList( dto.getExerciseTestCases() );
+            if ( list != null ) {
+                entity.setExerciseTestCases( list );
+            }
+        }
         if ( dto.getTitle() != null ) {
             entity.setTitle( dto.getTitle() );
         }
@@ -141,6 +156,7 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
         codingExerciseDTO.difficulty( entity.getDifficulty() );
         codingExerciseDTO.points( entity.getPoints() );
         codingExerciseDTO.isPublished( entity.getIsPublished() );
+        codingExerciseDTO.exerciseTestCases( exerciseTestCaseListToExerciseTestCasesDTOList( entity.getExerciseTestCases() ) );
         codingExerciseDTO.timeLimitMs( entity.getTimeLimitMs() );
         codingExerciseDTO.memoryLimitMb( entity.getMemoryLimitMb() );
         codingExerciseDTO.slug( entity.getSlug() );
@@ -165,11 +181,72 @@ public class CodingExerciseMapperImpl implements CodingExerciseMapper {
         codingExercise.title( dto.getTitle() );
         codingExercise.description( dto.getDescription() );
         codingExercise.programmingLanguage( dto.getProgrammingLanguage() );
+        codingExercise.timeLimitMs( dto.getTimeLimitMs() );
+        codingExercise.memoryLimitMb( dto.getMemoryLimitMb() );
         codingExercise.difficulty( dto.getDifficulty() );
         codingExercise.points( dto.getPoints() );
         codingExercise.slug( dto.getSlug() );
+        codingExercise.inputFormat( dto.getInputFormat() );
+        codingExercise.outputFormat( dto.getOutputFormat() );
+        codingExercise.constraintName( dto.getConstraintName() );
         codingExercise.isPublished( dto.getIsPublished() );
 
         return codingExercise.build();
+    }
+
+    protected ExerciseTestCase exerciseTestCasesDTOToExerciseTestCase(ExerciseTestCasesDTO exerciseTestCasesDTO) {
+        if ( exerciseTestCasesDTO == null ) {
+            return null;
+        }
+
+        ExerciseTestCase exerciseTestCase = new ExerciseTestCase();
+
+        exerciseTestCase.setInput( exerciseTestCasesDTO.getInput() );
+        exerciseTestCase.setExpectedOutput( exerciseTestCasesDTO.getExpectedOutput() );
+        exerciseTestCase.setIsPublic( exerciseTestCasesDTO.getIsPublic() );
+        exerciseTestCase.setScore( exerciseTestCasesDTO.getScore() );
+
+        return exerciseTestCase;
+    }
+
+    protected List<ExerciseTestCase> exerciseTestCasesDTOListToExerciseTestCaseList(List<ExerciseTestCasesDTO> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<ExerciseTestCase> list1 = new ArrayList<ExerciseTestCase>( list.size() );
+        for ( ExerciseTestCasesDTO exerciseTestCasesDTO : list ) {
+            list1.add( exerciseTestCasesDTOToExerciseTestCase( exerciseTestCasesDTO ) );
+        }
+
+        return list1;
+    }
+
+    protected ExerciseTestCasesDTO exerciseTestCaseToExerciseTestCasesDTO(ExerciseTestCase exerciseTestCase) {
+        if ( exerciseTestCase == null ) {
+            return null;
+        }
+
+        ExerciseTestCasesDTO.ExerciseTestCasesDTOBuilder exerciseTestCasesDTO = ExerciseTestCasesDTO.builder();
+
+        exerciseTestCasesDTO.input( exerciseTestCase.getInput() );
+        exerciseTestCasesDTO.expectedOutput( exerciseTestCase.getExpectedOutput() );
+        exerciseTestCasesDTO.isPublic( exerciseTestCase.getIsPublic() );
+        exerciseTestCasesDTO.score( exerciseTestCase.getScore() );
+
+        return exerciseTestCasesDTO.build();
+    }
+
+    protected List<ExerciseTestCasesDTO> exerciseTestCaseListToExerciseTestCasesDTOList(List<ExerciseTestCase> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<ExerciseTestCasesDTO> list1 = new ArrayList<ExerciseTestCasesDTO>( list.size() );
+        for ( ExerciseTestCase exerciseTestCase : list ) {
+            list1.add( exerciseTestCaseToExerciseTestCasesDTO( exerciseTestCase ) );
+        }
+
+        return list1;
     }
 }

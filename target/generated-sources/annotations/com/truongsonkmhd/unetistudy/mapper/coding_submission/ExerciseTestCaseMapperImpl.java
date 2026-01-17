@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T16:27:04+0700",
+    date = "2026-01-17T22:23:59+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
 )
 @Component
@@ -99,14 +99,14 @@ public class ExerciseTestCaseMapperImpl implements ExerciseTestCaseMapper {
             return null;
         }
 
-        ExerciseTestCase.ExerciseTestCaseBuilder exerciseTestCase = ExerciseTestCase.builder();
+        ExerciseTestCase exerciseTestCase = new ExerciseTestCase();
 
-        exerciseTestCase.input( dto.getInput() );
-        exerciseTestCase.expectedOutput( dto.getExpectedOutput() );
-        exerciseTestCase.isPublic( dto.getIsPublic() );
-        exerciseTestCase.score( dto.getScore() );
+        exerciseTestCase.setInput( dto.getInput() );
+        exerciseTestCase.setExpectedOutput( dto.getExpectedOutput() );
+        exerciseTestCase.setIsPublic( dto.getIsPublic() );
+        exerciseTestCase.setScore( dto.getScore() );
 
-        return exerciseTestCase.build();
+        return exerciseTestCase;
     }
 
     @Override

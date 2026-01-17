@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LessonRequest {
+public class CourseLessonRequest {
 
      UUID lessonId;          // tham chiếu đến module chứa bài học
      UUID moduleId;          // tham chiếu đến module chứa bài học

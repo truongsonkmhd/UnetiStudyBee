@@ -1,11 +1,9 @@
 package com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO;
 
-import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CodingExerciseDTO {
+public class CodingExerciseResponse {
     UUID exerciseId;
     UUID lessonId;
 
@@ -25,8 +23,6 @@ public class CodingExerciseDTO {
 
     Integer points;
     Boolean isPublished;
-
-    List<ExerciseTestCasesDTO> exerciseTestCases;
 
     Integer timeLimitMs;
     Integer memoryLimitMb;
