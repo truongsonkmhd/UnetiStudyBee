@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "lesson_skill_tag",
+        name = "tbl_lesson_skill_tag",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_lesson_tag",
                 columnNames = {"lesson_id", "tag"}

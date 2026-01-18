@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.coding;
 
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
@@ -36,8 +36,8 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
        """)
     CodingExercise getCodingExerciseDetailDTOByExerciseSlug(@Param("theSlug") String theSlug);
 
-    @Query("SELECT ce FROM CodingExercise ce WHERE ce.exerciseId = :exerciseID")
-    CodingExercise getExerciseEntityByID(@Param("exerciseId") UUID exerciseID);
+    @Query("SELECT ce FROM CodingExercise ce WHERE ce.exerciseId = :exerciseId")
+    CodingExercise getExerciseEntityById(@Param("exerciseId") UUID exerciseId);
 
     // Kiểm tra xem CodingExercise có phải nằm trong contest không
     @Query("""
@@ -53,6 +53,6 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
         FROM CodingExercise ce 
         WHERE ce.exerciseId = :exerciseId
     """)
-    UUID getLessonIDByExerciseID(@Param("exerciseId") UUID exerciseID);
+    UUID getLessonIDByExerciseID(@Param("exerciseId") UUID exerciseId);
 
 }

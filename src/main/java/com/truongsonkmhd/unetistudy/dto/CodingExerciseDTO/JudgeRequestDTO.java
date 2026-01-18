@@ -15,5 +15,5 @@ import java.util.UUID;
 public class JudgeRequestDTO {
     String sourceCode;
     String language;
-    UUID exerciseID;
+    UUID exerciseId;
 }

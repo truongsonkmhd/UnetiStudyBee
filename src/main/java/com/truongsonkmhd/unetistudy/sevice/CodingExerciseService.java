@@ -15,9 +15,9 @@ public interface CodingExerciseService {
     // Lấy ra chi tiết bài tập dựa vào slug của bài tập
     CodingExerciseDetailDTO getCodingExerciseDetailDTOByExerciseSlug(String theSlug);
 
-    CodingExercise getExerciseEntityByID(UUID exerciseID);
+    CodingExercise getExerciseEntityByID(UUID exerciseId);
 
-    boolean isExerciseInContestLesson(UUID exerciseID);
+    boolean isExerciseInContestLesson(UUID exerciseId);
 
-    UUID getLessonIDByExerciseID(UUID exerciseID);
+    UUID getLessonIDByExerciseID(UUID exerciseId);
 }

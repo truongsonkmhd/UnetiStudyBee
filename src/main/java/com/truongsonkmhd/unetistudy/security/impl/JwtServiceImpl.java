@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.security.impl;
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
-import com.truongsonkmhd.unetistudy.repository.TokenRepository;
+import com.truongsonkmhd.unetistudy.repository.auth.TokenRepository;
 import com.truongsonkmhd.unetistudy.security.JwtService;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import io.jsonwebtoken.Claims;
@@ -52,8 +52,7 @@ public class JwtServiceImpl implements JwtService {
 
     public static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
-            "/api/authenticate/**",
-            "/api/users/add",
+            "/api/authenticate/**"
     };
 
     @Override

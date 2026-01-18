@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.course;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseCardResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.CursorResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
-import com.truongsonkmhd.unetistudy.repository.CourseRepository;
+import com.truongsonkmhd.unetistudy.repository.course.CourseRepository;
 import com.truongsonkmhd.unetistudy.sevice.CourseCatalogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;

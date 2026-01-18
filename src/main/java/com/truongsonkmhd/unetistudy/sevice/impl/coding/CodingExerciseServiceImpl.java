@@ -6,8 +6,8 @@ import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDT
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingExerciseDetailMapper;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
-import com.truongsonkmhd.unetistudy.repository.CodingExerciseRepository;
-import com.truongsonkmhd.unetistudy.repository.ExerciseTestCaseRepository;
+import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
+import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingExerciseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,18 +42,18 @@ public class CodingExerciseServiceImpl implements CodingExerciseService {
     }
 
     @Override
-    public CodingExercise getExerciseEntityByID(UUID exerciseID) {
-        return codingExerciseRepository.getExerciseEntityByID(exerciseID);
+    public CodingExercise getExerciseEntityByID(UUID exerciseId) {
+        return codingExerciseRepository.getExerciseEntityById(exerciseId);
     }
 
     @Override
-    public boolean isExerciseInContestLesson(UUID exerciseID) {
-        return codingExerciseRepository.isExerciseInContestLesson(exerciseID);
+    public boolean isExerciseInContestLesson(UUID exerciseId) {
+        return codingExerciseRepository.isExerciseInContestLesson(exerciseId);
     }
 
     @Override
-    public UUID getLessonIDByExerciseID(UUID exerciseID) {
-        return codingExerciseRepository.getLessonIDByExerciseID(exerciseID);
+    public UUID getLessonIDByExerciseID(UUID exerciseId) {
+        return codingExerciseRepository.getLessonIDByExerciseID(exerciseId);
     }
 
 }

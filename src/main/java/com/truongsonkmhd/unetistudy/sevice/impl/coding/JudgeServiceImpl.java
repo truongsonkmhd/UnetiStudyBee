@@ -7,7 +7,7 @@ import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMapper;
-import com.truongsonkmhd.unetistudy.repository.ExerciseTestCaseRepository;
+import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
 import com.truongsonkmhd.unetistudy.sevice.JudgeService;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
 import com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil;
@@ -61,7 +61,7 @@ public class JudgeServiceImpl implements JudgeService {
 
         String userName = safeFilePart(UserContext.getUsername());
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-        String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;
+        String folderName = userName + "-ex" + request.getExerciseId() + "-" + timestamp;
 
         // luôn dùng base dir (đừng hard-code "Code_Dir")
         Path workingDir = hostBaseDir().resolve(folderName);
@@ -136,7 +136,7 @@ public class JudgeServiceImpl implements JudgeService {
 
     private Set<ExerciseTestCasesDTO> getListExerciseTestCase(JudgeRequestDTO request) {
         return exerciseTestCaseMapper.toDto(
-                exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(request.getExerciseID())
+                exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(request.getExerciseId())
         );
     }
 
@@ -149,7 +149,7 @@ public class JudgeServiceImpl implements JudgeService {
         UUID userId = userService.findUserIDByUserName("truongsonkmhd2");
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-        String folderName = userName + "-ex" + request.getExerciseID() + "-" + timestamp;
+        String folderName = userName + "-ex" + request.getExerciseId() + "-" + timestamp;
 
         Path workingDir = hostBaseDir().resolve(folderName);
 
@@ -215,7 +215,7 @@ public class JudgeServiceImpl implements JudgeService {
 
 
         return CodingSubmissionResponseDTO.builder()
-                .exerciseID(request.getExerciseID())
+                .exerciseID(request.getExerciseId())
                 .userID(userId)
                 .code(request.getSourceCode())
                 .language(request.getLanguage())

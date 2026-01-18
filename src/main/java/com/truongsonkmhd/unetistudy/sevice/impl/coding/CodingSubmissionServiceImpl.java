@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionShowDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingSubmissionShowMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
-import com.truongsonkmhd.unetistudy.repository.CodingSubmissionRepository;
+import com.truongsonkmhd.unetistudy.repository.coding.CodingSubmissionRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingSubmissionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

@@ -6,7 +6,7 @@ import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionResponseMapper;
 import com.truongsonkmhd.unetistudy.model.Permission;
-import com.truongsonkmhd.unetistudy.repository.PermissionRepository;
+import com.truongsonkmhd.unetistudy.repository.auth.PermissionRepository;
 import com.truongsonkmhd.unetistudy.sevice.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

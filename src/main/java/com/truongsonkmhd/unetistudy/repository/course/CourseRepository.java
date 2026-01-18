@@ -1,11 +1,10 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.course;
 
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseCardResponse;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

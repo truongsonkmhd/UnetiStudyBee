@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "invalidated_token")
+@Table(name = "tbl_invalidated_token")
 public class InvalidatedToken {
     @Id
     String id;

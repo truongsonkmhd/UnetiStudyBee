@@ -1,6 +1,5 @@
 package com.truongsonkmhd.unetistudy.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

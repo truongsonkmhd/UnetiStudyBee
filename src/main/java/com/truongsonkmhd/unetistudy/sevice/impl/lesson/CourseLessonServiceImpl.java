@@ -17,8 +17,8 @@ import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.model.lesson.ExerciseTestCase;
 import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
-import com.truongsonkmhd.unetistudy.repository.CourseLessonRepository;
-import com.truongsonkmhd.unetistudy.repository.CourseModuleRepository;
+import com.truongsonkmhd.unetistudy.repository.course.CourseLessonRepository;
+import com.truongsonkmhd.unetistudy.repository.course.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
 import jakarta.transaction.Transactional;
@@ -26,9 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service

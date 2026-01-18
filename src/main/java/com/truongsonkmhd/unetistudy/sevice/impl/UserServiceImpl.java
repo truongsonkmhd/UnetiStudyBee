@@ -9,7 +9,7 @@ import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
-import com.truongsonkmhd.unetistudy.repository.RoleRepository;
+import com.truongsonkmhd.unetistudy.repository.auth.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.sevice.UserService;

@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/practice/lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/judge/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/course_catalog/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/message/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,AuthoritiesConstants.STUDENT,AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/admin/courses/*/submit-approval")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/admin/courses/*/reject")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/admin/courses/*/approve")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
@@ -89,7 +90,7 @@ public class SecurityConfiguration {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:8080",
-                "http://localhost:8081  ",
+                "http://localhost:8081",
                 "http://localhost:5173",
                 "http://localhost:4221",
                 "https://localhost:4221"

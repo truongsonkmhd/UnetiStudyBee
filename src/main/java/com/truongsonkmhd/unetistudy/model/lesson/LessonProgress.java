@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "lesson_progress",
+        name = "tbl_lesson_progress",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_progress_user_course_lesson",
                 columnNames = {"user_id", "course_id", "lesson_id"}

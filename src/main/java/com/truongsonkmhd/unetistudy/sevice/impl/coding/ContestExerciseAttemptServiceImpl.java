@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ContestExerciseAttemptMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
-import com.truongsonkmhd.unetistudy.repository.ContestExerciseAttemptRepository;
+import com.truongsonkmhd.unetistudy.repository.coding.ContestExerciseAttemptRepository;
 import com.truongsonkmhd.unetistudy.sevice.ContestExerciseAttemptService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

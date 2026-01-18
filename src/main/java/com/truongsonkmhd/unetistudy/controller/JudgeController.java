@@ -51,13 +51,12 @@ public class JudgeController {
         // 1) Call judge -> nhận kết quả
         CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request);
 
-        // 2) Ensure IDs (nếu judgeService chưa set)
-        submission.setExerciseID(request.getExerciseID());
-        submission.setUserID(UserContext.getUserID());
+//        // 2) Ensure IDs (nếu judgeService chưa set)
+      submission.setExerciseID(request.getExerciseId());
 
         // 3) Load entities
         User userEntity = userService.findById(submission.getUserID());
-        CodingExercise codingExercise = codingExerciseService.getExerciseEntityByID(request.getExerciseID());
+        CodingExercise codingExercise = codingExerciseService.getExerciseEntityByID(request.getExerciseId());
 
         // 4) Build entity để lưu DB (đúng theo entity CodingSubmission của UNETI)
         CodingSubmission codingSubmission = CodingSubmission.builder()
@@ -79,22 +78,22 @@ public class JudgeController {
         submission.setSubmittedAt(saved.getSubmittedAt());
 
         // 6) Contest attempt (fix time type theo entity Attempt của bạn)
-        if (codingExerciseService.isExerciseInContestLesson(request.getExerciseID())) {
+        if (codingExerciseService.isExerciseInContestLesson(request.getExerciseId())) {
 
             AttemptInfoDTO attemptInfo = contestExerciseAttemptService
-                    .getAttemptInfoDTOByUserIDAndExerciseID(UserContext.getUserID(), request.getExerciseID(), "coding");
+                    .getAttemptInfoDTOByUserIDAndExerciseID(UserContext.getUserID(), request.getExerciseId(), "coding");
 
             if (attemptInfo == null) {
                 attemptInfo = new AttemptInfoDTO();
                 attemptInfo.setAttemptNumber(0);
                 attemptInfo.setExerciseType("coding");
-                attemptInfo.setLessonID(codingExerciseService.getLessonIDByExerciseID(request.getExerciseID()));
+                attemptInfo.setLessonID(codingExerciseService.getLessonIDByExerciseID(request.getExerciseId()));
             }
 
             int currentAttempt = attemptInfo.getAttemptNumber() == null ? 0 : attemptInfo.getAttemptNumber();
 
             ContestExerciseAttempt exerciseAttempt = new ContestExerciseAttempt();
-            exerciseAttempt.setExerciseID(request.getExerciseID());
+            exerciseAttempt.setExerciseID(request.getExerciseId());
 
             CourseLesson lesson = lessonService.findById(attemptInfo.getLessonID())
                     .orElseThrow(() -> new RuntimeException("Lesson not found"));

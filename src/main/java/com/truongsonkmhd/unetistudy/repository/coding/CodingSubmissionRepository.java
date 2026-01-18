@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.coding;
 
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -13,7 +13,7 @@ import java.time.Instant;
 @Setter
 @Data
 @Entity
-@Table(name = "token")
+@Table(name = "tbl_token")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Token {
     @Id

@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.course;
 
 import com.truongsonkmhd.unetistudy.dto.CourseModule.CourseModuleFILLDTO;
 import com.truongsonkmhd.unetistudy.dto.LessonDTO.*;

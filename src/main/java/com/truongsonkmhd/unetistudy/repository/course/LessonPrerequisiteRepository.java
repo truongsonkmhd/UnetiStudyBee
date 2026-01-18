@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.course;
 
 import com.truongsonkmhd.unetistudy.model.lesson.LessonPrerequisite;
 import io.lettuce.core.dynamic.annotation.Param;

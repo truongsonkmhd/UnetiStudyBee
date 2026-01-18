@@ -1,11 +1,10 @@
-package com.truongsonkmhd.unetistudy.repository;
+package com.truongsonkmhd.unetistudy.repository.auth;
 
 
 import com.truongsonkmhd.unetistudy.model.Token;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
