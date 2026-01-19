@@ -7,10 +7,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CodingSubmissionRepository extends JpaRepository<CodingSubmission, Long> {
+public interface CodingSubmissionRepository extends JpaRepository<CodingSubmission, UUID> {
     @Query("""
             SELECT cb
             FROM CodingSubmission cb
@@ -42,4 +43,12 @@ public interface CodingSubmissionRepository extends JpaRepository<CodingSubmissi
             @Param("userId") UUID userId,
             @Param("lessonId") UUID lessonId
     );
+
+    @Query("""
+    select cs
+    from CodingSubmission cs
+    where cs.submissionId = :id
+""")
+    Optional<CodingSubmission> findByIdEntity(@Param("id") UUID id);
+
 }

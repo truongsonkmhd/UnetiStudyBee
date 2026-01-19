@@ -1,4 +1,5 @@
 services:
+
   postgres:
     image: postgres:15
     container_name: postgres_container
@@ -26,12 +27,26 @@ services:
     networks:
       - spring_net
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    restart: unless-stopped
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - spring_net
+
   spring-app:
     build: .
     container_name: spring_app_container
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     ports:
       - "${SERVER_PORT:-8097}:8097"
       - "5005:5005"
@@ -47,9 +62,7 @@ services:
       JUDGE_WORKDIR_HOST: /opt/judge-workdir
       JUDGE_WORKDIR_CONTAINER: /work
     volumes:
-      # cho spring-app gọi docker của host
       - /var/run/docker.sock:/var/run/docker.sock
-      #  nơi spring-app ghi code + nơi runner container mount
       - /opt/judge-workdir:/opt/judge-workdir
     networks:
       - spring_net

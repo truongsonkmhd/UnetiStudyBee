@@ -52,7 +52,8 @@ public class JwtServiceImpl implements JwtService {
 
     public static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
-            "/api/authenticate/**"
+            "/api/authenticate/**",
+            "ws-submission/**"
     };
 
     @Override

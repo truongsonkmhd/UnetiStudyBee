@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/course_catalog")
+@RequestMapping("/api/course-catalog")
 @Slf4j(topic = "COURSE-CONTROLLER")
 @Tag(name = "course Controller")
 @RequiredArgsConstructor

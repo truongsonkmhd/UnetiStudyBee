@@ -13,6 +13,7 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CodingSubmissionResponseDTO {
+    UUID submissionId;
     UUID exerciseID;
     UUID userID;
     String code;

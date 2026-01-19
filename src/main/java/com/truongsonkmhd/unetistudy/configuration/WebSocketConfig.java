@@ -13,28 +13,20 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final AuthChannelInterceptor authChannelInterceptor;
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        // Enable simple broker cho topic/queue
+        config.enableSimpleBroker("/topic", "/queue");
+
+        // Prefix cho messages từ client
+        config.setApplicationDestinationPrefixes("/app");
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-chat")
-                .setAllowedOriginPatterns("*"); // production: set domain
-        // Nếu muốn SockJS:
-        // registry.addEndpoint("/ws-chat").setAllowedOriginPatterns("*").withSockJS();
-    }
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // Client subscribe:
-        // - /topic/rooms/{roomId} : broadcast room
-        // - /user/queue/messages  : message riêng cho user
-        registry.enableSimpleBroker("/topic", "/queue");
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(authChannelInterceptor);
+        // Endpoint để client connect
+        registry.addEndpoint("/ws-submission")
+                .setAllowedOriginPatterns("*") // Cho phép mọi origin (dev only)
+                .withSockJS(); // Fallback cho browsers không support WebSocket
     }
 }

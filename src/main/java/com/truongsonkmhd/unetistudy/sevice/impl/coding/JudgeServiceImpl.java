@@ -1,18 +1,28 @@
 package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
 import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
+import com.truongsonkmhd.unetistudy.configuration.JudgeRabbitConfig;
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
 import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMapper;
+import com.truongsonkmhd.unetistudy.model.User;
+import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
+import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
+import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.mq.JudgeInternalResult;
+import com.truongsonkmhd.unetistudy.model.mq.JudgeSubmitMessage;
 import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
-import com.truongsonkmhd.unetistudy.sevice.JudgeService;
-import com.truongsonkmhd.unetistudy.sevice.UserService;
+import com.truongsonkmhd.unetistudy.sevice.*;
 import com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,65 +38,188 @@ import static com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JudgeServiceImpl implements JudgeService {
-
     private final UserService userService;
     private final ExerciseTestCaseMapper exerciseTestCaseMapper;
     private final ExerciseTestCaseRepository exerciseTestCaseRepository;
+    private final RabbitTemplate rabbitTemplate;
+
+    private final CodingExerciseService codingExerciseService;
+    private final ContestExerciseAttemptService contestExerciseAttemptService;
+    private final CourseLessonService lessonService;
 
     private static final String ENV_CONTAINER = "JUDGE_WORKDIR_CONTAINER";
     private static final String ENV_HOST = "JUDGE_WORKDIR_HOST";
 
-    /**
-     * Đường dẫn "nhìn từ trong container judge" (nếu util của bạn cần).
-     * Nếu bạn chỉ truyền workingDir (host) vào util và util tự map mount thì có thể không cần dùng.
-     */
-    private Path containerBaseDir() {
-        String v = System.getenv(ENV_CONTAINER);
-        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    @Override
+    public void publishSubmitJob(CodingSubmission saved, JudgeRequestDTO request) {
+        JudgeSubmitMessage msg = JudgeSubmitMessage.builder()
+                .submissionId(saved.getSubmissionId())
+                .exerciseId(saved.getExercise().getExerciseId())
+                .userId(saved.getUser().getId())
+                .code(saved.getCode())
+                .language(saved.getLanguage())
+                .createdAt(Instant.now())
+                .build();
+
+        rabbitTemplate.convertAndSend(
+                JudgeRabbitConfig.JUDGE_EXCHANGE,
+                JudgeRabbitConfig.RK_SUBMIT,
+                msg
+        );
+
+        log.info("Published judge job: submissionId={}, exerciseId={}",
+                saved.getSubmissionId(), saved.getExercise().getExerciseId());
     }
 
-    /**
-     * Đường dẫn thực tế nơi app đang chạy và ghi file (host path đối với docker mount).
-     * Nếu app của bạn chạy trong container, "hostBaseDir" vẫn là path trong container app,
-     * nhưng phải đúng với volume mount mà container judge dùng.
-     */
-    private Path hostBaseDir() {
-        String v = System.getenv(ENV_HOST);
-        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    @Override
+    @Transactional
+    public void createContestAttemptIfNeeded(CodingSubmission submission) {
+        UUID exerciseId = submission.getExercise().getExerciseId();
+        UUID userId = submission.getUser().getId();
+
+        // Kiểm tra exercise có thuộc contest không
+        if (!codingExerciseService.isExerciseInContestLesson(exerciseId)) {
+            return;
+        }
+
+        log.info("Creating contest attempt: userId={}, exerciseId={}", userId, exerciseId);
+
+        AttemptInfoDTO attemptInfo = contestExerciseAttemptService
+                .getAttemptInfoDTOByUserIDAndExerciseID(userId, exerciseId, "coding");
+
+        if (attemptInfo == null) {
+            attemptInfo = new AttemptInfoDTO();
+            attemptInfo.setAttemptNumber(0);
+            attemptInfo.setExerciseType("coding");
+            attemptInfo.setLessonID(codingExerciseService.getLessonIDByExerciseID(exerciseId));
+        }
+
+        int currentAttempt = attemptInfo.getAttemptNumber() == null ? 0 : attemptInfo.getAttemptNumber();
+
+        AttemptInfoDTO finalAttemptInfo = attemptInfo;
+        CourseLesson lesson = lessonService.findById(attemptInfo.getLessonID())
+                .orElseThrow(() -> new RuntimeException("Lesson not found: " + finalAttemptInfo.getLessonID()));
+
+        ContestExerciseAttempt exerciseAttempt = new ContestExerciseAttempt();
+        exerciseAttempt.setExerciseID(exerciseId);
+        exerciseAttempt.setLesson(lesson);
+
+        User user = new User();
+        user.setId(userId);
+        exerciseAttempt.setUser(user);
+
+        exerciseAttempt.setSubmittedAt(LocalDateTime.now());
+        exerciseAttempt.setExerciseType(attemptInfo.getExerciseType());
+        exerciseAttempt.setAttemptNumber(currentAttempt + 1);
+        exerciseAttempt.setScore(submission.getScore() != null ? submission.getScore().doubleValue() : 0.0);
+
+        contestExerciseAttemptService.save(exerciseAttempt);
+
+        log.info("Contest attempt created: attemptNumber={}, score={}",
+                currentAttempt + 1, exerciseAttempt.getScore());
+    }
+
+    @Override
+    public JudgeInternalResult judgeCode(JudgeRequestDTO request) {
+        Set<ExerciseTestCasesDTO> testCases = getListExerciseTestCase(request.getExerciseId());
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        String folderName = "sub-" + request.getExerciseId() + "-" + timestamp;
+
+        Path workingDir = hostBaseDir().resolve(folderName);
+
+        int passed = 0;
+        int total = (testCases == null) ? 0 : testCases.size();
+        int score = 0;
+
+        Integer runtimeMs = null;
+        Integer memoryKb = null;
+
+        SubmissionVerdict verdict = SubmissionVerdict.PENDING;
+        String message = null;
+
+        try {
+            Files.createDirectories(hostBaseDir());
+            Files.createDirectories(workingDir);
+
+            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
+            Files.writeString(sourceFile, request.getSourceCode() == null ? "" : request.getSourceCode());
+
+            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
+
+            if (total == 0) {
+                String out = DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
+                verdict = SubmissionVerdict.ACCEPTED;
+                message = out;
+            } else {
+                boolean allPassed = true;
+
+                for (ExerciseTestCasesDTO tc : testCases) {
+                    String outputRun = DockerCodeExecutionUtil.runInContainer(
+                            workingDir,
+                            request.getLanguage(),
+                            safeString(tc.getInput())
+                    );
+
+                    String expected = safeTrim(tc.getExpectedOutput());
+                    String actual = safeTrim(outputRun);
+
+                    boolean ok = expected.equals(actual);
+                    if (!ok) {
+                        allPassed = false;
+                    } else {
+                        passed++;
+                        score += (tc.getScore() != null ? tc.getScore() : 0);
+                    }
+                }
+
+                verdict = allPassed ? SubmissionVerdict.ACCEPTED : SubmissionVerdict.WRONG_ANSWER;
+            }
+
+        } catch (DockerCodeExecutionUtil.CompilationException e) {
+            verdict = SubmissionVerdict.COMPILATION_ERROR;
+            message = e.getOutput();
+        } catch (Exception e) {
+            verdict = SubmissionVerdict.RUNTIME_ERROR;
+            message = e.getMessage();
+        } finally {
+            try {
+                DockerCodeExecutionUtil.deleteDirectoryRecursively(workingDir);
+            } catch (Exception ignored) {}
+        }
+
+        return JudgeInternalResult.builder()
+                .verdict(verdict)
+                .passed(passed)
+                .total(total)
+                .score(score)
+                .runtimeMs(runtimeMs)
+                .memoryKb(memoryKb)
+                .message(message)
+                .build();
     }
 
     @Override
     public JudgeRunResponseDTO runUserCode(JudgeRequestDTO request) {
-
-        String userName = safeFilePart(UserContext.getUsername());
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-        String folderName = userName + "-ex" + request.getExerciseId() + "-" + timestamp;
-
-        // luôn dùng base dir (đừng hard-code "Code_Dir")
+        String folderName = "run-" + request.getExerciseId() + "-" + timestamp;
         Path workingDir = hostBaseDir().resolve(folderName);
 
         try {
-            // (giữ để debug nếu bạn cần)
-            Path containerDir = containerBaseDir().resolve(folderName);
-
-            // Tạo folder base + folder bài làm
             Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            // Tạo và ghi file source theo ngôn ngữ
             Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
             Files.writeString(sourceFile, request.getSourceCode());
 
-            // Biên dịch trong Docker
             DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
-            // Lấy testcases 1 lần
-            Set<ExerciseTestCasesDTO> testCases = getListExerciseTestCase(request);
+            Set<ExerciseTestCasesDTO> testCases = getListExerciseTestCase(request.getExerciseId());
 
             StringBuilder output = new StringBuilder();
 
-            // Không có test case -> chạy 1 lần (không input)
             if (testCases == null || testCases.isEmpty()) {
                 output.append(DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), ""));
                 return new JudgeRunResponseDTO(output.toString(), "SUCCESS", "");
@@ -95,7 +228,6 @@ public class JudgeServiceImpl implements JudgeService {
             boolean allPassed = true;
 
             for (ExerciseTestCasesDTO testCase : testCases) {
-                // Bỏ qua test case ẩn (public = false) khi "run"
                 if (Boolean.FALSE.equals(testCase.getIsPublic())) continue;
 
                 String outputRun = DockerCodeExecutionUtil.runInContainer(
@@ -129,21 +261,14 @@ public class JudgeServiceImpl implements JudgeService {
         } finally {
             try {
                 DockerCodeExecutionUtil.deleteDirectoryRecursively(workingDir);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
         }
     }
 
-    private Set<ExerciseTestCasesDTO> getListExerciseTestCase(JudgeRequestDTO request) {
-        return exerciseTestCaseMapper.toDto(
-                exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(request.getExerciseId())
-        );
-    }
-
     @Override
+    @Deprecated
     public CodingSubmissionResponseDTO submitUserCode(JudgeRequestDTO request) {
-
-        Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request);
+        Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request.getExerciseId());
 
         String userName = safeFilePart(UserContext.getUsername());
         UUID userId = userService.findUserIDByUserName("truongsonkmhd2");
@@ -157,12 +282,15 @@ public class JudgeServiceImpl implements JudgeService {
         int total = (exerciseTestCases == null) ? 0 : exerciseTestCases.size();
         int score = 0;
 
-        Integer runtimeMs = null; // TODO đo thật
-        Integer memoryKb = null;  // TODO đo thật
+        Integer runtimeMs = null; // TODO
+        Integer memoryKb = null;  // TODO
 
         SubmissionVerdict verdict = SubmissionVerdict.PENDING;
 
         try {
+
+            Path containerDir = containerBaseDir().resolve(folderName);
+
             Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
@@ -171,7 +299,7 @@ public class JudgeServiceImpl implements JudgeService {
 
             DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
-            // Không có test case -> chạy 1 lần
+            // KhÃ´ng cÃ³ test case -> cháº¡y 1 láº§n
             if (total == 0) {
                 DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
                 verdict = SubmissionVerdict.ACCEPTED;
@@ -179,7 +307,6 @@ public class JudgeServiceImpl implements JudgeService {
             } else {
                 boolean allPassed = true;
 
-                // submit thường chấm cả public + hidden (không filter)
                 for (ExerciseTestCasesDTO tc : exerciseTestCases) {
                     String outputRun = DockerCodeExecutionUtil.runInContainer(
                             workingDir,
@@ -229,6 +356,23 @@ public class JudgeServiceImpl implements JudgeService {
                 .build();
     }
 
+    // Helper methods
+    private Path containerBaseDir() {
+        String v = System.getenv(ENV_CONTAINER);
+        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    }
+
+    private Path hostBaseDir() {
+        String v = System.getenv(ENV_HOST);
+        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
+    }
+
+    private Set<ExerciseTestCasesDTO> getListExerciseTestCase(UUID exerciseId) {
+        return exerciseTestCaseMapper.toDto(
+                exerciseTestCaseRepository.getExerciseTestCasesDTOByExerciseID(exerciseId)
+        );
+    }
+
     private static String safeTrim(String s) {
         return s == null ? "" : s.trim();
     }
@@ -237,17 +381,12 @@ public class JudgeServiceImpl implements JudgeService {
         return s == null ? "" : s;
     }
 
-    /**
-     * Chống username chứa ký tự lạ làm hỏng path.
-     */
     private static String safeFilePart(String s) {
         if (s == null || s.isBlank()) return "user";
         return s.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
-    /**
-     * Tùy language mà map ra đúng file name.
-     */
+
     private static String resolveSourceFileName(String language) {
         if (language == null || language.isBlank()) {
             return "Main.java";
@@ -262,5 +401,4 @@ public class JudgeServiceImpl implements JudgeService {
             default -> "Main.java";
         };
     }
-
 }

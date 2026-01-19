@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,12 @@ public class CodingSubmissionServiceImpl implements CodingSubmissionService {
     private final CodingSubmissionRepository codingSubmissionRepository;
 
     private final CodingSubmissionShowMapper codingSubmissionShowMapper;
+
+    @Override
+    public CodingSubmission getSubmissionById(UUID id) {
+        return codingSubmissionRepository.findByIdEntity(id).orElseThrow(()->new RuntimeException("Submisson not found: " + id));
+    }
+
 
     @Override
     @Transactional
