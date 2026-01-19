@@ -14,9 +14,10 @@
 ## 4. Technologies
 
 **BackEnd**
-
 - Spring boot
 - Websocket
+- ElasticSearch
+- rabbitMQ
 - Maven
 
 **FrontEnd**
@@ -24,10 +25,8 @@
 - TailwindCSS
 
 **Database**
-- MongoDB
 - Postgres
 - Redis
-- ElasticSearch
 
 **Authentication**
 - JWT
