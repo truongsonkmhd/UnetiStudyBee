@@ -5,9 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be29100d-f4ef-4210-bae9-ab17241b3c82" name="Changes" comment="add gitignore">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/.env_sample" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/  config/hi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/  config/liquibase/master.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="coding" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -88,7 +92,7 @@
     "Spring Boot.UnetiStudyApplication (3).executor": "Run",
     "Spring Boot.UnetiStudyApplication.executor": "Run",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "test__class__coding",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/anh-viet-cao/DATN/UnetiStudyBee/src/main/resources",
@@ -325,6 +329,7 @@
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.springframework.aop.framework.JdkDynamicAopProxy" memberName="advised" />
+        <PinnedItemInfo parentTag="com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO" memberName="exerciseID" />
         <PinnedItemInfo parentTag="org.springframework.aop.framework.ProxyFactory" memberName="advisorKey" />
       </pinned-members>
     </pin-to-top-manager>

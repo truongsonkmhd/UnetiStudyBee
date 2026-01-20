@@ -21,10 +21,13 @@ spring:
         acknowledge-mode: manual
         retry:
           enabled: false
+  liquibase:
+    enabled: true
+    change-log: classpath:config/liquibase/master.xml
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
