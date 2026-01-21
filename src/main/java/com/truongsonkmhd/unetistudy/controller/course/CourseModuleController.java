@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseModuleRequest;
+import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleRequest;
 import com.truongsonkmhd.unetistudy.sevice.CourseModuleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;

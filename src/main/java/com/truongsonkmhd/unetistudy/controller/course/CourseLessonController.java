@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonRequest;
+import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
 import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -38,18 +38,6 @@ public class CourseLessonController {
     @Transactional
     ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId , @PathVariable String slug){
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleIDAndSlug(moduleId,slug)));
-    }
-
-    @GetMapping("/getLessonByModuleIDAndSlug/{moduleId}")
-    @Transactional
-    ResponseEntity<IResponseMessage> getCodingContest(@PathVariable UUID moduleId){
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getCodingContest(moduleId)));
-    }
-
-    @GetMapping("/getMultipleChoiceContest/{moduleId}")
-    @Transactional
-    ResponseEntity<IResponseMessage> getMultipleChoiceContest(@PathVariable UUID moduleId){
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getMultipleChoiceContest(moduleId)));
     }
 
     @PostMapping("/add")

@@ -38,26 +38,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+        final String token;
         final String userName;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userName = jwtService.extractUsername(jwt);
+        token = authHeader.substring(7);
+        userName = jwtService.extractUsername(token);
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails;
-            if(this.cacheUtil.getMapTokenUserDetail().containsKey(jwt)){
-                userDetails = this.cacheUtil.getMapTokenUserDetail().get(jwt);
+            if(this.cacheUtil.getMapTokenUserDetail().containsKey(token)){
+                userDetails = this.cacheUtil.getMapTokenUserDetail().get(token);
             }else{
                 userDetails = this.userDetailsService.loadUserByUsername(userName);
-                this.cacheUtil.updateMapTokenUserDetail(jwt, userDetails);
+                this.cacheUtil.updateMapTokenUserDetail(token, userDetails);
             }
 
 
-            if (jwtService.isValid(jwt, userDetails) /*&& isTokenValid*/) {
+            if (jwtService.isValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -69,20 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
 
-            String token = null;
-
-
-            if (request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if ("token".equals(cookie.getName())) {
-                        token = cookie.getValue();
-                        break;
-                    }
-                }
-            }
 
             // Nếu token hợp lệ → set vào ThreadLocal
-            if (token != null && jwtService.validateToken(token)) {
+            if (jwtService.validateToken(token)) {
                 String username = jwtService.extractUsername(token);
                 UUID userID = jwtService.extractUserID(token);
                 UserContext.setUsername(username);

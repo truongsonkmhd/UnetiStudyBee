@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserRequest;
 import com.truongsonkmhd.unetistudy.model.User;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

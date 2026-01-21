@@ -3,9 +3,9 @@ package com.truongsonkmhd.unetistudy.sevice.impl.course;
 import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.context.UserContext;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.*;
-import com.truongsonkmhd.unetistudy.dto.LessonDTO.CourseLessonRequest;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDTO;
+import com.truongsonkmhd.unetistudy.dto.course_dto.*;
+import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
@@ -15,10 +15,10 @@ import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.course.Course;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
-import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
-import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.QuizQuestion;
 import com.truongsonkmhd.unetistudy.repository.*;
 import com.truongsonkmhd.unetistudy.repository.auth.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
@@ -102,12 +102,17 @@ public class CourseTreeServiceImpl implements CourseTreeService {
 
         List<CourseModule> modules = courseModuleRequestMapper.toEntity(req.getModules());
 
+//        if (modules != null) {
+//            for (CourseModule m : modules) {
+//                course.addCourse(m);
+//            }
+//        }
+
         if (modules != null) {
             for (CourseModule m : modules) {
                 m.setCourse(course);
             }
         }
-
         course.setModules(modules);
         Course saved = courseRepository.save(course);
         return courseResponseMapper.toDto(saved);
@@ -194,13 +199,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         List<UUID> lessonIds = lessons.stream().map(CourseLesson::getLessonId).toList();
 
         List<CodingExercise> exercises = codingExerciseRepository.findExercisesByLessonIds(lessonIds);
-        List<Quiz> quizzes = quizRepository.findQuizzesByLessonIds(lessonIds);
+        List<QuizQuestion> quizQuestions = quizRepository.findQuizzesByLessonIds(lessonIds);
 
         Map<UUID, List<CodingExercise>> exByLesson = exercises.stream()
-                .collect(Collectors.groupingBy(e -> e.getLesson().getLessonId()));
+                .collect(Collectors.groupingBy(e -> e.getContestLesson().getContestLessonId()));
 
-        Map<UUID, List<Quiz>> quizByLesson = quizzes.stream()
-                .collect(Collectors.groupingBy(q -> q.getLesson().getLessonId()));
+        Map<UUID, List<QuizQuestion>> quizByLesson = quizQuestions.stream()
+                .collect(Collectors.groupingBy(q -> q.getContestLesson().getContestLessonId()));
 
         return mapCourse(course,courseModule,lessons, mode , exByLesson ,quizByLesson);
     }
@@ -209,7 +214,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     // MAPPING (FILTER INSIDE)
     // =========================
 
-    private CourseTreeResponse mapCourse(Course course,List<CourseModule> courseModule,List<CourseLesson> courseLessons, Set<Role> mode ,  Map<UUID, List<CodingExercise>> exByLesson,Map<UUID, List<Quiz>> quizByLesson) {
+    private CourseTreeResponse mapCourse(Course course, List<CourseModule> courseModule, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
         List<CourseModuleResponse> modules = courseModule.stream()
                 .sorted(Comparator.comparing(CourseModule::getOrderIndex, NULL_SAFE_INT))
                // .filter(m -> !isOnlyStudent(mode) || allowPublished(m.getIsPublished()))
@@ -228,7 +233,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         );
     }
 
-    private CourseModuleResponse mapModule(CourseModule m,List<CourseLesson> courseLessons,Set<Role> mode ,Map<UUID, List<CodingExercise>> exByLesson,Map<UUID, List<Quiz>> quizByLesson) {
+    private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
 
         List<CourseLessonResponse> lessons = courseLessons.stream()
                 .sorted(Comparator.comparing(CourseLesson::getOrderIndex, NULL_SAFE_INT))
@@ -246,7 +251,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         );
     }
 
-    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> mode ,Map<UUID, List<CodingExercise>> exByLesson,Map<UUID, List<Quiz>> quizByLesson) {
+    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
 
         List<CodingExerciseDTO> coding = exByLesson.getOrDefault(courseLesson.getLessonId(), List.of()).stream()
                 .filter(e ->  allowPublished(e.getIsPublished()))
@@ -276,7 +281,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         if (e == null) return null;
 
         return CodingExerciseDTO.builder()
-                .lessonId(e.getLesson() != null ? e.getLesson().getLessonId() : null)
+                .contestLessonId(e.getContestLesson() != null ? e.getContestLesson().getContestLessonId() : null)
                 .title(e.getTitle())
                 .description(e.getDescription())
                 .programmingLanguage(e.getProgrammingLanguage())
@@ -294,12 +299,12 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 .build();
     }
 
-    private QuizDTO mapQuiz(Quiz q) {
+    private QuizDTO mapQuiz(QuizQuestion q) {
         if (q == null) return null;
 
         return QuizDTO.builder()
                 .quizId(q.getQuizId())
-                .lessonId(q.getLesson() != null ? q.getLesson().getLessonId() : null)
+                .lessonId(q.getContestLesson() != null ? q.getContestLesson().getContestLessonId() : null)
                 .title(q.getTitle())
                 .totalQuestions(q.getTotalQuestions())
                 .passScore(q.getPassScore())
@@ -379,11 +384,6 @@ public class CourseTreeServiceImpl implements CourseTreeService {
             lesson.setIsPreview(Boolean.TRUE.equals(lr.getIsPreview()));
             lesson.setIsPublished(Boolean.TRUE.equals(lr.getIsPublished()));
             lesson.setSlug(lr.getSlug());
-            lesson.setIsContest(Boolean.TRUE.equals(lr.getIsContest()));
-            lesson.setTotalPoints(lr.getTotalPoints() != null ? lr.getTotalPoints() : 0);
-            lesson.setContestStartTime(lr.getContestStartTime());
-            lesson.setContestEndTime(lr.getContestEndTime());
-
             newList.add(lesson);
         }
 

@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
+import com.truongsonkmhd.unetistudy.dto.auth_dto.*;
 
 import java.text.ParseException;
 

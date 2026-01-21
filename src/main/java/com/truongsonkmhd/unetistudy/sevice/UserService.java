@@ -1,10 +1,10 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPageResponse;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserPageResponse;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserResponse;
 import com.truongsonkmhd.unetistudy.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

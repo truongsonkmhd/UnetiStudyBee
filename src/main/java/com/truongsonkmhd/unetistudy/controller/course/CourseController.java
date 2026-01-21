@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
+import com.truongsonkmhd.unetistudy.dto.course_dto.CourseShowRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.CourseTreeService;

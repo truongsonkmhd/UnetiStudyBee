@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.model.course;
 
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.template.ExerciseTemplateTestCase;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -60,5 +61,8 @@ public class CourseModule {
 
     @Column(name = "slug", nullable = true)
     String slug;
+
+
+
 
 }

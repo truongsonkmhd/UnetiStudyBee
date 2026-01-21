@@ -1,8 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.course;
 
-import com.truongsonkmhd.unetistudy.common.CourseStatus;
-import com.truongsonkmhd.unetistudy.common.LessonType;
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.CourseShowRequest;
+import com.truongsonkmhd.unetistudy.dto.course_dto.CourseShowRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import org.mapstruct.Mapper;

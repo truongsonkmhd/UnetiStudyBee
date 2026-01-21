@@ -3,18 +3,18 @@ package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
 import com.truongsonkmhd.unetistudy.configuration.JudgeRabbitConfig;
 import com.truongsonkmhd.unetistudy.context.UserContext;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
-import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
-import com.truongsonkmhd.unetistudy.dto.ExerciseTestCasesDTO.ExerciseTestCasesDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRunResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.contest_exercise_attempt.AttemptInfoDTO;
+import com.truongsonkmhd.unetistudy.dto.exercise_test_cases_dto.ExerciseTestCasesDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMapper;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
-import com.truongsonkmhd.unetistudy.model.mq.JudgeInternalResult;
-import com.truongsonkmhd.unetistudy.model.mq.JudgeSubmitMessage;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeInternalResult;
+import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeSubmitMessage;
 import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
 import com.truongsonkmhd.unetistudy.sevice.*;
 import com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil;
@@ -78,11 +78,6 @@ public class JudgeServiceImpl implements JudgeService {
     public void createContestAttemptIfNeeded(CodingSubmission submission) {
         UUID exerciseId = submission.getExercise().getExerciseId();
         UUID userId = submission.getUser().getId();
-
-        // Kiểm tra exercise có thuộc contest không
-        if (!codingExerciseService.isExerciseInContestLesson(exerciseId)) {
-            return;
-        }
 
         log.info("Creating contest attempt: userId={}, exerciseId={}", userId, exerciseId);
 
@@ -271,7 +266,7 @@ public class JudgeServiceImpl implements JudgeService {
         Set<ExerciseTestCasesDTO> exerciseTestCases = getListExerciseTestCase(request.getExerciseId());
 
         String userName = safeFilePart(UserContext.getUsername());
-        UUID userId = userService.findUserIDByUserName("truongsonkmhd2");
+        UUID userId = userService.findUserIDByUserName(userName);
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
         String folderName = userName + "-ex" + request.getExerciseId() + "-" + timestamp;

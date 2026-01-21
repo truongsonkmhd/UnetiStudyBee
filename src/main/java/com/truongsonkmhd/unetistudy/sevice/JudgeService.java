@@ -1,11 +1,11 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRunResponseDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRunResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
-import com.truongsonkmhd.unetistudy.model.mq.JudgeInternalResult;
+import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeInternalResult;
 
 public interface JudgeService {
 

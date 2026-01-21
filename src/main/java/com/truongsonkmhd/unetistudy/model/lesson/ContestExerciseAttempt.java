@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.model.lesson;
 
 import com.truongsonkmhd.unetistudy.model.User;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserUpdateRequest;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;

@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionResponseDTO;
 
 import java.util.UUID;
 

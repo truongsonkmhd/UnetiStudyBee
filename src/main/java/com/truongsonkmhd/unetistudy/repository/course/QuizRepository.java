@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository.course;
 
-import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.QuizQuestion;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,19 +11,19 @@ import java.util.UUID;
 
 
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, UUID> {
+public interface QuizRepository extends JpaRepository<QuizQuestion, UUID> {
 
     @Query("""
         select q
-        from Quiz q
-        where q.lesson.lessonId in :lessonIds
+        from QuizQuestion q
+        where q.contestLesson.courseLesson.lessonId in :lessonIds
         """)
-    List<Quiz> findQuizzesByLessonIds(List<UUID> lessonIds);
+    List<QuizQuestion> findQuizzesByLessonIds(List<UUID> lessonIds);
 
     @Query("""
         select avg(qa.passScore)
-        from Quiz qa
-        where qa.lesson.lessonId = :lessonId
+        from QuizQuestion qa
+        where qa.contestLesson.courseLesson.lessonId= :lessonId
     """)
     Double avgScore(
             @Param("userId") UUID userId,

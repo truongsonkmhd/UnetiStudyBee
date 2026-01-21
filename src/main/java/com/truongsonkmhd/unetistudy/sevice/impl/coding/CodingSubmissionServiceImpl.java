@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
-import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionShowDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionShowDTO;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.CodingSubmissionShowMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingSubmissionRepository;

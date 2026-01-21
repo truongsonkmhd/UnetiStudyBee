@@ -1,0 +1,88 @@
+package com.truongsonkmhd.unetistudy.model.lesson.template;
+
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.base.BaseCodingExercise;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Standalone coding exercise template (library/pool of exercises)
+ * NO foreign keys - can be reused across multiple contests
+ */
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "tbl_coding_exercise_template",
+        indexes = {
+                @Index(name = "idx_template_slug", columnList = "slug"),
+                @Index(name = "idx_template_published", columnList = "is_published"),
+                @Index(name = "idx_template_difficulty", columnList = "difficulty")
+        })
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class CodingExerciseTemplate extends BaseCodingExercise {
+
+    @Id
+    @UuidGenerator
+    @Column(name = "template_id", nullable = false, updatable = false)
+    UUID templateId;
+
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    List<ExerciseTemplateTestCase> testCases = new ArrayList<>();
+
+    @Column(name = "category", length = 50)
+    String category; // e.g., "Array", "String", "Dynamic Programming"
+
+    @Column(name = "tags", columnDefinition = "text")
+    String tags;
+    @Column(name = "usage_count", nullable = false)
+    @Builder.Default
+    Integer usageCount = 0; // Theo doi so lan su dung
+
+    // Helper methods
+    public void addTestCase(ExerciseTemplateTestCase testCase) {
+        testCases.add(testCase);
+        testCase.setTemplate(this);
+    }
+
+    public void removeTestCase(ExerciseTemplateTestCase testCase) {
+        testCases.remove(testCase);
+        testCase.setTemplate(null);
+    }
+
+    /**
+     * Create a contest exercise from this template
+     */
+    public CodingExercise toContestExercise() {
+        return CodingExercise.builder()
+                .title(this.getTitle())
+                .description(this.getDescription())
+                .programmingLanguage(this.getProgrammingLanguage())
+                .initialCode(this.getInitialCode())
+                .difficulty(this.getDifficulty())
+                .solutionCode(this.getSolutionCode())
+                .timeLimitMs(this.getTimeLimitMs())
+                .memoryLimitMb(this.getMemoryLimitMb())
+                .slug(this.getSlug())
+                .inputFormat(this.getInputFormat())
+                .outputFormat(this.getOutputFormat())
+                .constraintName(this.getConstraintName())
+                .points(this.getPoints())
+                .isPublished(this.getIsPublished())
+                .build();
+    }
+
+    public void incrementUsageCount() {
+        this.usageCount++;
+    }
+}

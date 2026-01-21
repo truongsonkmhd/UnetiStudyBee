@@ -2,7 +2,6 @@ package com.truongsonkmhd.unetistudy.model;
 
 import com.truongsonkmhd.unetistudy.common.Gender;
 import com.truongsonkmhd.unetistudy.common.UserStatus;
-import com.truongsonkmhd.unetistudy.common.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

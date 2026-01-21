@@ -132,6 +132,11 @@ public class Course {
     @UpdateTimestamp
     Instant updatedAt;
 
+    public void addCourse(CourseModule courseModule) {
+        modules.add(courseModule);
+        courseModule.setCourse(this);
+    }
+
     // helper (tuỳ bạn)
     public boolean isOwner(UUID userId) {
         return instructor != null && instructor.getId() != null && instructor.getId().equals(userId);

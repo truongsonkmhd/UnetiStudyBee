@@ -2,10 +2,10 @@ package com.truongsonkmhd.unetistudy.configuration;
 
 import com.rabbitmq.client.Channel;
 import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.JudgeRequestDTO;
-import com.truongsonkmhd.unetistudy.dto.CodingSubmission.CodingSubmissionResponseDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRequestDTO;
+import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
-import com.truongsonkmhd.unetistudy.model.mq.JudgeSubmitMessage;
+import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeSubmitMessage;
 import com.truongsonkmhd.unetistudy.sevice.CodingSubmissionService;
 import com.truongsonkmhd.unetistudy.sevice.JudgeService;
 import com.truongsonkmhd.unetistudy.sevice.WebSocketNotificationService;

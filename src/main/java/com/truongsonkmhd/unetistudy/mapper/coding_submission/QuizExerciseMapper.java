@@ -1,14 +1,11 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
-import com.truongsonkmhd.unetistudy.dto.CodingExerciseDTO.CodingExerciseDTO;
-import com.truongsonkmhd.unetistudy.dto.CourseDTO.QuizDTO;
+import com.truongsonkmhd.unetistudy.dto.course_dto.QuizDTO;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
-import com.truongsonkmhd.unetistudy.model.lesson.CodingExercise;
-import com.truongsonkmhd.unetistudy.model.lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.QuizQuestion;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface QuizExerciseMapper extends EntityMapper<QuizDTO, Quiz> {
+public interface QuizExerciseMapper extends EntityMapper<QuizDTO, QuizQuestion> {
 
 }

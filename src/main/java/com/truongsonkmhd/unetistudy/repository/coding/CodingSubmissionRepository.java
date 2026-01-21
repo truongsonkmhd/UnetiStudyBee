@@ -37,7 +37,7 @@ public interface CodingSubmissionRepository extends JpaRepository<CodingSubmissi
             end
         from CodingSubmission cs
         where cs.user.id = :userId
-          and cs.exercise.lesson.lessonId = :lessonId
+          and cs.exercise.contestLesson.courseLesson.lessonId = :lessonId
     """)
     Double acRate(
             @Param("userId") UUID userId,

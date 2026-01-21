@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 
-import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
+import com.truongsonkmhd.unetistudy.dto.contest_exercise_attempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
 
 import java.util.UUID;

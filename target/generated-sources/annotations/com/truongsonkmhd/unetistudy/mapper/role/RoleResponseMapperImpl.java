@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.mapper.role;
 
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
-import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.role_dto.RoleResponse;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;
 import java.util.ArrayList;

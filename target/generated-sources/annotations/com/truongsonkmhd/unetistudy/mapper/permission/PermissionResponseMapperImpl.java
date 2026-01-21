@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.permission;
 
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionResponse;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl;
 
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.*;
+import com.truongsonkmhd.unetistudy.dto.user_dto.*;
 import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;

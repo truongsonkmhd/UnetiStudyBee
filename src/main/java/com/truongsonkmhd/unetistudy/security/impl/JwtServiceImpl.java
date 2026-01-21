@@ -81,7 +81,7 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(MyUserDetail myUserDetail, boolean isRememberMe) {
         User user = myUserDetail.user();
         Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_USER_ID, user.getId().toString()); // Chuyển UUID thành String
+        claims.put(CLAIM_USER_ID, user.getId().toString());
         claims.put(CLAIM_USER_CLASS_ID, user.getClassId());
         claims.put(CLAIM_USER_NAME, user.getUsername());
         claims.put(CLAIM_USER_AVATAR, user.getAvatar());

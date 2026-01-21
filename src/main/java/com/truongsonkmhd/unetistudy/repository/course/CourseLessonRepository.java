@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository.course;
 
-import com.truongsonkmhd.unetistudy.model.lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,30 +20,16 @@ public interface CourseLessonRepository extends JpaRepository<CourseLesson, UUID
     @Query("""
         SELECT cl
         FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = false
+        WHERE cl.module.moduleId = :moduleID 
     """)
     List<CourseLesson> getLessonByModuleId(@Param("moduleID") UUID moduleID);
 
     @Query("""
         SELECT cl
         FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.slug LIKE %:slug% AND cl.isContest = false
+        WHERE cl.module.moduleId = :moduleID AND cl.slug LIKE %:slug%
     """)
     List<CourseLesson> getLessonByModuleIdAndSlug(@Param("moduleID") UUID moduleID,@Param("slug")String slug);
-
-    @Query("""
-        SELECT cl
-        FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.lessonType = "CODE"
-    """)
-    List<CourseLesson> getCodingContest(@Param("moduleID") UUID moduleID);
-
-    @Query("""
-        SELECT cl
-        FROM CourseLesson cl
-        WHERE cl.module.moduleId = :moduleID AND cl.isContest = true AND CURRENT_TIMESTAMP < cl.contestEndTime AND cl.lessonType = "CODE"
-    """)
-    List<CourseLesson> getMultipleChoiceContest(@Param("moduleID") UUID moduleID);
 
     boolean existsBySlug(String slug);
 }

@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.truongsonkmhd.unetistudy.dto.AuthDTO.*;
+import com.truongsonkmhd.unetistudy.dto.auth_dto.*;
 import com.truongsonkmhd.unetistudy.dto.a_custom.ApiResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;

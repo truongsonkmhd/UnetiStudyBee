@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleRequest;
-import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.role_dto.RoleRequest;
+import com.truongsonkmhd.unetistudy.dto.role_dto.RoleResponse;
 
 import java.util.List;
 

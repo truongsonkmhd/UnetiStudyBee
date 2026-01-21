@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
-import com.truongsonkmhd.unetistudy.dto.ContestExerciseAttempt.AttemptInfoDTO;
+import com.truongsonkmhd.unetistudy.dto.contest_exercise_attempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
 import org.mapstruct.Mapper;

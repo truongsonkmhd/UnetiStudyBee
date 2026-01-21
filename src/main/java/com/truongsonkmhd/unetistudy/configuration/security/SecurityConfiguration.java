@@ -59,6 +59,8 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/admin/courses/*/reject")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/admin/courses/*/approve")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/published/scroll")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/coding-exercise-template/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
+                                        .requestMatchers(mvc.pattern("/api/course-contest-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(

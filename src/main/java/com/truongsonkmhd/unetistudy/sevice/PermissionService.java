@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionRequest;
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionResponse;
 
 import java.util.List;
 

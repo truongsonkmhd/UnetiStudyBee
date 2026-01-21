@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.mapper.user;
 
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionResponse;
-import com.truongsonkmhd.unetistudy.dto.RoleDTO.RoleResponse;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserResponse;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionResponse;
+import com.truongsonkmhd.unetistudy.dto.role_dto.RoleResponse;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserResponse;
 import com.truongsonkmhd.unetistudy.model.Permission;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;

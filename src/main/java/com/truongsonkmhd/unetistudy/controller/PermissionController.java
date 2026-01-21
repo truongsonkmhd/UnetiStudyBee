@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.PermissionDTO.PermissionRequest;
+import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.PermissionService;

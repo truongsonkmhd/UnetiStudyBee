@@ -1,8 +1,8 @@
 package com.truongsonkmhd.unetistudy.controller;
 
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserPasswordRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserRequest;
-import com.truongsonkmhd.unetistudy.dto.UserDTO.UserUpdateRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserPasswordRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserRequest;
+import com.truongsonkmhd.unetistudy.dto.user_dto.UserUpdateRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.sevice.UserService;
