@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.lesson.template;
 
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.base.BaseCodingExercise;
 import jakarta.persistence.*;
 import lombok.*;

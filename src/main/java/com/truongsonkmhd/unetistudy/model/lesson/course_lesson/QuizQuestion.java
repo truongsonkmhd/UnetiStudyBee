@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson;
+package com.truongsonkmhd.unetistudy.model.lesson.course_lesson;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +32,10 @@ public class QuizQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contest_lesson_id", nullable = false)
     ContestLesson contestLesson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    CourseLesson courseLesson;
 
     @Column(name = "title", nullable = false)
     String title;

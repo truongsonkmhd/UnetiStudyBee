@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.repository.coding;
 
 
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.ExerciseTestCase;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ExerciseTestCase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

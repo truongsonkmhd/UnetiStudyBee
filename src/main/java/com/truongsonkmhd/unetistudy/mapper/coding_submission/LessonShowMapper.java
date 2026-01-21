@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.mapper.coding_submission;
 
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.LessonShowDTO;
 import com.truongsonkmhd.unetistudy.mapper.EntityMapper;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

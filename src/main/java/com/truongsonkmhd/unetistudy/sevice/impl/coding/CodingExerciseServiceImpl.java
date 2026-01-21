@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingExerciseService;
 import lombok.RequiredArgsConstructor;

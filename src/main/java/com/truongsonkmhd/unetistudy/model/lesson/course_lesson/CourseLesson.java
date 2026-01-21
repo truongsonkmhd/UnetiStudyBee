@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson;
+package com.truongsonkmhd.unetistudy.model.lesson.course_lesson;
 
 import com.truongsonkmhd.unetistudy.common.LessonType;
 import com.truongsonkmhd.unetistudy.model.User;
@@ -43,10 +43,6 @@ public class CourseLesson {
     @JoinColumn(name = "creator_id", nullable = false)
     User creator;
 
-    // Relationship with ContestLesson (one-to-one, optional)
-    @OneToOne(mappedBy = "courseLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    ContestLesson contestLesson;
-
     @Column(name = "title", nullable = false)
     String title;
 
@@ -65,6 +61,14 @@ public class CourseLesson {
     @Column(name = "order_index", nullable = false)
     @Builder.Default
     Integer orderIndex = 0;
+
+    @OneToMany(mappedBy = "courseLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    List<CodingExercise> codingExercises = new ArrayList<>();
+
+    @OneToMany(mappedBy = "courseLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    List<QuizQuestion> quizQuestions = new ArrayList<>();
 
     @Column(name = "is_preview", nullable = false)
     @Builder.Default
@@ -89,15 +93,26 @@ public class CourseLesson {
     @Column(name = "updated_at")
     Instant updatedAt;
 
-    // Helper methods
-    public void setContestLesson(ContestLesson contestLesson) {
-        if (contestLesson == null) {
-            if (this.contestLesson != null) {
-                this.contestLesson.setCourseLesson(null);
-            }
-        } else {
-            contestLesson.setCourseLesson(this);
-        }
-        this.contestLesson = contestLesson;
+    // ======= HELPER METHODS =======
+
+    public void addCodingExercise(CodingExercise exercise) {
+        codingExercises.add(exercise);
+        exercise.setCourseLesson(this);
     }
+
+    public void removeCodingExercise(CodingExercise exercise) {
+        codingExercises.remove(exercise);
+        exercise.setCourseLesson(null);
+    }
+
+    public void addQuizQuestion(QuizQuestion quiz) {
+        quizQuestions.add(quiz);
+        quiz.setCourseLesson(this);
+    }
+
+    public void removeQuizQuestion(QuizQuestion quiz) {
+        quizQuestions.remove(quiz);
+        quiz.setCourseLesson(null);
+    }
+
 }

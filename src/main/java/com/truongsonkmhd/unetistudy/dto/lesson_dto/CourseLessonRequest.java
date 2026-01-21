@@ -39,7 +39,6 @@ public class CourseLessonRequest {
      Date contestEndTime;
      Integer totalPoints;
 
-    // List<CodingExerciseDTO> codingExercises;
      List<UUID> exerciseTemplateIds;  // Add this for METHOD 2
      List<QuizDTO> quizzes;
 }

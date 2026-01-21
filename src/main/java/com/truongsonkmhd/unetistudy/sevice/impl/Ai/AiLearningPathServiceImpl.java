@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.Ai;
 import com.truongsonkmhd.unetistudy.common.ProgressStatus;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.AiLessonSuggestionDTO;
 import com.truongsonkmhd.unetistudy.model.course.Course;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.model.lesson.LessonProgress;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingSubmissionRepository;

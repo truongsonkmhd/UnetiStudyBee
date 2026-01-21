@@ -14,18 +14,22 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContestLessonResponseDTO {
+    String title;
 
-    UUID contestLessonId;
+    String description;
 
-    Instant startTime;
-    Instant endTime;
+    Integer defaultDurationMinutes;
 
     Integer totalPoints;
-    Integer maxAttempts;
 
-    Boolean isActive;
-    Boolean showLeaderboard;
+    Integer defaultMaxAttempts;
 
-    StatusContest status; // ONGOING | UPCOMING | ENDED
+    Integer passingScore;
+
+    Boolean showLeaderboardDefault;
+
+    String instructions;
+
+    StatusContest status;
 
 }

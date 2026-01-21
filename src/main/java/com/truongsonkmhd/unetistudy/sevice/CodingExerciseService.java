@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice;
 
 
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 
 import java.util.UUID;
 

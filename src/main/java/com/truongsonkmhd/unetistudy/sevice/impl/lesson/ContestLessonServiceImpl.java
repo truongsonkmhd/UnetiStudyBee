@@ -3,10 +3,9 @@ package com.truongsonkmhd.unetistudy.sevice.impl.lesson;
 import com.truongsonkmhd.unetistudy.common.StatusContest;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonResponseDTO;
-import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.ContestLesson;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.ExerciseTestCase;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ExerciseTestCase;
 import com.truongsonkmhd.unetistudy.model.lesson.template.CodingExerciseTemplate;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseTemplateRepository;
 import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
@@ -32,11 +31,15 @@ public class ContestLessonServiceImpl implements ContestLessonService {
     public ContestLessonResponseDTO addContestLesson(ContestLessonRequestDTO request) {
 
         ContestLesson contestLesson = ContestLesson.builder()
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .maxAttempts(request.getMaxAttempts())
-                .isActive(request.getIsActive())
-                .showLeaderboard(request.getShowLeaderboard())
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .defaultDurationMinutes(request.getDefaultDurationMinutes())
+                .totalPoints(request.getTotalPoints())
+                .defaultMaxAttempts(request.getDefaultMaxAttempts())
+                .passingScore(request.getPassingScore())
+                .showLeaderboardDefault(request.getShowLeaderboardDefault())
+                .instructions(request.getInstructions())
+                .status(StatusContest.DRAFT)
                 .build();
 
         addCodingExercisesToContest(request.getExerciseTemplateIds(),contestLesson);
@@ -45,18 +48,18 @@ public class ContestLessonServiceImpl implements ContestLessonService {
         contestLessonRepository.save(contestLesson);
 
         return ContestLessonResponseDTO.builder()
-                .contestLessonId(contestLesson.getContestLessonId())
-                .startTime(contestLesson.getStartTime())
-                .endTime(contestLesson.getEndTime())
+                .title(contestLesson.getTitle())
+                .description(contestLesson.getDescription())
+                .defaultDurationMinutes(contestLesson.getDefaultDurationMinutes())
                 .totalPoints(contestLesson.getTotalPoints())
-                .maxAttempts(contestLesson.getMaxAttempts())
-                .isActive(contestLesson.getIsActive())
-                .showLeaderboard(contestLesson.getShowLeaderboard())
-                .status(StatusContest.ONGOING)
+                .defaultMaxAttempts(contestLesson.getDefaultMaxAttempts())
+                .passingScore(contestLesson.getPassingScore())
+                .showLeaderboardDefault(contestLesson.getShowLeaderboardDefault())
+                .instructions(contestLesson.getInstructions())
+                .status(contestLesson.getStatus())
                 .build();
     }
 
-    @Override
     public void addCodingExercisesToContest(List<UUID> exerciseTemplateIds, ContestLesson contestLesson) {
 
         if (exerciseTemplateIds!= null && !exerciseTemplateIds.isEmpty()) {

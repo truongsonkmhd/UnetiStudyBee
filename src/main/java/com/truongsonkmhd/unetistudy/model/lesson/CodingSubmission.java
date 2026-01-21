@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.model.lesson;
 
 import com.truongsonkmhd.unetistudy.common.SubmissionVerdict;
 import com.truongsonkmhd.unetistudy.model.User;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CodingExercise;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

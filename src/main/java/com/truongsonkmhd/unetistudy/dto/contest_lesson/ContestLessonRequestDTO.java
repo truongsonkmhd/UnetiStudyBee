@@ -14,14 +14,20 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContestLessonRequestDTO {
+    String title;
+    String description;
 
+    Integer defaultDurationMinutes;
 
-    Instant startTime;
-    Instant endTime;
+    Integer totalPoints;
 
-    Integer maxAttempts;
-    Boolean isActive;
-    Boolean showLeaderboard;
+    Integer defaultMaxAttempts;
+
+    Integer passingScore;
+
+    Boolean showLeaderboardDefault;
+
+    String instructions;
 
     List<UUID> exerciseTemplateIds;
 

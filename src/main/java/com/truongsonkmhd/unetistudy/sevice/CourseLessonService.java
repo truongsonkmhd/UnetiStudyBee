@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice;
 
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 
 import java.util.List;
 import java.util.Optional;

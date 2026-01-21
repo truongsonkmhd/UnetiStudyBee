@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository.course;
 
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

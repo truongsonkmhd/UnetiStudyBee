@@ -12,7 +12,7 @@ import com.truongsonkmhd.unetistudy.mapper.coding_submission.ExerciseTestCaseMap
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
-import com.truongsonkmhd.unetistudy.model.lesson.solid.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeInternalResult;
 import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeSubmitMessage;
 import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
