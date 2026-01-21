@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.lesson.course_lesson;
 
+import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -36,6 +39,10 @@ public class QuizQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     CourseLesson courseLesson;
+
+    @OneToMany(mappedBy ="quiz" , cascade = CascadeType.ALL , orphanRemoval = true , fetch = FetchType.LAZY)
+    @Builder.Default
+    List<Question> questions = new ArrayList<>();
 
     @Column(name = "title", nullable = false)
     String title;

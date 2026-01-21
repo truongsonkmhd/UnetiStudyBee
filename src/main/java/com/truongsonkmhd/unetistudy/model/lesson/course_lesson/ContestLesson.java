@@ -4,14 +4,17 @@ import com.truongsonkmhd.unetistudy.common.StatusContest;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * ContestLesson: Định nghĩa Template/Mẫu của một Contest
@@ -39,6 +42,12 @@ public class ContestLesson {
     @Column(name = "contest_lesson_id", nullable = false, updatable = false)
     UUID contestLessonId;
 
+    @Column(name = "title", nullable = false)
+    String title;
+
+    @Column(name = "description", columnDefinition = "text")
+    String description;
+
     // Quan hệ với các lớp sử dụng contest này
     @OneToMany(mappedBy = "contestLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
@@ -55,13 +64,6 @@ public class ContestLesson {
 
     // ======= CẤU HÌNH MẶC ĐỊNH (Template) =======
     // Các lớp có thể ghi đè (override) những giá trị này
-
-    @Column(name = "title", nullable = false)
-    String title;
-
-    @Column(name = "description", columnDefinition = "text")
-    String description;
-
 
     @Column(name = "default_duration_minutes")
     Integer defaultDurationMinutes; // Thời lượng mặc định (phút)
@@ -148,7 +150,7 @@ public class ContestLesson {
 //        int quizPoints = quizQuestions.stream()
 //                .mapToInt(QuizQuestion::getPoints)
 //                .sum();
-        int quizPoints = 1;
+        int quizPoints = 0;
         this.totalPoints = codingPoints + quizPoints;
     }
 
@@ -161,7 +163,8 @@ public class ContestLesson {
     }
 
     public boolean canBeAssignedToClass() {
-        return isActive && (status == StatusContest.READY);
+        return isActive &&
+                (status == StatusContest.READY);
     }
 
     // Kiểm tra xem contest có đang được dùng trong lớp nào không

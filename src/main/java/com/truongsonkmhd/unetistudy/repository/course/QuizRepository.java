@@ -16,14 +16,14 @@ public interface QuizRepository extends JpaRepository<QuizQuestion, UUID> {
     @Query("""
         select q
         from QuizQuestion q
-        where q.contestLesson.courseLesson.lessonId in :lessonIds
+        where q.courseLesson.lessonId in :lessonIds
         """)
     List<QuizQuestion> findQuizzesByLessonIds(List<UUID> lessonIds);
 
     @Query("""
         select avg(qa.passScore)
         from QuizQuestion qa
-        where qa.contestLesson.courseLesson.lessonId= :lessonId
+        where qa.courseLesson.lessonId= :lessonId
     """)
     Double avgScore(
             @Param("userId") UUID userId,
