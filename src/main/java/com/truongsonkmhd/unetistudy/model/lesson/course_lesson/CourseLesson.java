@@ -68,7 +68,7 @@ public class CourseLesson {
 
     @OneToMany(mappedBy = "courseLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    List<QuizQuestion> quizQuestions = new ArrayList<>();
+    List<Quiz> quizzes = new ArrayList<>();
 
     @Column(name = "is_preview", nullable = false)
     @Builder.Default
@@ -105,13 +105,13 @@ public class CourseLesson {
         exercise.setCourseLesson(null);
     }
 
-    public void addQuizQuestion(QuizQuestion quiz) {
-        quizQuestions.add(quiz);
+    public void addQuizQuestion(Quiz quiz) {
+        quizzes.add(quiz);
         quiz.setCourseLesson(this);
     }
 
-    public void removeQuizQuestion(QuizQuestion quiz) {
-        quizQuestions.remove(quiz);
+    public void removeQuizQuestion(Quiz quiz) {
+        quizzes.remove(quiz);
         quiz.setCourseLesson(null);
     }
 

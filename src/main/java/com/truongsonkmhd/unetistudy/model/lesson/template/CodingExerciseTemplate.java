@@ -24,7 +24,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "tbl_coding_exercise_template",
         indexes = {
-                @Index(name = "idx_template_slug", columnList = "slug"),
+                @Index(name = "uk_template_slug", columnList = "slug", unique = true),
                 @Index(name = "idx_template_published", columnList = "is_published"),
                 @Index(name = "idx_template_difficulty", columnList = "difficulty")
         })

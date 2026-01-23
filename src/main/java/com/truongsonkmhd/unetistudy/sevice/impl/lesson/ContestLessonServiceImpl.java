@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.sevice.impl.lesson;
 
 import com.truongsonkmhd.unetistudy.common.StatusContest;
+import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonResponseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
@@ -12,7 +13,11 @@ import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
 import com.truongsonkmhd.unetistudy.sevice.ContestLessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +30,6 @@ public class ContestLessonServiceImpl implements ContestLessonService {
     private final ContestLessonRepository contestLessonRepository;
     
     private final CodingExerciseTemplateRepository templateRepository;
-
 
     @Override
     public ContestLessonResponseDTO addContestLesson(ContestLessonRequestDTO request) {
@@ -59,6 +63,37 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                 .status(contestLesson.getStatus())
                 .build();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<ContestLessonResponseDTO> searchContestLessons(
+            int page,
+            int size,
+            String q,
+            StatusContest statusContest
+    ) {
+
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), 50);
+
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+        Page<ContestLessonResponseDTO> result = contestLessonRepository.searchContestAdvance(q,statusContest,pageable);
+
+        return buildPageResponse(result);
+    }
+
+    private PageResponse<ContestLessonResponseDTO> buildPageResponse(
+            Page<ContestLessonResponseDTO> page) {
+        return PageResponse.<ContestLessonResponseDTO>builder()
+                .items(page.getContent())
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .hasNext(page.hasNext())
+                .build();
+    }
+
 
     public void addCodingExercisesToContest(List<UUID> exerciseTemplateIds, ContestLesson contestLesson) {
 

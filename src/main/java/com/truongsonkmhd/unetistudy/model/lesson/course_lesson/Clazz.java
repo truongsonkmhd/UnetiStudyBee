@@ -24,7 +24,6 @@ import java.util.UUID;
 @Table(name = "tbl_class",
         indexes = {
                 @Index(name = "idx_class_code", columnList = "class_code"),
-                @Index(name = "idx_class_course", columnList = "course_id"),
                 @Index(name = "idx_class_instructor", columnList = "instructor_id")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)

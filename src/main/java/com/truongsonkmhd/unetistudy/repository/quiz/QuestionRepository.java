@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository.quiz;
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
     @Query("SELECT q FROM Question q WHERE q.quiz = :quiz ORDER BY q.questionOrder ASC")
-    List<Question> findByQuizOrderByQuestionOrderAsc(QuizQuestion quiz);
+    List<Question> findByQuizOrderByQuestionOrderAsc(Quiz quiz);
 
-    long countByQuiz(QuizQuestion quiz);
+    long countByQuiz(Quiz quiz);
 }

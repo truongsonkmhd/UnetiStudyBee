@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.*;
-import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -31,7 +29,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "tbl_contest_lesson",
         indexes = {
                 @Index(name = "idx_contest_active", columnList = "is_active"),
-                @Index(name = "idx_contest_course_lesson", columnList = "course_lesson_id"),
                 @Index(name = "idx_contest_status", columnList = "status")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -60,7 +57,7 @@ public class ContestLesson {
 
     @OneToMany(mappedBy = "contestLesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    List<QuizQuestion> quizQuestions = new ArrayList<>();
+    List<Quiz> quizzes = new ArrayList<>();
 
     // ======= CẤU HÌNH MẶC ĐỊNH (Template) =======
     // Các lớp có thể ghi đè (override) những giá trị này
@@ -120,14 +117,14 @@ public class ContestLesson {
         recalculateTotalPoints();
     }
 
-    public void addQuizQuestion(QuizQuestion quiz) {
-        quizQuestions.add(quiz);
+    public void addQuizQuestion(Quiz quiz) {
+        quizzes.add(quiz);
         quiz.setContestLesson(this);
         recalculateTotalPoints();
     }
 
-    public void removeQuizQuestion(QuizQuestion quiz) {
-        quizQuestions.remove(quiz);
+    public void removeQuizQuestion(Quiz quiz) {
+        quizzes.remove(quiz);
         quiz.setContestLesson(null);
         recalculateTotalPoints();
     }
@@ -147,8 +144,8 @@ public class ContestLesson {
         int codingPoints = codingExercises.stream()
                 .mapToInt(CodingExercise::getPoints)
                 .sum();
-//        int quizPoints = quizQuestions.stream()
-//                .mapToInt(QuizQuestion::getPoints)
+//        int quizPoints = quizzes.stream()
+//                .mapToInt(Quiz::getPoints)
 //                .sum();
         int quizPoints = 0;
         this.totalPoints = codingPoints + quizPoints;
@@ -159,7 +156,7 @@ public class ContestLesson {
     public boolean isReadyToUse() {
         return isActive &&
                 status == StatusContest.READY &&
-                (!codingExercises.isEmpty() || !quizQuestions.isEmpty());
+                (!codingExercises.isEmpty() || !quizzes.isEmpty());
     }
 
     public boolean canBeAssignedToClass() {

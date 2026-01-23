@@ -14,9 +14,6 @@ public interface CodingExerciseTemplateService {
     PageResponse<CodingExerciseTemplateCardResponse> getPublishedTemplates(
             int page, int size);
 
-    PageResponse<CodingExerciseTemplateCardResponse> getAllTemplates(
-            int page, int size);
-
     PageResponse<CodingExerciseTemplateCardResponse> searchTemplates(
             int page, int size, String q, Difficulty difficulty,
             String category, String language);

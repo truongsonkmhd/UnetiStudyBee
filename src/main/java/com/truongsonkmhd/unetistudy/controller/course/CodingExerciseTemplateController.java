@@ -49,32 +49,22 @@ public class CodingExerciseTemplateController {
         return ResponseEntity.ok(codingExerciseTemplateService.getPublishedTemplates(page, size));
     }
 
-    @GetMapping("/templates/all")
-    @Operation(summary = "Get all templates including unpublished (admin only)")
-    public ResponseEntity<PageResponse<CodingExerciseTemplateCardResponse>> getAllTemplates(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-
-        return ResponseEntity.ok(codingExerciseTemplateService.getAllTemplates(page, size));
-    }
-
     @GetMapping("/templates/search")
     @Operation(summary = "Search published templates with filters")
-    public ResponseEntity<PageResponse<CodingExerciseTemplateCardResponse>> searchTemplates(
+    public ResponseEntity<IResponseMessage> searchTemplates(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Difficulty difficulty,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String language) {
-        return ResponseEntity.ok(
-                codingExerciseTemplateService.searchTemplates(page, size, q, difficulty, category, language)
-        );
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
+                codingExerciseTemplateService.searchTemplates(page, size, q, difficulty, category, language)));
     }
 
     @GetMapping("/templates/search/all")
     @Operation(summary = "Search all templates (admin only)")
-    public ResponseEntity<PageResponse<CodingExerciseTemplateCardResponse>> searchAllTemplates(
+    public ResponseEntity<IResponseMessage> searchAllTemplates(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String q,
@@ -83,9 +73,8 @@ public class CodingExerciseTemplateController {
             @RequestParam(required = false) String language,
             @RequestParam(required = false) Boolean published) {
 
-        return ResponseEntity.ok(
-                codingExerciseTemplateService.searchAllTemplates(page, size, q, difficulty, category, language, published)
-        );
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
+                codingExerciseTemplateService.searchAllTemplates(page, size, q, difficulty, category, language, published)));
     }
 
     // ========== CURSOR PAGINATION ==========

@@ -1,7 +1,8 @@
 package com.truongsonkmhd.unetistudy.model.quiz;
 
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.common.AttemptStatus;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -40,7 +41,7 @@ public class UserQuizAttempt {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id", nullable = false)
-    QuizQuestion quiz;
+    Quiz quiz;
 
     @Column(name = "score")
     Double score;
@@ -76,13 +77,6 @@ public class UserQuizAttempt {
     @UpdateTimestamp
     @Column(name = "updated_at")
     Instant updatedAt;
-
-    public enum AttemptStatus {
-        IN_PROGRESS,
-        COMPLETED,
-        TIMEOUT,
-        ABANDONED
-    }
 
     // Helper methods
     public void addUserAnswer(UserAnswer userAnswer) {

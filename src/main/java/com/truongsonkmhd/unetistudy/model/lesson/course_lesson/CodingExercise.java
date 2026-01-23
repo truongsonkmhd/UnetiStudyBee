@@ -31,8 +31,12 @@ public class CodingExercise extends BaseCodingExercise {
     UUID exerciseId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contest_lesson_id", nullable = false)
+    @JoinColumn(name = "contest_lesson_id", nullable = true)
     ContestLesson contestLesson;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = true)
+    CourseLesson courseLesson;
 
     @OneToMany(mappedBy = "codingExercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default

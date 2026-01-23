@@ -1,5 +1,5 @@
 package com.truongsonkmhd.unetistudy.repository.quiz;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.UserQuizAttempt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,5 +14,5 @@ public interface UserQuizAttemptRepository extends JpaRepository<UserQuizAttempt
     List<UserQuizAttempt> findByUserIdAndQuizOrderByCreatedAtDesc(UUID userId, UUID quizId);
 
     @Query("SELECT a FROM UserQuizAttempt a WHERE a.userId = :userId AND a.quiz = :quiz AND a.status = 'IN_PROGRESS'")
-    List<UserQuizAttempt> findActiveAttemptsByUserAndQuiz(UUID userId, QuizQuestion quiz);
+    List<UserQuizAttempt> findActiveAttemptsByUserAndQuiz(UUID userId, Quiz quiz);
 }

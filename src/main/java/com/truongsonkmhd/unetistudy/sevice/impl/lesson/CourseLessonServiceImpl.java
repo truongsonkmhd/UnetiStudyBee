@@ -123,7 +123,7 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     private void addQuizQuestionsToContest(CourseLessonRequest request, ContestLesson contestLesson) {
         if (request.getQuizzes() != null && !request.getQuizzes().isEmpty()) {
             for (var quizDto : request.getQuizzes()) {
-                QuizQuestion quiz = quizExerciseMapper.toEntity(quizDto);
+                Quiz quiz = quizExerciseMapper.toEntity(quizDto);
                 contestLesson.addQuizQuestion(quiz);
             }
         }

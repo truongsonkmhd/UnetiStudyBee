@@ -11,16 +11,14 @@ import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseResponseMapper;
-import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;
 import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.course.Course;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import com.truongsonkmhd.unetistudy.repository.*;
-import com.truongsonkmhd.unetistudy.repository.auth.RoleRepository;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
 import com.truongsonkmhd.unetistudy.repository.course.*;
 import com.truongsonkmhd.unetistudy.sevice.CourseTreeService;
@@ -45,22 +43,14 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     private final CodingExerciseRepository codingExerciseRepository;
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
-
     private final CourseResponseMapper courseResponseMapper;
     private final CourseRequestMapper courseRequestMapper;
-
     private final CourseModuleRequestMapper courseModuleRequestMapper;
     private final CourseModuleResponseMapper courseModuleResponseMapper;
-
-    private final CourseLessonRepository courseLessonRepository;
-
-    private final RoleRepository roleRepository;
-
     private final Slugify slugify;
 
     private static final Comparator<Integer> NULL_SAFE_INT =
             Comparator.nullsLast(Integer::compareTo);
-    private final CourseLessonRequestMapper courseLessonRequestMapper;
 
     // =========================
     // BASIC CRUD
@@ -199,12 +189,12 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         List<UUID> lessonIds = lessons.stream().map(CourseLesson::getLessonId).toList();
 
         List<CodingExercise> exercises = codingExerciseRepository.findExercisesByLessonIds(lessonIds);
-        List<QuizQuestion> quizQuestions = quizRepository.findQuizzesByLessonIds(lessonIds);
+        List<Quiz> quizzes = quizRepository.findQuizzesByLessonIds(lessonIds);
 
         Map<UUID, List<CodingExercise>> exByLesson = exercises.stream()
                 .collect(Collectors.groupingBy(e -> e.getContestLesson().getContestLessonId()));
 
-        Map<UUID, List<QuizQuestion>> quizByLesson = quizQuestions.stream()
+        Map<UUID, List<Quiz>> quizByLesson = quizzes.stream()
                 .collect(Collectors.groupingBy(q -> q.getContestLesson().getContestLessonId()));
 
         return mapCourse(course,courseModule,lessons, mode , exByLesson ,quizByLesson);
@@ -214,7 +204,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     // MAPPING (FILTER INSIDE)
     // =========================
 
-    private CourseTreeResponse mapCourse(Course course, List<CourseModule> courseModule, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
+    private CourseTreeResponse mapCourse(Course course, List<CourseModule> courseModule, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<Quiz>> quizByLesson) {
         List<CourseModuleResponse> modules = courseModule.stream()
                 .sorted(Comparator.comparing(CourseModule::getOrderIndex, NULL_SAFE_INT))
                // .filter(m -> !isOnlyStudent(mode) || allowPublished(m.getIsPublished()))
@@ -233,7 +223,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         );
     }
 
-    private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
+    private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<Quiz>> quizByLesson) {
 
         List<CourseLessonResponse> lessons = courseLessons.stream()
                 .sorted(Comparator.comparing(CourseLesson::getOrderIndex, NULL_SAFE_INT))
@@ -251,7 +241,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         );
     }
 
-    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<QuizQuestion>> quizByLesson) {
+    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> mode , Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<Quiz>> quizByLesson) {
 
         List<CodingExerciseDTO> coding = exByLesson.getOrDefault(courseLesson.getLessonId(), List.of()).stream()
                 .filter(e ->  allowPublished(e.getIsPublished()))
@@ -299,7 +289,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 .build();
     }
 
-    private QuizDTO mapQuiz(QuizQuestion q) {
+    private QuizDTO mapQuiz(Quiz q) {
         if (q == null) return null;
 
         return QuizDTO.builder()

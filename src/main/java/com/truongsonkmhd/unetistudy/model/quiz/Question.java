@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.quiz;
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +33,7 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id", nullable = false)
-    QuizQuestion quiz;
+    Quiz quiz;
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     String content;

@@ -25,7 +25,7 @@ import java.util.UUID;
                 @Index(name = "idx_quiz_contest", columnList = "contest_lesson_id")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class QuizQuestion {
+public class Quiz {
 
     @Id
     @UuidGenerator
@@ -33,11 +33,11 @@ public class QuizQuestion {
     UUID quizId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contest_lesson_id", nullable = false)
+    @JoinColumn(name = "contest_lesson_id", nullable = true)
     ContestLesson contestLesson;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lesson_id", nullable = false)
+    @JoinColumn(name = "lesson_id", nullable =  true)
     CourseLesson courseLesson;
 
     @OneToMany(mappedBy ="quiz" , cascade = CascadeType.ALL , orphanRemoval = true , fetch = FetchType.LAZY)
@@ -46,6 +46,9 @@ public class QuizQuestion {
 
     @Column(name = "title", nullable = false)
     String title;
+
+    @Column(name = "description", columnDefinition = "text")
+    String description;
 
     @Column(name = "total_questions")
     @Builder.Default
@@ -65,4 +68,9 @@ public class QuizQuestion {
     @UpdateTimestamp
     @Column(name = "updated_at")
     Instant updatedAt;
+
+    public void addQuestion(Question question) {
+        questions.add(question);
+        question.setQuiz(this);
+    }
 }

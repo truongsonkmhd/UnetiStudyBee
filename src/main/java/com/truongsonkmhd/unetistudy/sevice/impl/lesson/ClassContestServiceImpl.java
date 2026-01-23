@@ -150,7 +150,7 @@ public class ClassContestServiceImpl implements ClassContestService {
      */
     @Override
     @Transactional
-    public void updateContestStatuses(UUID classId) {
+    public Boolean updateContestStatuses(UUID classId) {
         Clazz clazz = classRepository.findById(classId)
                 .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
 
@@ -168,6 +168,8 @@ public class ClassContestServiceImpl implements ClassContestService {
         });
 
         classContestRepository.saveAll(contests);
+
+        return true;
     }
 
     /**
@@ -268,7 +270,7 @@ public class ClassContestServiceImpl implements ClassContestService {
                         .description(contestLesson.getDescription())
                         .defaultTotalPoints(contestLesson.getTotalPoints())
                         .codingExerciseCount(contestLesson.getCodingExercises().size())
-                        .quizQuestionCount(contestLesson.getQuizQuestions().size())
+                        .quizQuestionCount(contestLesson.getQuizzes().size())
                         .build())
                 .scheduledStartTime(classContest.getScheduledStartTime())
                 .scheduledEndTime(classContest.getScheduledEndTime())

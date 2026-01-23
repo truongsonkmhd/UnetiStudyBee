@@ -91,31 +91,21 @@ public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplate
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CodingExerciseTemplateCardResponse> getAllTemplates(
-            int page, int size) {
-
-        int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 50);
-
-        Pageable pageable = PageRequest.of(safePage, safeSize);
-        Page<CodingExerciseTemplateCardResponse> result = repository.findAllTemplates(pageable);
-
-        return buildPageResponse(result);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public PageResponse<CodingExerciseTemplateCardResponse> searchTemplates(
-            int page, int size, String q, Difficulty difficulty,
-            String category, String language) {
-
+            int page,
+            int size,
+            String q,
+            Difficulty difficulty,
+            String category,
+            String language
+    ) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 50);
 
         Pageable pageable = PageRequest.of(safePage, safeSize);
-        Page<CodingExerciseTemplateCardResponse> result = repository.searchTemplates(
-                q, difficulty, category, language, pageable
-        );
+
+        Page<CodingExerciseTemplateCardResponse> result =
+                repository.searchTemplates(q, difficulty, category, language, pageable);
 
         return buildPageResponse(result);
     }

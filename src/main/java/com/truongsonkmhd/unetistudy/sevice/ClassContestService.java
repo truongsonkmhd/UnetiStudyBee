@@ -14,7 +14,7 @@ public interface ClassContestService {
     List<ClassContestResponse> getClassContests(UUID classId);
     List<ClassContestResponse> getOngoingContests(UUID classId);
     List<ClassContestResponse> getUpcomingContests(UUID classId);
-    void updateContestStatuses(UUID classId);
+    Boolean updateContestStatuses(UUID classId);
     ClassContestResponse cancelClassContest(UUID classContestId);
     ClassContestResponse rescheduleClassContest(
             UUID classContestId,

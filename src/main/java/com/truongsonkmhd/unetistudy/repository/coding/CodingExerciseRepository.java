@@ -15,7 +15,7 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
     @Query("""
         SELECT e
         FROM CodingExercise e
-        WHERE e.contestLesson.courseLesson.lessonId IN :lessonIds
+        WHERE e.courseLesson.lessonId IN :lessonIds
     """)
     List<CodingExercise> findExercisesByLessonIds(@Param("lessonIds") List<UUID> lessonIds);
 
@@ -23,14 +23,14 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
         SELECT DISTINCT ce
         FROM CodingExercise ce
         LEFT JOIN FETCH ce.exerciseTestCases
-        WHERE ce.contestLesson.courseLesson.slug = :slug
+        WHERE ce.courseLesson.slug = :slug
     """)
     List<CodingExercise> findByLessonSlugWithTestCases(@Param("slug") String slug);
 
     @Query("""
         SELECT ce
         FROM CodingExercise ce
-        WHERE ce.contestLesson.courseLesson.slug = :slug
+        WHERE ce.courseLesson.slug = :slug
     """)
     CodingExercise findDetailByLessonSlug(@Param("slug") String slug);
 
@@ -42,7 +42,7 @@ public interface CodingExerciseRepository extends JpaRepository<CodingExercise, 
     CodingExercise getExerciseEntityById(@Param("exerciseId") UUID exerciseId);
 
     @Query("""
-        SELECT ce.contestLesson.courseLesson.lessonId
+        SELECT ce.courseLesson.lessonId
         FROM CodingExercise ce
         WHERE ce.exerciseId = :exerciseId
     """)

@@ -1,7 +1,8 @@
-package com.truongsonkmhd.unetistudy.sevice.impl;
+package com.truongsonkmhd.unetistudy.sevice.impl.quiz;
 
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.QuizQuestion;
+import com.truongsonkmhd.unetistudy.common.AttemptStatus;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Answer;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import com.truongsonkmhd.unetistudy.model.quiz.UserAnswer;
@@ -29,7 +30,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional
     public UserQuizAttempt startQuizAttempt(UUID userId, UUID quizId) {
-        QuizQuestion quiz = quizRepository.findById(quizId)
+        Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
         if (!quiz.getIsPublished()) {
@@ -40,7 +41,7 @@ public class QuizServiceImpl implements QuizService {
                 .userId(userId)
                 .quiz(quiz)
                 .startedAt(Instant.now())
-                .status(UserQuizAttempt.AttemptStatus.IN_PROGRESS)
+                .status(AttemptStatus.IN_PROGRESS)
                 .build();
 
         return attemptRepository.save(attempt);
@@ -139,7 +140,7 @@ public class QuizServiceImpl implements QuizService {
         attempt.setPercentage(percentage);
         attempt.setIsPassed(isPassed);
         attempt.setCompletedAt(Instant.now());
-        attempt.setStatus(UserQuizAttempt.AttemptStatus.COMPLETED);
+        attempt.setStatus(AttemptStatus.COMPLETED);
 
         return attemptRepository.save(attempt);
     }

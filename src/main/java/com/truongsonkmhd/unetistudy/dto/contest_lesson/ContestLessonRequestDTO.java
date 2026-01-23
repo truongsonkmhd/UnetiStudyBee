@@ -15,6 +15,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContestLessonRequestDTO {
     String title;
+
     String description;
 
     Integer defaultDurationMinutes;
