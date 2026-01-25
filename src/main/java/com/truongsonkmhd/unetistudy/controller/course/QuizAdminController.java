@@ -23,13 +23,13 @@ public class QuizAdminController {
      * Create a new quiz with questions and answers
      * POST /api/admin/quiz
      */
-    @PostMapping
-    public ResponseEntity<IResponseMessage> createQuiz(
-            @Valid @RequestBody QuizAdminDTO.CreateQuizRequest request) {
-
-        QuizAdminDTO.QuizResponse response = quizAdminService.createQuiz(request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
-    }
+//    @PostMapping
+//    public ResponseEntity<IResponseMessage> createQuiz(
+//            @Valid @RequestBody QuizAdminDTO.CreateQuizRequest request) {
+//
+//        QuizAdminDTO.QuizResponse response = quizAdminService.createQuiz(request);
+//        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+//    }
 
     /**
      * Update quiz basic information

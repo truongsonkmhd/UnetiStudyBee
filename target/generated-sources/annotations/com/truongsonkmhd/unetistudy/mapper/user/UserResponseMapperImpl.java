@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-17T22:23:59+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:23+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class UserResponseMapperImpl implements UserResponseMapper {
@@ -83,8 +83,17 @@ public class UserResponseMapperImpl implements UserResponseMapper {
             return;
         }
 
-        if ( dto.getId() != null ) {
-            entity.setId( dto.getId() );
+        if ( dto.getBirthday() != null ) {
+            entity.setBirthday( dto.getBirthday() );
+        }
+        if ( dto.getContactAddress() != null ) {
+            entity.setContactAddress( dto.getContactAddress() );
+        }
+        if ( dto.getCurrentResidence() != null ) {
+            entity.setCurrentResidence( dto.getCurrentResidence() );
+        }
+        if ( dto.getEmail() != null ) {
+            entity.setEmail( dto.getEmail() );
         }
         if ( dto.getFullName() != null ) {
             entity.setFullName( dto.getFullName() );
@@ -92,23 +101,11 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         if ( dto.getGender() != null ) {
             entity.setGender( dto.getGender() );
         }
-        if ( dto.getBirthday() != null ) {
-            entity.setBirthday( dto.getBirthday() );
-        }
-        if ( dto.getEmail() != null ) {
-            entity.setEmail( dto.getEmail() );
+        if ( dto.getId() != null ) {
+            entity.setId( dto.getId() );
         }
         if ( dto.getPhone() != null ) {
             entity.setPhone( dto.getPhone() );
-        }
-        if ( dto.getUsername() != null ) {
-            entity.setUsername( dto.getUsername() );
-        }
-        if ( dto.getContactAddress() != null ) {
-            entity.setContactAddress( dto.getContactAddress() );
-        }
-        if ( dto.getCurrentResidence() != null ) {
-            entity.setCurrentResidence( dto.getCurrentResidence() );
         }
         if ( entity.getRoles() != null ) {
             Set<Role> set = roleResponseSetToRoleSet( dto.getRoles() );
@@ -123,6 +120,9 @@ public class UserResponseMapperImpl implements UserResponseMapper {
                 entity.setRoles( set );
             }
         }
+        if ( dto.getUsername() != null ) {
+            entity.setUsername( dto.getUsername() );
+        }
     }
 
     @Override
@@ -133,16 +133,16 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         UserResponse.UserResponseBuilder userResponse = UserResponse.builder();
 
-        userResponse.id( entity.getId() );
-        userResponse.fullName( entity.getFullName() );
-        userResponse.gender( entity.getGender() );
         userResponse.birthday( entity.getBirthday() );
-        userResponse.username( entity.getUsername() );
-        userResponse.email( entity.getEmail() );
-        userResponse.phone( entity.getPhone() );
         userResponse.contactAddress( entity.getContactAddress() );
         userResponse.currentResidence( entity.getCurrentResidence() );
+        userResponse.email( entity.getEmail() );
+        userResponse.fullName( entity.getFullName() );
+        userResponse.gender( entity.getGender() );
+        userResponse.id( entity.getId() );
+        userResponse.phone( entity.getPhone() );
         userResponse.roles( roleSetToRoleResponseSet( entity.getRoles() ) );
+        userResponse.username( entity.getUsername() );
 
         return userResponse.build();
     }
@@ -155,16 +155,16 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         User.UserBuilder user = User.builder();
 
-        user.id( dto.getId() );
-        user.fullName( dto.getFullName() );
-        user.gender( dto.getGender() );
         user.birthday( dto.getBirthday() );
-        user.email( dto.getEmail() );
-        user.phone( dto.getPhone() );
-        user.username( dto.getUsername() );
         user.contactAddress( dto.getContactAddress() );
         user.currentResidence( dto.getCurrentResidence() );
+        user.email( dto.getEmail() );
+        user.fullName( dto.getFullName() );
+        user.gender( dto.getGender() );
+        user.id( dto.getId() );
+        user.phone( dto.getPhone() );
         user.roles( roleResponseSetToRoleSet( dto.getRoles() ) );
+        user.username( dto.getUsername() );
 
         return user.build();
     }
@@ -176,8 +176,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         Permission.PermissionBuilder permission = Permission.builder();
 
-        permission.name( permissionResponse.getName() );
         permission.description( permissionResponse.getDescription() );
+        permission.name( permissionResponse.getName() );
 
         return permission.build();
     }
@@ -202,8 +202,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         Role.RoleBuilder role = Role.builder();
 
-        role.name( roleResponse.getName() );
         role.description( roleResponse.getDescription() );
+        role.name( roleResponse.getName() );
         role.permissions( permissionResponseSetToPermissionSet( roleResponse.getPermissions() ) );
 
         return role.build();
@@ -229,8 +229,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         PermissionResponse.PermissionResponseBuilder permissionResponse = PermissionResponse.builder();
 
-        permissionResponse.name( permission.getName() );
         permissionResponse.description( permission.getDescription() );
+        permissionResponse.name( permission.getName() );
 
         return permissionResponse.build();
     }
@@ -255,8 +255,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
 
         RoleResponse.RoleResponseBuilder roleResponse = RoleResponse.builder();
 
-        roleResponse.name( role.getName() );
         roleResponse.description( role.getDescription() );
+        roleResponse.name( role.getName() );
         roleResponse.permissions( permissionSetToPermissionResponseSet( role.getPermissions() ) );
 
         return roleResponse.build();

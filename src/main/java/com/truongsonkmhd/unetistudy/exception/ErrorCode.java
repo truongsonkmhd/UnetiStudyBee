@@ -2,29 +2,56 @@ package com.truongsonkmhd.unetistudy.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-    INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
-    USER_EXISTED(1002, "User existed", HttpStatus.BAD_REQUEST),
-    USERNAME_INVALID(1003, "Username must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    INVALID_PASSWORD(1004, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
-    UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
-    INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
 
-    ;
+    // 400 - Bad Request
+    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "Validation failed"),
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "Invalid parameter"),
+    INVALID_PAYLOAD(HttpStatus.BAD_REQUEST, "Invalid request payload"),
+    INVALID_DATA(HttpStatus.BAD_REQUEST, "Invalid data"),
+    MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "Required parameter is missing"),
 
-    ErrorCode(int code, String message, HttpStatusCode statusCode) {
-        this.code = code;
-        this.message = message;
-        this.statusCode = statusCode;
+    // 401 - Unauthorized
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Authentication required"),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid username or password"),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Token has expired"),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Invalid token"),
+
+    // 403 - Forbidden
+    FORBIDDEN(HttpStatus.FORBIDDEN, "Access forbidden"),
+    INSUFFICIENT_PERMISSIONS(HttpStatus.FORBIDDEN, "Insufficient permissions"),
+
+    // 404 - Not Found
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not found"),
+    ENDPOINT_NOT_FOUND(HttpStatus.NOT_FOUND, "Endpoint not found"),
+
+    // 409 - Conflict
+    RESOURCE_CONFLICT(HttpStatus.CONFLICT, "Resource already exists"),
+    OPTIMISTIC_LOCK_ERROR(HttpStatus.CONFLICT, "Resource has been modified by another user"),
+    DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT, "Data integrity violation"),
+
+    // 422 - Unprocessable Entity
+    BUSINESS_RULE_VIOLATION(HttpStatus.UNPROCESSABLE_ENTITY, "Business rule violation"),
+    INVALID_STATE_TRANSITION(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid state transition"),
+
+    // 500 - Internal Server Error
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error occurred"),
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Database error occurred"),
+    EXTERNAL_SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "External service error");
+
+    private final HttpStatus httpStatus;
+    private final String defaultMessage;
+
+    public int getStatusCode() {
+        return httpStatus.value();
     }
 
-    private int code;
-    private String message;
-    private HttpStatusCode statusCode;
+    public String getStatusReason() {
+        return httpStatus.getReasonPhrase();
+    }
 }

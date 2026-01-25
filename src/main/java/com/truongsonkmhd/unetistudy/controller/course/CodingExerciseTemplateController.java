@@ -16,8 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/coding-exercise-template")
+@RequestMapping("/api/admin/coding-exercise-template")
 @Slf4j(topic = "coding-exercise")
 @Tag(name = "Coding Exercise Controller")
 @RequiredArgsConstructor
@@ -27,12 +29,21 @@ public class CodingExerciseTemplateController {
 
     // ========== CREATE ==========
 
-    @PostMapping("/add")
+    @PostMapping("")
     @Operation(summary = "Create new coding exercise template")
     public ResponseEntity<IResponseMessage> createTemplate(
             @RequestBody CodingExerciseTemplateDTO dto) {
         return ResponseEntity.ok(
                 SuccessResponseMessage.CreatedSuccess(codingExerciseTemplateService.save(dto))
+        );
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get coding exercise template by id")
+    public ResponseEntity<IResponseMessage> getById(
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(
+                SuccessResponseMessage.CreatedSuccess(codingExerciseTemplateService.getById(id))
         );
     }
 

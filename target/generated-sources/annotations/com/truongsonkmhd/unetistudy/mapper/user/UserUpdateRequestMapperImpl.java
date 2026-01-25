@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-18T13:14:08+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:25+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class UserUpdateRequestMapperImpl implements UserUpdateRequestMapper {
@@ -81,14 +81,14 @@ public class UserUpdateRequestMapperImpl implements UserUpdateRequestMapper {
 
         User.UserBuilder user = User.builder();
 
-        user.fullName( dto.getFullName() );
-        user.gender( dto.getGender() );
         user.birthday( dto.getBirthday() );
-        user.email( dto.getEmail() );
-        user.phone( dto.getPhone() );
-        user.username( dto.getUsername() );
         user.contactAddress( dto.getContactAddress() );
         user.currentResidence( dto.getCurrentResidence() );
+        user.email( dto.getEmail() );
+        user.fullName( dto.getFullName() );
+        user.gender( dto.getGender() );
+        user.phone( dto.getPhone() );
+        user.username( dto.getUsername() );
 
         return user.build();
     }
@@ -117,13 +117,13 @@ public class UserUpdateRequestMapperImpl implements UserUpdateRequestMapper {
             return;
         }
 
-        user.setFullName( userUpdateRequest.getFullName() );
-        user.setGender( userUpdateRequest.getGender() );
         user.setBirthday( userUpdateRequest.getBirthday() );
-        user.setEmail( userUpdateRequest.getEmail() );
-        user.setPhone( userUpdateRequest.getPhone() );
-        user.setUsername( userUpdateRequest.getUsername() );
         user.setContactAddress( userUpdateRequest.getContactAddress() );
         user.setCurrentResidence( userUpdateRequest.getCurrentResidence() );
+        user.setEmail( userUpdateRequest.getEmail() );
+        user.setFullName( userUpdateRequest.getFullName() );
+        user.setGender( userUpdateRequest.getGender() );
+        user.setPhone( userUpdateRequest.getPhone() );
+        user.setUsername( userUpdateRequest.getUsername() );
     }
 }

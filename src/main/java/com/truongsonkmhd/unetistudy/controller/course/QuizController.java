@@ -33,13 +33,13 @@ public class QuizController {
     public ResponseEntity<IResponseMessage> startQuiz(
             @PathVariable UUID quizId
             ) {
-       UUID userID = UserContext.getUserID();
+        UUID userID = UserContext.getUserID();
 
         UserQuizAttempt attempt = quizService.startQuizAttempt(userID,quizId);
 
         QuizDTO.StartQuizResponse response = QuizDTO.StartQuizResponse.builder()
                 .attemptId(attempt.getAttemptId())
-                .quizId(attempt.getQuiz().getQuizId())
+                .quizId(attempt.getQuiz().getId())
                 .quizTitle(attempt.getQuiz().getTitle())
                 .totalQuestions(attempt.getQuiz().getTotalQuestions())
                 .startedAt(attempt.getStartedAt())
@@ -58,7 +58,7 @@ public class QuizController {
 
         List<QuizDTO.AnswerOption> answerOptions = question.getAnswers().stream()
                 .map(answer -> QuizDTO.AnswerOption.builder()
-                        .answerId(answer.getAnswerId())
+                        .answerId(answer.getId())
                         .content(answer.getContent())
                         .answerOrder(answer.getAnswerOrder())
                         .build()
@@ -67,7 +67,7 @@ public class QuizController {
                 .toList();
 
         QuizDTO.QuestionResponse response = QuizDTO.QuestionResponse.builder()
-                .questionId(question.getQuestionId())
+                .questionId(question.getId())
                 .content(question.getContent())
                 .questionOrder(question.getQuestionOrder())
                 .timeLimitSeconds(question.getTimeLimitSeconds())
@@ -116,7 +116,7 @@ public class QuizController {
                     List<QuizDTO.AnswerDetail> answerDetails = userAnswer.getQuestion()
                             .getAnswers().stream()
                             .map(answer -> QuizDTO.AnswerDetail.builder()
-                                    .answerId(answer.getAnswerId())
+                                    .answerId(answer.getId())
                                     .content(answer.getContent())
                                     .isCorrect(answer.getIsCorrect())
                                     .isSelected(userAnswer.getSelectedAnswers()
@@ -125,7 +125,7 @@ public class QuizController {
                             .collect(Collectors.toList());
 
                     return QuizDTO.QuestionResult.builder()
-                            .questionId(userAnswer.getQuestion().getQuestionId())
+                            .questionId(userAnswer.getQuestion().getId())
                             .questionContent(userAnswer.getQuestion().getContent())
                             .isCorrect(userAnswer.getIsCorrect())
                             .pointsEarned(userAnswer.getPointsEarned())

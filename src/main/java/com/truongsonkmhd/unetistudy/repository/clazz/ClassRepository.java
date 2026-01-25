@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ClazzRepository extends JpaRepository<Clazz, UUID> {
+public interface ClassRepository extends JpaRepository<Clazz, UUID> {
 
 }

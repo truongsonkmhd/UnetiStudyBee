@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.quiz;
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.base.BaseEntityQuestion;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,38 +24,15 @@ import java.util.UUID;
                 @Index(name = "idx_question_quiz", columnList = "quiz_id")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Question {
-
-    @Id
-    @UuidGenerator
-    @Column(name = "question_id", nullable = false, updatable = false)
-    UUID questionId;
+public class Question  extends BaseEntityQuestion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id", nullable = false)
     Quiz quiz;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    String content;
-
-    @Column(name = "question_order", nullable = false)
-    Integer questionOrder;
-
-    @Column(name = "time_limit_seconds", nullable = false)
-    @Builder.Default
-    Integer timeLimitSeconds = 5;
-
-    @Column(name = "points")
-    @Builder.Default
-    Double points = 1.0;
-
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     List<Answer> answers = new ArrayList<>();
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    Instant createdAt;
 
     // Helper methods
     public void addAnswer(Answer answer) {

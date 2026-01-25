@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-17T22:23:59+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:25+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class UserRequestMapperImpl implements UserRequestMapper {
@@ -25,14 +25,14 @@ public class UserRequestMapperImpl implements UserRequestMapper {
 
         User.UserBuilder user = User.builder();
 
-        user.fullName( dto.getFullName() );
-        user.gender( dto.getGender() );
         user.birthday( dto.getBirthday() );
-        user.email( dto.getEmail() );
-        user.phone( dto.getPhone() );
-        user.password( dto.getPassword() );
         user.contactAddress( dto.getContactAddress() );
         user.currentResidence( dto.getCurrentResidence() );
+        user.email( dto.getEmail() );
+        user.fullName( dto.getFullName() );
+        user.gender( dto.getGender() );
+        user.password( dto.getPassword() );
+        user.phone( dto.getPhone() );
 
         return user.build();
     }
@@ -110,29 +110,29 @@ public class UserRequestMapperImpl implements UserRequestMapper {
             return;
         }
 
-        if ( dto.getFullName() != null ) {
-            entity.setFullName( dto.getFullName() );
-        }
-        if ( dto.getGender() != null ) {
-            entity.setGender( dto.getGender() );
-        }
         if ( dto.getBirthday() != null ) {
             entity.setBirthday( dto.getBirthday() );
-        }
-        if ( dto.getEmail() != null ) {
-            entity.setEmail( dto.getEmail() );
-        }
-        if ( dto.getPhone() != null ) {
-            entity.setPhone( dto.getPhone() );
-        }
-        if ( dto.getPassword() != null ) {
-            entity.setPassword( dto.getPassword() );
         }
         if ( dto.getContactAddress() != null ) {
             entity.setContactAddress( dto.getContactAddress() );
         }
         if ( dto.getCurrentResidence() != null ) {
             entity.setCurrentResidence( dto.getCurrentResidence() );
+        }
+        if ( dto.getEmail() != null ) {
+            entity.setEmail( dto.getEmail() );
+        }
+        if ( dto.getFullName() != null ) {
+            entity.setFullName( dto.getFullName() );
+        }
+        if ( dto.getGender() != null ) {
+            entity.setGender( dto.getGender() );
+        }
+        if ( dto.getPassword() != null ) {
+            entity.setPassword( dto.getPassword() );
+        }
+        if ( dto.getPhone() != null ) {
+            entity.setPhone( dto.getPhone() );
         }
     }
 }

@@ -2,8 +2,8 @@ package com.truongsonkmhd.unetistudy.sevice.impl.coding;
 
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTemplateDTO;
 import com.truongsonkmhd.unetistudy.dto.exercise_test_cases_dto.ExerciseTestCasesDTO;
-import com.truongsonkmhd.unetistudy.model.lesson.template.CodingExerciseTemplate;
-import com.truongsonkmhd.unetistudy.model.lesson.template.ExerciseTemplateTestCase;
+import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
+import com.truongsonkmhd.unetistudy.model.coding_template.ExerciseTemplateTestCase;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseTemplateRepository;
 import com.truongsonkmhd.unetistudy.sevice.CodingExerciseTemplateService;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +20,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplateService {
 
     private final CodingExerciseTemplateRepository repository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public CodingExerciseTemplate getById(UUID templateId) {
+        return repository.findById(templateId)
+                .orElseThrow(() ->
+                        new RuntimeException("CodingExerciseTemplate not found: " + templateId)
+                );
+    }
 
     @Override
     @Transactional

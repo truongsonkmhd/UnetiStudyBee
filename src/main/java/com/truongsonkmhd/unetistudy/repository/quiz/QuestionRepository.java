@@ -1,6 +1,6 @@
 package com.truongsonkmhd.unetistudy.repository.quiz;
 
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

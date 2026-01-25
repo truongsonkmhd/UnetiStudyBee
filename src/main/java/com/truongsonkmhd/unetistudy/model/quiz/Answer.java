@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.model.quiz;
 
+import com.truongsonkmhd.unetistudy.model.quiz.base.BaseEntityAnswer;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,24 +20,9 @@ import java.util.UUID;
                 @Index(name = "idx_answer_question", columnList = "question_id")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Answer {
-
-    @Id
-    @UuidGenerator
-    @Column(name = "answer_id", nullable = false, updatable = false)
-    UUID answerId;
+public class Answer extends BaseEntityAnswer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     Question question;
-
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    String content;
-
-    @Column(name = "is_correct", nullable = false)
-    @Builder.Default
-    Boolean isCorrect = false;
-
-    @Column(name = "answer_order", nullable = false)
-    Integer answerOrder;
 }

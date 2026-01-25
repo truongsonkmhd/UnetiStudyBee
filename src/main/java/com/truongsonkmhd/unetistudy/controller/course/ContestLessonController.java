@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/contest-lesson")
+@RequestMapping("/api/admin/contest-lesson")
 @Slf4j(topic = "LESSON-CONTROLLER")
 @Tag(name = "lesson Controller")
 @RequiredArgsConstructor

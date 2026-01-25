@@ -6,9 +6,13 @@ import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTempla
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTemplateDTO;
 import com.truongsonkmhd.unetistudy.dto.a_common.CursorResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
-import com.truongsonkmhd.unetistudy.model.lesson.template.CodingExerciseTemplate;
+import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
+
+import java.util.UUID;
 
 public interface CodingExerciseTemplateService {
+    CodingExerciseTemplate getById(UUID templateId);
+
     CodingExerciseTemplate save(CodingExerciseTemplateDTO codingExercise);
 
     PageResponse<CodingExerciseTemplateCardResponse> getPublishedTemplates(

@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.quiz;
 
 
 import com.truongsonkmhd.unetistudy.common.AttemptStatus;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Answer;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import com.truongsonkmhd.unetistudy.model.quiz.UserAnswer;
@@ -54,7 +54,7 @@ public class QuizServiceImpl implements QuizService {
 
         // Lấy danh sách câu hỏi đã trả lời
         Set<UUID> answeredQuestionIds = attempt.getUserAnswers().stream()
-                .map(ua -> ua.getQuestion().getQuestionId())
+                .map(ua -> ua.getQuestion().getId())
                 .collect(Collectors.toSet());
 
         // Lấy câu hỏi tiếp theo chưa trả lời
@@ -62,7 +62,7 @@ public class QuizServiceImpl implements QuizService {
                 .findByQuizOrderByQuestionOrderAsc(attempt.getQuiz());
 
         return questions.stream()
-                .filter(q -> !answeredQuestionIds.contains(q.getQuestionId()))
+                .filter(q -> !answeredQuestionIds.contains(q.getId()))
                 .findFirst()
                 .orElse(null);
     }
@@ -89,7 +89,7 @@ public class QuizServiceImpl implements QuizService {
         // Kiểm tra đúng sai
         Set<UUID> correctAnswerIds = question.getAnswers().stream()
                 .filter(Answer::getIsCorrect)
-                .map(Answer::getAnswerId)
+                .map(Answer::getId)
                 .collect(Collectors.toSet());
 
         boolean isCorrect = !isTimeout &&

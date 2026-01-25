@@ -154,7 +154,6 @@ public class JudgeController {
 
             log.info("Submission saved with PENDING: submissionId={}", saved.getSubmissionId());
 
-            // Publish job vào RabbitMQ để chấm bài
             judgeService.publishSubmitJob(saved, request);
 
             log.info("Judge job published: submissionId={}", saved.getSubmissionId());

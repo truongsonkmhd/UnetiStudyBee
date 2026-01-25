@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.quiz;
 
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizAdminDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Answer;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
@@ -27,65 +27,54 @@ public class QuizAdminServiceImpl implements QuizAdminService {
     private final AnswerRepository answerRepository;
     private final ContestLessonRepository contestLessonRepository;
 
-    @Override
-    @Transactional
-    public QuizAdminDTO.QuizResponse createQuiz(QuizAdminDTO.CreateQuizRequest request) {
-        // Validate contest lesson exists
-        ContestLesson contestLesson = contestLessonRepository.findById(request.getContestLessonId())
-                .orElseThrow(() -> new RuntimeException("Contest lesson not found"));
-
-        // Validate at least one correct answer per question
-        validateQuestions(request.getQuestions());
-
-        // Create quiz
-        Quiz quiz = Quiz.builder()
-                .contestLesson(contestLesson)
-                .title(request.getTitle())
-                .passScore(request.getPassScore())
-                .isPublished(request.getIsPublished())
-                .totalQuestions(request.getQuestions().size())
-                .description(request.getDescription())
-                .build();
-
-
-        for (QuizAdminDTO.CreateQuestionRequest qReq : request.getQuestions()) {
-            Question question = Question.builder()
-                    .quiz(quiz)
-                    .content(qReq.getContent())
-                    .questionOrder(qReq.getQuestionOrder())
-                    .timeLimitSeconds(qReq.getTimeLimitSeconds())
-                    .points(qReq.getPoints())
-                    .build();
-
-            for (QuizAdminDTO.CreateAnswerRequest aReq : qReq.getAnswers()) {
-                Answer answer = Answer.builder()
-                        .question(question)
-                        .content(aReq.getContent())
-                        .answerOrder(aReq.getAnswerOrder())
-                        .isCorrect(aReq.getIsCorrect())
-                        .build();
-                question.addAnswer(answer);
-            }
-
-            for (QuizAdminDTO.CreateAnswerRequest aReq : qReq.getAnswers()) {
-                Answer answer = Answer.builder()
-                        .question(question)
-                        .content(aReq.getContent())
-                        .answerOrder(aReq.getAnswerOrder())
-                        .isCorrect(aReq.getIsCorrect())
-                        .build();
-                question.addAnswer(answer);
-            }
-
-
-            quiz.addQuestion(question);
-        }
-
-
-        quiz = quizRepository.save(quiz);
-
-        return mapToQuizResponse(quiz, quiz.getQuestions());
-    }
+//    @Override
+//    @Transactional
+//    public QuizAdminDTO.QuizResponse createQuiz(QuizAdminDTO.CreateQuizRequest request) {
+//        // Validate contest lesson exists
+//        ContestLesson contestLesson = contestLessonRepository.findById(request.getContestLessonId())
+//                .orElseThrow(() -> new RuntimeException("Contest lesson not found"));
+//
+//        // Validate at least one correct answer per question
+//        validateQuestions(request.getQuestions());
+//
+//        // Create quiz
+//        Quiz quiz = Quiz.builder()
+//                .contestLesson(contestLesson)
+//                .title(request.getTitle())
+//                .passScore(request.getPassScore())
+//                .isPublished(request.getIsPublished())
+//                .totalQuestions(request.getQuestions().size())
+//                .description(request.getDescription())
+//                .build();
+//
+//
+//        for (QuizAdminDTO.CreateQuestionRequest qReq : request.getQuestions()) {
+//            Question question = Question.builder()
+//                    .quiz(quiz)
+//                    .content(qReq.getContent())
+//                    .questionOrder(qReq.getQuestionOrder())
+//                    .timeLimitSeconds(qReq.getTimeLimitSeconds())
+//                    .points(qReq.getPoints())
+//                    .build();
+//
+//            for (QuizAdminDTO.CreateAnswerRequest aReq : qReq.getAnswers()) {
+//                Answer answer = Answer.builder()
+//                        .question(question)
+//                        .content(aReq.getContent())
+//                        .answerOrder(aReq.getAnswerOrder())
+//                        .isCorrect(aReq.getIsCorrect())
+//                        .build();
+//                question.addAnswer(answer);
+//            }
+//
+//            quiz.addQuestion(question);
+//        }
+//
+//
+//        quiz = quizRepository.save(quiz);
+//
+//        return mapToQuizResponse(quiz, quiz.getQuestions());
+//    }
 
     @Override
     @Transactional
@@ -362,7 +351,7 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
     private QuizAdminDTO.QuizResponse mapToQuizResponse(Quiz quiz, List<Question> questions) {
         return QuizAdminDTO.QuizResponse.builder()
-                .quizId(quiz.getQuizId())
+                .quizId(quiz.getId())
                 .title(quiz.getTitle())
                 .description(quiz.getDescription())
                 .totalQuestions(quiz.getTotalQuestions())
@@ -381,7 +370,7 @@ public class QuizAdminServiceImpl implements QuizAdminService {
         List<Answer> answers = answerRepository.findByQuestionOrderByAnswerOrderAsc(question);
 
         return QuizAdminDTO.QuestionResponse.builder()
-                .questionId(question.getQuestionId())
+                .questionId(question.getId())
                 .content(question.getContent())
                 .questionOrder(question.getQuestionOrder())
                 .timeLimitSeconds(question.getTimeLimitSeconds())
@@ -394,7 +383,7 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
     private QuizAdminDTO.AnswerResponse mapToAnswerResponse(Answer answer) {
         return QuizAdminDTO.AnswerResponse.builder()
-                .answerId(answer.getAnswerId())
+                .answerId(answer.getId())
                 .content(answer.getContent())
                 .answerOrder(answer.getAnswerOrder())
                 .isCorrect(answer.getIsCorrect())
@@ -403,7 +392,7 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
     private QuizAdminDTO.QuizSummaryResponse mapToQuizSummaryResponse(Quiz quiz) {
         return QuizAdminDTO.QuizSummaryResponse.builder()
-                .quizId(quiz.getQuizId())
+                .quizId(quiz.getId())
                 .title(quiz.getTitle())
                 .totalQuestions(quiz.getTotalQuestions())
                 .passScore(quiz.getPassScore())

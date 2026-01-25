@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T16:27:04+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:24+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class PermissionRequestMapperImpl implements PermissionRequestMapper {
@@ -25,8 +25,8 @@ public class PermissionRequestMapperImpl implements PermissionRequestMapper {
 
         Permission.PermissionBuilder permission = Permission.builder();
 
-        permission.name( dto.getName() );
         permission.description( dto.getDescription() );
+        permission.name( dto.getName() );
 
         return permission.build();
     }
@@ -39,8 +39,8 @@ public class PermissionRequestMapperImpl implements PermissionRequestMapper {
 
         PermissionRequest.PermissionRequestBuilder permissionRequest = PermissionRequest.builder();
 
-        permissionRequest.name( entity.getName() );
         permissionRequest.description( entity.getDescription() );
+        permissionRequest.name( entity.getName() );
 
         return permissionRequest.build();
     }
@@ -107,11 +107,11 @@ public class PermissionRequestMapperImpl implements PermissionRequestMapper {
             return;
         }
 
-        if ( dto.getName() != null ) {
-            entity.setName( dto.getName() );
-        }
         if ( dto.getDescription() != null ) {
             entity.setDescription( dto.getDescription() );
+        }
+        if ( dto.getName() != null ) {
+            entity.setName( dto.getName() );
         }
     }
 }

@@ -3,6 +3,7 @@ package com.truongsonkmhd.unetistudy.model.lesson.course_lesson;
 import com.truongsonkmhd.unetistudy.common.LessonType;
 import com.truongsonkmhd.unetistudy.model.User;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

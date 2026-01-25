@@ -7,9 +7,12 @@ import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonResponseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ExerciseTestCase;
-import com.truongsonkmhd.unetistudy.model.lesson.template.CodingExerciseTemplate;
+import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.template.QuizTemplate;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseTemplateRepository;
 import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
+import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
 import com.truongsonkmhd.unetistudy.sevice.ContestLessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,8 @@ public class ContestLessonServiceImpl implements ContestLessonService {
     
     private final CodingExerciseTemplateRepository templateRepository;
 
+    private final QuizTemplateRepository quizTemplateRepository;
+
     @Override
     public ContestLessonResponseDTO addContestLesson(ContestLessonRequestDTO request) {
 
@@ -47,6 +52,7 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                 .build();
 
         addCodingExercisesToContest(request.getExerciseTemplateIds(),contestLesson);
+        addQuizToContest(request.getQuizTemplateIds(),contestLesson);
 
         // save
         contestLessonRepository.save(contestLesson);
@@ -95,11 +101,11 @@ public class ContestLessonServiceImpl implements ContestLessonService {
     }
 
 
-    public void addCodingExercisesToContest(List<UUID> exerciseTemplateIds, ContestLesson contestLesson) {
+    public void addCodingExercisesToContest(List<UUID> exerciseTemplateIds2, ContestLesson contestLesson) {
 
-        if (exerciseTemplateIds!= null && !exerciseTemplateIds.isEmpty()) {
+        if (exerciseTemplateIds2!= null && !exerciseTemplateIds2.isEmpty()) {
             List<CodingExerciseTemplate> templates = templateRepository
-                    .findAllById(exerciseTemplateIds);
+                    .findAllById(exerciseTemplateIds2);
 
             for (CodingExerciseTemplate template : templates) {
                 CodingExercise contestExercise = template.toContestExercise();
@@ -123,5 +129,26 @@ public class ContestLessonServiceImpl implements ContestLessonService {
             }
         }
     }
+
+    @Transactional
+    public void addQuizToContest(List<UUID> quizTemplateIds, ContestLesson contestLesson) {
+
+        if (quizTemplateIds == null || quizTemplateIds.isEmpty()) {
+            return;
+        }
+
+        List<QuizTemplate> templates =
+                quizTemplateRepository.findAllById(quizTemplateIds);
+
+        templates.forEach(template -> {
+
+            Quiz quiz = template.toQuiz();
+
+            contestLesson.addQuizQuestion(quiz);
+
+            template.incrementUsageCount();
+        });
+    }
+
 
 }

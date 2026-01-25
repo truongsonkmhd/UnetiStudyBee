@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.model.lesson.template;
+package com.truongsonkmhd.unetistudy.model.coding_template;
 
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.base.BaseCodingExercise;

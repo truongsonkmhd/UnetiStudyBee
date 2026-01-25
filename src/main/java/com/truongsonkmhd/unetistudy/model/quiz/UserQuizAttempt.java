@@ -2,7 +2,6 @@ package com.truongsonkmhd.unetistudy.model.quiz;
 
 
 import com.truongsonkmhd.unetistudy.common.AttemptStatus;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

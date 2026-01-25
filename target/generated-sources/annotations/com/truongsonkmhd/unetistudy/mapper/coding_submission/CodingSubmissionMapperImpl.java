@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-18T13:14:08+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:24+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
@@ -85,26 +85,29 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
         if ( dto.getLanguage() != null ) {
             entity.setLanguage( dto.getLanguage() );
         }
-        if ( dto.getVerdict() != null ) {
-            entity.setVerdict( dto.getVerdict() );
+        if ( dto.getMemoryKb() != null ) {
+            entity.setMemoryKb( dto.getMemoryKb() );
         }
         if ( dto.getPassedTestcases() != null ) {
             entity.setPassedTestcases( dto.getPassedTestcases() );
         }
-        if ( dto.getTotalTestcases() != null ) {
-            entity.setTotalTestcases( dto.getTotalTestcases() );
-        }
         if ( dto.getRuntimeMs() != null ) {
             entity.setRuntimeMs( dto.getRuntimeMs() );
-        }
-        if ( dto.getMemoryKb() != null ) {
-            entity.setMemoryKb( dto.getMemoryKb() );
         }
         if ( dto.getScore() != null ) {
             entity.setScore( dto.getScore() );
         }
+        if ( dto.getSubmissionId() != null ) {
+            entity.setSubmissionId( dto.getSubmissionId() );
+        }
         if ( dto.getSubmittedAt() != null ) {
             entity.setSubmittedAt( dto.getSubmittedAt() );
+        }
+        if ( dto.getTotalTestcases() != null ) {
+            entity.setTotalTestcases( dto.getTotalTestcases() );
+        }
+        if ( dto.getVerdict() != null ) {
+            entity.setVerdict( dto.getVerdict() );
         }
     }
 
@@ -118,13 +121,14 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
 
         codingSubmissionResponseDTO.code( entity.getCode() );
         codingSubmissionResponseDTO.language( entity.getLanguage() );
-        codingSubmissionResponseDTO.verdict( entity.getVerdict() );
-        codingSubmissionResponseDTO.passedTestcases( entity.getPassedTestcases() );
-        codingSubmissionResponseDTO.totalTestcases( entity.getTotalTestcases() );
-        codingSubmissionResponseDTO.runtimeMs( entity.getRuntimeMs() );
         codingSubmissionResponseDTO.memoryKb( entity.getMemoryKb() );
+        codingSubmissionResponseDTO.passedTestcases( entity.getPassedTestcases() );
+        codingSubmissionResponseDTO.runtimeMs( entity.getRuntimeMs() );
         codingSubmissionResponseDTO.score( entity.getScore() );
+        codingSubmissionResponseDTO.submissionId( entity.getSubmissionId() );
         codingSubmissionResponseDTO.submittedAt( entity.getSubmittedAt() );
+        codingSubmissionResponseDTO.totalTestcases( entity.getTotalTestcases() );
+        codingSubmissionResponseDTO.verdict( entity.getVerdict() );
 
         return codingSubmissionResponseDTO.build();
     }
@@ -139,13 +143,14 @@ public class CodingSubmissionMapperImpl implements CodingSubmissionMapper {
 
         codingSubmission.code( dto.getCode() );
         codingSubmission.language( dto.getLanguage() );
-        codingSubmission.verdict( dto.getVerdict() );
-        codingSubmission.passedTestcases( dto.getPassedTestcases() );
-        codingSubmission.totalTestcases( dto.getTotalTestcases() );
-        codingSubmission.runtimeMs( dto.getRuntimeMs() );
         codingSubmission.memoryKb( dto.getMemoryKb() );
+        codingSubmission.passedTestcases( dto.getPassedTestcases() );
+        codingSubmission.runtimeMs( dto.getRuntimeMs() );
         codingSubmission.score( dto.getScore() );
+        codingSubmission.submissionId( dto.getSubmissionId() );
         codingSubmission.submittedAt( dto.getSubmittedAt() );
+        codingSubmission.totalTestcases( dto.getTotalTestcases() );
+        codingSubmission.verdict( dto.getVerdict() );
 
         return codingSubmission.build();
     }

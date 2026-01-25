@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface QuizAdminService {
-    QuizAdminDTO.QuizResponse createQuiz(QuizAdminDTO.CreateQuizRequest request);
+   // QuizAdminDTO.QuizResponse createQuiz(QuizAdminDTO.CreateQuizRequest request);
 
     QuizAdminDTO.QuizResponse updateQuiz(UUID quizId, QuizAdminDTO.UpdateQuizRequest request);
 

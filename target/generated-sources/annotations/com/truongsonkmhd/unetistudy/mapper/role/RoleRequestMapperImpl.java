@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-14T16:27:04+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:25+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class RoleRequestMapperImpl implements RoleRequestMapper {
@@ -83,8 +83,8 @@ public class RoleRequestMapperImpl implements RoleRequestMapper {
         Role.RoleBuilder role = Role.builder();
 
         role.permissions( mapPermissions( dto.getPermissions() ) );
-        role.name( dto.getName() );
         role.description( dto.getDescription() );
+        role.name( dto.getName() );
 
         return role.build();
     }
@@ -98,8 +98,8 @@ public class RoleRequestMapperImpl implements RoleRequestMapper {
         RoleRequest.RoleRequestBuilder roleRequest = RoleRequest.builder();
 
         roleRequest.permissions( mapPermissionNames( entity.getPermissions() ) );
-        roleRequest.name( entity.getName() );
         roleRequest.description( entity.getDescription() );
+        roleRequest.name( entity.getName() );
 
         return roleRequest.build();
     }
@@ -123,11 +123,11 @@ public class RoleRequestMapperImpl implements RoleRequestMapper {
                 entity.setPermissions( set );
             }
         }
-        if ( dto.getName() != null ) {
-            entity.setName( dto.getName() );
-        }
         if ( dto.getDescription() != null ) {
             entity.setDescription( dto.getDescription() );
+        }
+        if ( dto.getName() != null ) {
+            entity.setName( dto.getName() );
         }
     }
 }

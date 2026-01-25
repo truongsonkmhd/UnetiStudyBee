@@ -26,8 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CodingExerciseController {
 
-    private final CodingExerciseService codingExerciseService;
-
     private final CodingSubmissionService codingSubmissionService;
 
     @GetMapping("/submissions/{slug}")

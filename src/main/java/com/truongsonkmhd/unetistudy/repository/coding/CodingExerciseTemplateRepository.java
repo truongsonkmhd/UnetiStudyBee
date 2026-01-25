@@ -1,5 +1,5 @@
 package com.truongsonkmhd.unetistudy.repository.coding;
-import com.truongsonkmhd.unetistudy.model.lesson.template.CodingExerciseTemplate;
+import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.UUID;

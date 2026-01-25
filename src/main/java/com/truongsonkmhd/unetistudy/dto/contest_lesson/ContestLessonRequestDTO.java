@@ -32,4 +32,5 @@ public class ContestLessonRequestDTO {
 
     List<UUID> exerciseTemplateIds;
 
+    List<UUID> quizTemplateIds;
 }

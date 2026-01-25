@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/class-contests")
+@RequestMapping("/api/admin/class-contests")
 @Slf4j(topic = "CLASS-CONTEST-CONTROLLER")
 @Tag(name = "Class Contest Controller")
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class ClassContestController {
 
     // ================= GET ALL CONTESTS OF CLASS =================
 
-    @GetMapping("/class/{classId}")
+    @GetMapping("/{classId}")
     public ResponseEntity<IResponseMessage> getClassContests(
             @PathVariable UUID classId) {
 
@@ -50,7 +50,7 @@ public class ClassContestController {
 
     // ================= GET ONGOING =================
 
-    @GetMapping("/class/{classId}/ongoing")
+    @GetMapping("/{classId}/ongoing")
     public ResponseEntity<IResponseMessage> getOngoingContests(
             @PathVariable UUID classId) {
 
@@ -63,7 +63,7 @@ public class ClassContestController {
 
     // ================= GET UPCOMING =================
 
-    @GetMapping("/class/{classId}/upcoming")
+    @GetMapping("/{classId}/upcoming")
     public ResponseEntity<IResponseMessage> getUpcomingContests(
             @PathVariable UUID classId) {
 

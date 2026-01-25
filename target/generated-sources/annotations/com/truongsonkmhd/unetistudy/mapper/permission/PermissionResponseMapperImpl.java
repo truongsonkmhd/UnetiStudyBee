@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-18T13:14:08+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Eclipse Adoptium)"
+    date = "2026-01-25T12:03:24+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260101-2150, environment: Java 21.0.9 (Eclipse Adoptium)"
 )
 @Component
 public class PermissionResponseMapperImpl implements PermissionResponseMapper {
@@ -25,8 +25,8 @@ public class PermissionResponseMapperImpl implements PermissionResponseMapper {
 
         Permission.PermissionBuilder permission = Permission.builder();
 
-        permission.name( dto.getName() );
         permission.description( dto.getDescription() );
+        permission.name( dto.getName() );
 
         return permission.build();
     }
@@ -39,8 +39,8 @@ public class PermissionResponseMapperImpl implements PermissionResponseMapper {
 
         PermissionResponse.PermissionResponseBuilder permissionResponse = PermissionResponse.builder();
 
-        permissionResponse.name( entity.getName() );
         permissionResponse.description( entity.getDescription() );
+        permissionResponse.name( entity.getName() );
 
         return permissionResponse.build();
     }
@@ -107,11 +107,11 @@ public class PermissionResponseMapperImpl implements PermissionResponseMapper {
             return;
         }
 
-        if ( dto.getName() != null ) {
-            entity.setName( dto.getName() );
-        }
         if ( dto.getDescription() != null ) {
             entity.setDescription( dto.getDescription() );
+        }
+        if ( dto.getName() != null ) {
+            entity.setName( dto.getName() );
         }
     }
 }

@@ -1,6 +1,8 @@
-package com.truongsonkmhd.unetistudy.model.lesson.course_lesson;
+package com.truongsonkmhd.unetistudy.model.quiz;
 
-import com.truongsonkmhd.unetistudy.model.quiz.Question;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
+import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
+import com.truongsonkmhd.unetistudy.model.quiz.base.BaseEntityQuiz;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,12 +27,7 @@ import java.util.UUID;
                 @Index(name = "idx_quiz_contest", columnList = "contest_lesson_id")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Quiz {
-
-    @Id
-    @UuidGenerator
-    @Column(name = "quiz_id", nullable = false, updatable = false)
-    UUID quizId;
+public class Quiz extends BaseEntityQuiz {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contest_lesson_id", nullable = true)
@@ -44,33 +41,25 @@ public class Quiz {
     @Builder.Default
     List<Question> questions = new ArrayList<>();
 
-    @Column(name = "title", nullable = false)
-    String title;
-
-    @Column(name = "description", columnDefinition = "text")
-    String description;
-
-    @Column(name = "total_questions")
-    @Builder.Default
-    Integer totalQuestions = 0;
-
-    @Column(name = "pass_score")
-    Double passScore;
-
     @Column(name = "is_published", nullable = false)
     @Builder.Default
     Boolean isPublished = false;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    Instant updatedAt;
-
     public void addQuestion(Question question) {
         questions.add(question);
         question.setQuiz(this);
+    }
+
+    public void removeQuestion(Question question) {
+        questions.remove(question);
+        question.setQuiz(null);
+    }
+
+    public void publish() {
+        this.setIsPublished(true);
+    }
+
+    public void unpublish() {
+        this.setIsPublished(false);
     }
 }

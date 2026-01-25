@@ -17,7 +17,7 @@ import com.truongsonkmhd.unetistudy.model.course.Course;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
-import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.repository.*;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
 import com.truongsonkmhd.unetistudy.repository.course.*;
@@ -293,7 +293,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         if (q == null) return null;
 
         return QuizDTO.builder()
-                .quizId(q.getQuizId())
+                .quizId(q.getId())
                 .lessonId(q.getContestLesson() != null ? q.getContestLesson().getContestLessonId() : null)
                 .title(q.getTitle())
                 .totalQuestions(q.getTotalQuestions())

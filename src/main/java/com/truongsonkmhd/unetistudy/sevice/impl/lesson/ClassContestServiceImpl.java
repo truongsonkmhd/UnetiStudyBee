@@ -2,14 +2,13 @@ package com.truongsonkmhd.unetistudy.sevice.impl.lesson;
 
 import com.truongsonkmhd.unetistudy.common.ClassContestStatus;
 
-import com.truongsonkmhd.unetistudy.dto.contest_lesson.ClassContestResponse;
-import com.truongsonkmhd.unetistudy.dto.contest_lesson.CreateClassContestRequest;
-import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.dto.contest_lesson.*;
+import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ClassContest;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Clazz;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
 import com.truongsonkmhd.unetistudy.repository.clazz.ClassContestRepository;
-import com.truongsonkmhd.unetistudy.repository.clazz.ClazzRepository;
+import com.truongsonkmhd.unetistudy.repository.clazz.ClassRepository;
 import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
 import com.truongsonkmhd.unetistudy.sevice.ClassContestService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 public class ClassContestServiceImpl implements ClassContestService {
 
     private final ClassContestRepository classContestRepository;
-    private final ClazzRepository classRepository;
+    private final ClassRepository classRepository;
     private final ContestLessonRepository contestLessonRepository;
 
     /**
@@ -258,13 +257,13 @@ public class ClassContestServiceImpl implements ClassContestService {
 
         return ClassContestResponse.builder()
                 .classContestId(classContest.getClassContestId())
-                .classInfo(ClassContestResponse.ClassInfo.builder()
+                .classInfo(ClassInfo.builder()
                         .classId(clazz.getClassId())
                         .classCode(clazz.getClassCode())
                         .className(clazz.getClassName())
                         .instructorName(clazz.getInstructor().getUsername())
                         .build())
-                .contestInfo(ClassContestResponse.ContestInfo.builder()
+                .contestInfo(ContestInfo.builder()
                         .contestLessonId(contestLesson.getContestLessonId())
                         .title(contestLesson.getTitle())
                         .description(contestLesson.getDescription())
@@ -278,7 +277,7 @@ public class ClassContestServiceImpl implements ClassContestService {
                 .status(classContest.getStatus())
                 .isActive(classContest.getIsActive())
                 .weight(classContest.getWeight())
-                .effectiveConfig(ClassContestResponse.EffectiveConfig.builder()
+                .effectiveConfig(EffectiveConfig.builder()
                         .maxAttempts(classContest.getEffectiveMaxAttempts())
                         .showLeaderboard(classContest.getEffectiveShowLeaderboard())
                         .instructions(classContest.getEffectiveInstructions())

@@ -40,42 +40,4 @@ public class ClassContestResponse {
     Instant createdAt;
     Instant updatedAt;
 
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ClassInfo {
-        UUID classId;
-        String classCode;
-        String className;
-        String instructorName;
-    }
-
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ContestInfo {
-        UUID contestLessonId;
-        String title; // Từ CourseLesson
-        String description;
-        Integer defaultTotalPoints;
-        Integer codingExerciseCount;
-        Integer quizQuestionCount;
-    }
-
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class EffectiveConfig {
-        Integer maxAttempts;
-        Boolean showLeaderboard;
-        String instructions;
-        Integer passingScore;
-        Integer totalPoints; // Đã áp dụng weight
-    }
 }

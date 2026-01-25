@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.sevice.impl.auth;
 
 import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionRequest;
 import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionResponse;
-import com.truongsonkmhd.unetistudy.exception.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.permission.PermissionResponseMapper;
 import com.truongsonkmhd.unetistudy.model.Permission;
