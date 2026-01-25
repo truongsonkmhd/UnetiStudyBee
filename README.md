@@ -35,9 +35,6 @@
 **Storage**
 - Cloudinary for storing images
 
-**External Service**
-- VNPay for online banking
-
 **Other**
 - python train ai
 
