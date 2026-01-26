@@ -6,9 +6,9 @@ import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.JudgeRequestDTO;
 import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionResponseDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeSubmitMessage;
-import com.truongsonkmhd.unetistudy.sevice.CodingSubmissionService;
-import com.truongsonkmhd.unetistudy.sevice.JudgeService;
-import com.truongsonkmhd.unetistudy.sevice.WebSocketNotificationService;
+import com.truongsonkmhd.unetistudy.service.CodingSubmissionService;
+import com.truongsonkmhd.unetistudy.service.JudgeService;
+import com.truongsonkmhd.unetistudy.service.WebSocketNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -59,8 +59,7 @@ public class JudgeSubmitConsumer {
                 webSocketService.notifySubmissionStatus(
                         payload.getUserId(),
                         payload.getSubmissionId(),
-                        "RUNNING"
-                );
+                        "RUNNING");
             } catch (Exception e) {
                 log.error("Failed to update verdict to RUNNING: submissionId={}",
                         payload.getSubmissionId(), e);
@@ -138,8 +137,7 @@ public class JudgeSubmitConsumer {
                 rabbitTemplate.convertAndSend(
                         JudgeRabbitConfig.JUDGE_EXCHANGE,
                         JudgeRabbitConfig.RK_SUBMIT_DLQ,
-                        payload
-                );
+                        payload);
 
                 // ACK message hiện tại để không loop nữa
                 channel.basicAck(tag, false);
@@ -157,14 +155,16 @@ public class JudgeSubmitConsumer {
      * Verdict cuối cùng - không cần chấm lại
      */
     private boolean isFinalVerdict(SubmissionVerdict v) {
-        if (v == null) return false;
+        if (v == null)
+            return false;
         return switch (v) {
             case ACCEPTED,
-                 WRONG_ANSWER,
-                 TIME_LIMIT_EXCEEDED,
-                 MEMORY_LIMIT_EXCEEDED,
-                 RUNTIME_ERROR,
-                 COMPILATION_ERROR -> true;
+                    WRONG_ANSWER,
+                    TIME_LIMIT_EXCEEDED,
+                    MEMORY_LIMIT_EXCEEDED,
+                    RUNTIME_ERROR,
+                    COMPILATION_ERROR ->
+                true;
             case PENDING, RUNNING -> false;
         };
     }
@@ -174,11 +174,13 @@ public class JudgeSubmitConsumer {
      */
     private int getRetryCountFromXDeath(Message message, String queueName) {
         Object xDeath = message.getMessageProperties().getHeaders().get("x-death");
-        if (!(xDeath instanceof List<?> deaths)) return 0;
+        if (!(xDeath instanceof List<?> deaths))
+            return 0;
 
         int total = 0;
         for (Object d : deaths) {
-            if (!(d instanceof Map<?, ?> death)) continue;
+            if (!(d instanceof Map<?, ?> death))
+                continue;
 
             Object q = death.get("queue");
             Object count = death.get("count");

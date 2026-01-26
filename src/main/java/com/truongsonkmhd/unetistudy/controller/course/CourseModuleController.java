@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleRequest;
-import com.truongsonkmhd.unetistudy.sevice.CourseModuleService;
+import com.truongsonkmhd.unetistudy.service.CourseModuleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class CourseModuleController {
 
     @GetMapping("/show-course-module")
     @Transactional
-    ResponseEntity<IResponseMessage> getList(){
+    ResponseEntity<IResponseMessage> getList() {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getAllModule()));
     }
 
@@ -34,10 +34,8 @@ public class CourseModuleController {
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<IResponseMessage> update(@RequestBody CourseModuleRequest request , @PathVariable UUID id){
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id,request)));
+    ResponseEntity<IResponseMessage> update(@RequestBody CourseModuleRequest request, @PathVariable UUID id) {
+        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id, request)));
     }
-
-
 
 }

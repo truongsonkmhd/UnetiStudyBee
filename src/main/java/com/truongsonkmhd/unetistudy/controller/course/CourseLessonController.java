@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
-import com.truongsonkmhd.unetistudy.sevice.CourseLessonService;
+import com.truongsonkmhd.unetistudy.service.CourseLessonService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +24,22 @@ public class CourseLessonController {
 
     @GetMapping("/getAll")
     @Transactional
-    ResponseEntity<IResponseMessage> getList(){
+    ResponseEntity<IResponseMessage> getList() {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonAll()));
     }
 
     @GetMapping("/getLessonByModuleId/{moduleId}")
     @Transactional
-    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId){
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleId(moduleId)));
+    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId) {
+        return ResponseEntity.ok()
+                .body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleId(moduleId)));
     }
 
     @GetMapping("/getLessonByModuleIDAndSlug/{slug}/{moduleId}")
     @Transactional
-    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId , @PathVariable String slug){
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleIDAndSlug(moduleId,slug)));
+    ResponseEntity<IResponseMessage> getLessonByModuleId(@PathVariable UUID moduleId, @PathVariable String slug) {
+        return ResponseEntity.ok()
+                .body(SuccessResponseMessage.LoadedSuccess(lessonService.getLessonByModuleIDAndSlug(moduleId, slug)));
     }
 
     @PostMapping("/add")
@@ -45,16 +47,14 @@ public class CourseLessonController {
         return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(lessonService.addLesson(request)));
     }
 
-
     @DeleteMapping("/delete{id}")
     ResponseEntity<IResponseMessage> delete(@PathVariable UUID id) {
         return ResponseEntity.ok().body(SuccessResponseMessage.DeletedSuccess(lessonService.delete(id)));
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<IResponseMessage> update(@RequestBody CourseLessonRequest request , @PathVariable UUID id){
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id,request)));
+    ResponseEntity<IResponseMessage> update(@RequestBody CourseLessonRequest request, @PathVariable UUID id) {
+        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id, request)));
     }
-
 
 }

@@ -13,8 +13,8 @@ import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
 import com.truongsonkmhd.unetistudy.model.lesson.CodingSubmission;
 import com.truongsonkmhd.unetistudy.model.lesson.ContestExerciseAttempt;
-import com.truongsonkmhd.unetistudy.sevice.*;
-import com.truongsonkmhd.unetistudy.sevice.impl.coding.CodingExerciseServiceImpl;
+import com.truongsonkmhd.unetistudy.service.*;
+import com.truongsonkmhd.unetistudy.service.impl.coding.CodingExerciseServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +45,13 @@ public class JudgeController {
     private final CourseLessonService lessonService;
 
     @PostMapping("/run")
-    public ResponseEntity<IResponseMessage>  handleRunCode(@RequestBody JudgeRequestDTO request){
-        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(judgeService.runUserCode(request)));
+    public ResponseEntity<IResponseMessage> handleRunCode(@RequestBody JudgeRequestDTO request) {
+        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(judgeService.runUserCode(request)));
     }
+
     @PostMapping("/submit")
-    public  ResponseEntity<IResponseMessage>  handleSubmitCode(
-            @RequestBody JudgeRequestDTO request
-    ) {
+    public ResponseEntity<IResponseMessage> handleSubmitCode(
+            @RequestBody JudgeRequestDTO request) {
         // 1) Call judge -> nhận kết quả
         CodingSubmissionResponseDTO submission = judgeService.submitUserCode(request);
 
@@ -112,7 +112,7 @@ public class JudgeController {
         exerciseAttempt.setScore(submission.getScore() != null ? submission.getScore().doubleValue() : 0.0);
 
         contestExerciseAttemptService.save(exerciseAttempt);
-        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(submission));
+        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(submission));
     }
 
     @PostMapping("/submitMQ")
@@ -183,11 +183,9 @@ public class JudgeController {
         }
     }
 
-
     @GetMapping("/submission/{submissionId}")
     public ResponseEntity<IResponseMessage> getSubmissionResult(
-            @PathVariable UUID submissionId
-    ){
+            @PathVariable UUID submissionId) {
         try {
             CodingSubmission submission = codingSubmissionService.getSubmissionById(submissionId);
 
@@ -220,27 +218,27 @@ public class JudgeController {
         }
     }
 
-//    @GetMapping("/submissions")
-//    public ResponseEntity<IResponseMessage> getUserSubmissions(
-//            @RequestParam UUID exerciseId,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size
-//    ) {
-//        try {
-//            UUID userId = UserContext.getUserID();
-//
-//            // Giả sử bạn có method này trong service
-//            var submissions = codingSubmissionService.getUserSubmissions(
-//                    userId, exerciseId, page, size
-//            );
-//
-//            return ResponseEntity.ok()
-//                    .body(SuccessResponseMessage.CreatedSuccess(submissions));
-//
-//        } catch (Exception e) {
-//            log.error("Failed to get user submissions: exerciseId={}", exerciseId, e);
-//            throw e;
-//        }
-//    }
+    // @GetMapping("/submissions")
+    // public ResponseEntity<IResponseMessage> getUserSubmissions(
+    // @RequestParam UUID exerciseId,
+    // @RequestParam(defaultValue = "0") int page,
+    // @RequestParam(defaultValue = "10") int size
+    // ) {
+    // try {
+    // UUID userId = UserContext.getUserID();
+    //
+    // // Giả sử bạn có method này trong service
+    // var submissions = codingSubmissionService.getUserSubmissions(
+    // userId, exerciseId, page, size
+    // );
+    //
+    // return ResponseEntity.ok()
+    // .body(SuccessResponseMessage.CreatedSuccess(submissions));
+    //
+    // } catch (Exception e) {
+    // log.error("Failed to get user submissions: exerciseId={}", exerciseId, e);
+    // throw e;
+    // }
+    // }
 
 }

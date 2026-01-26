@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.class_dto.CreateClazzRequest;
-import com.truongsonkmhd.unetistudy.sevice.ClassService;
+import com.truongsonkmhd.unetistudy.service.ClassService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +25,10 @@ public class ClassController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<IResponseMessage> searchAdvanceContest(){
+    public ResponseEntity<IResponseMessage> searchAdvanceContest() {
 
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
-               SuccessResponseMessage.LoadedSuccess(classService.getALlClass())
-        ));
+                SuccessResponseMessage.LoadedSuccess(classService.getALlClass())));
     }
 
 }

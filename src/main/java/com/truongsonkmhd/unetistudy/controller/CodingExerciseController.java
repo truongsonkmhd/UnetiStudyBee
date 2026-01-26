@@ -6,8 +6,8 @@ import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDetail
 import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionShowDTO;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.sevice.CodingExerciseService;
-import com.truongsonkmhd.unetistudy.sevice.CodingSubmissionService;
+import com.truongsonkmhd.unetistudy.service.CodingExerciseService;
+import com.truongsonkmhd.unetistudy.service.CodingSubmissionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,21 +29,22 @@ public class CodingExerciseController {
     private final CodingSubmissionService codingSubmissionService;
 
     @GetMapping("/submissions/{slug}")
-    public ResponseEntity<IResponseMessage> showExerciseSubmissions(@PathVariable("slug") String theSlug){
-        List<CodingSubmissionShowDTO> submissions = codingSubmissionService.getCodingSubmissionShowByUserName(UserContext.getUsername(), theSlug);
+    public ResponseEntity<IResponseMessage> showExerciseSubmissions(@PathVariable("slug") String theSlug) {
+        List<CodingSubmissionShowDTO> submissions = codingSubmissionService
+                .getCodingSubmissionShowByUserName(UserContext.getUsername(), theSlug);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(submissions));
     }
 
     @GetMapping("/leaderboard/{slug}")
-    public  ResponseEntity<IResponseMessage> showLeaderBoard(@PathVariable("slug") String theSlug){
-        List<CodingSubmissionShowDTO> submissions = codingSubmissionService.getCodingSubmissionShowBySlugExercise(theSlug);
+    public ResponseEntity<IResponseMessage> showLeaderBoard(@PathVariable("slug") String theSlug) {
+        List<CodingSubmissionShowDTO> submissions = codingSubmissionService
+                .getCodingSubmissionShowBySlugExercise(theSlug);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(submissions));
     }
 
     @GetMapping("/tutorial/{slug}")
-    public String showTutorial(@PathVariable("slug") String theSlug){
+    public String showTutorial(@PathVariable("slug") String theSlug) {
         return "ClientTemplates/coding-exercise/tutorial";
     }
-
 
 }

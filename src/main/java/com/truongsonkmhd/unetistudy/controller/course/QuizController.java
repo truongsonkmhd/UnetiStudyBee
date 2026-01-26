@@ -8,7 +8,7 @@ import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import com.truongsonkmhd.unetistudy.model.quiz.UserAnswer;
 import com.truongsonkmhd.unetistudy.model.quiz.UserQuizAttempt;
-import com.truongsonkmhd.unetistudy.sevice.QuizService;
+import com.truongsonkmhd.unetistudy.service.QuizService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,154 +27,147 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuizController {
 
-    private final QuizService quizService;
+        private final QuizService quizService;
 
-    @PostMapping("/{quizId}/start")
-    public ResponseEntity<IResponseMessage> startQuiz(
-            @PathVariable UUID quizId
-            ) {
-        UUID userID = UserContext.getUserID();
+        @PostMapping("/{quizId}/start")
+        public ResponseEntity<IResponseMessage> startQuiz(
+                        @PathVariable UUID quizId) {
+                UUID userID = UserContext.getUserID();
 
-        UserQuizAttempt attempt = quizService.startQuizAttempt(userID,quizId);
+                UserQuizAttempt attempt = quizService.startQuizAttempt(userID, quizId);
 
-        QuizDTO.StartQuizResponse response = QuizDTO.StartQuizResponse.builder()
-                .attemptId(attempt.getAttemptId())
-                .quizId(attempt.getQuiz().getId())
-                .quizTitle(attempt.getQuiz().getTitle())
-                .totalQuestions(attempt.getQuiz().getTotalQuestions())
-                .startedAt(attempt.getStartedAt())
-                .build();
+                QuizDTO.StartQuizResponse response = QuizDTO.StartQuizResponse.builder()
+                                .attemptId(attempt.getAttemptId())
+                                .quizId(attempt.getQuiz().getId())
+                                .quizTitle(attempt.getQuiz().getTitle())
+                                .totalQuestions(attempt.getQuiz().getTotalQuestions())
+                                .startedAt(attempt.getStartedAt())
+                                .build();
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
-    }
-
-    @GetMapping("/attempt/{attemptId}/next-question")
-    public ResponseEntity<IResponseMessage> getNextQuestion(@PathVariable UUID attemptId){
-        Question question = quizService.getNextQuestion(attemptId);
-
-        if(question == null){
-            return ResponseEntity.noContent().build();
+                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
         }
 
-        List<QuizDTO.AnswerOption> answerOptions = question.getAnswers().stream()
-                .map(answer -> QuizDTO.AnswerOption.builder()
-                        .answerId(answer.getId())
-                        .content(answer.getContent())
-                        .answerOrder(answer.getAnswerOrder())
-                        .build()
-                )
-                .sorted(Comparator.comparing(QuizDTO.AnswerOption::getAnswerOrder))
-                .toList();
+        @GetMapping("/attempt/{attemptId}/next-question")
+        public ResponseEntity<IResponseMessage> getNextQuestion(@PathVariable UUID attemptId) {
+                Question question = quizService.getNextQuestion(attemptId);
 
-        QuizDTO.QuestionResponse response = QuizDTO.QuestionResponse.builder()
-                .questionId(question.getId())
-                .content(question.getContent())
-                .questionOrder(question.getQuestionOrder())
-                .timeLimitSeconds(question.getTimeLimitSeconds())
-                .answers(answerOptions)
-                .currentQuestion(question.getQuestionOrder())
-                .totalQuestions(question.getQuiz().getTotalQuestions())
-                .build();
+                if (question == null) {
+                        return ResponseEntity.noContent().build();
+                }
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(response));
-    }
+                List<QuizDTO.AnswerOption> answerOptions = question.getAnswers().stream()
+                                .map(answer -> QuizDTO.AnswerOption.builder()
+                                                .answerId(answer.getId())
+                                                .content(answer.getContent())
+                                                .answerOrder(answer.getAnswerOrder())
+                                                .build())
+                                .sorted(Comparator.comparing(QuizDTO.AnswerOption::getAnswerOrder))
+                                .toList();
 
+                QuizDTO.QuestionResponse response = QuizDTO.QuestionResponse.builder()
+                                .questionId(question.getId())
+                                .content(question.getContent())
+                                .questionOrder(question.getQuestionOrder())
+                                .timeLimitSeconds(question.getTimeLimitSeconds())
+                                .answers(answerOptions)
+                                .currentQuestion(question.getQuestionOrder())
+                                .totalQuestions(question.getQuiz().getTotalQuestions())
+                                .build();
 
-    @PostMapping("/attempt/{attemptId}/submit-answer")
-    public ResponseEntity<IResponseMessage> submitAnswer(
-            @PathVariable UUID attemptId,
-            @RequestBody QuizDTO.SubmitAnswerRequest request) {
+                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(response));
+        }
 
-        UserAnswer userAnswer = quizService.submitAnswer(
-                attemptId,
-                request.getQuestionId(),
-                request.getSelectedAnswerIds(),
-                request.getTimeSpentSeconds()
-        );
+        @PostMapping("/attempt/{attemptId}/submit-answer")
+        public ResponseEntity<IResponseMessage> submitAnswer(
+                        @PathVariable UUID attemptId,
+                        @RequestBody QuizDTO.SubmitAnswerRequest request) {
 
-        Question nextQuestion = quizService.getNextQuestion(attemptId);
+                UserAnswer userAnswer = quizService.submitAnswer(
+                                attemptId,
+                                request.getQuestionId(),
+                                request.getSelectedAnswerIds(),
+                                request.getTimeSpentSeconds());
 
-        QuizDTO.SubmitAnswerResponse response = QuizDTO.SubmitAnswerResponse.builder()
-                .userAnswerId(userAnswer.getUserAnswerId())
-                .isCorrect(userAnswer.getIsCorrect())
-                .pointsEarned(userAnswer.getPointsEarned())
-                .isTimeout(userAnswer.getIsTimeout())
-                .hasNextQuestion(nextQuestion != null)
-                .build();
+                Question nextQuestion = quizService.getNextQuestion(attemptId);
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
-    }
+                QuizDTO.SubmitAnswerResponse response = QuizDTO.SubmitAnswerResponse.builder()
+                                .userAnswerId(userAnswer.getUserAnswerId())
+                                .isCorrect(userAnswer.getIsCorrect())
+                                .pointsEarned(userAnswer.getPointsEarned())
+                                .isTimeout(userAnswer.getIsTimeout())
+                                .hasNextQuestion(nextQuestion != null)
+                                .build();
 
-    @PostMapping("/attempt/{attemptId}/complete")
-    public ResponseEntity<IResponseMessage> completeQuiz(
-            @PathVariable UUID attemptId) {
+                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        }
 
-        UserQuizAttempt attempt = quizService.completeQuizAttempt(attemptId);
+        @PostMapping("/attempt/{attemptId}/complete")
+        public ResponseEntity<IResponseMessage> completeQuiz(
+                        @PathVariable UUID attemptId) {
 
-        List<QuizDTO.QuestionResult> questionResults = attempt.getUserAnswers().stream()
-                .map(userAnswer -> {
-                    List<QuizDTO.AnswerDetail> answerDetails = userAnswer.getQuestion()
-                            .getAnswers().stream()
-                            .map(answer -> QuizDTO.AnswerDetail.builder()
-                                    .answerId(answer.getId())
-                                    .content(answer.getContent())
-                                    .isCorrect(answer.getIsCorrect())
-                                    .isSelected(userAnswer.getSelectedAnswers()
-                                            .contains(answer))
-                                    .build())
-                            .collect(Collectors.toList());
+                UserQuizAttempt attempt = quizService.completeQuizAttempt(attemptId);
 
-                    return QuizDTO.QuestionResult.builder()
-                            .questionId(userAnswer.getQuestion().getId())
-                            .questionContent(userAnswer.getQuestion().getContent())
-                            .isCorrect(userAnswer.getIsCorrect())
-                            .pointsEarned(userAnswer.getPointsEarned())
-                            .maxPoints(userAnswer.getQuestion().getPoints())
-                            .timeSpentSeconds(userAnswer.getTimeSpentSeconds())
-                            .isTimeout(userAnswer.getIsTimeout())
-                            .answers(answerDetails)
-                            .build();
-                })
-                .collect(Collectors.toList());
+                List<QuizDTO.QuestionResult> questionResults = attempt.getUserAnswers().stream()
+                                .map(userAnswer -> {
+                                        List<QuizDTO.AnswerDetail> answerDetails = userAnswer.getQuestion()
+                                                        .getAnswers().stream()
+                                                        .map(answer -> QuizDTO.AnswerDetail.builder()
+                                                                        .answerId(answer.getId())
+                                                                        .content(answer.getContent())
+                                                                        .isCorrect(answer.getIsCorrect())
+                                                                        .isSelected(userAnswer.getSelectedAnswers()
+                                                                                        .contains(answer))
+                                                                        .build())
+                                                        .collect(Collectors.toList());
 
-        QuizDTO.QuizResultResponse response = QuizDTO.QuizResultResponse.builder()
-                .attemptId(attempt.getAttemptId())
-                .score(attempt.getScore())
-                .totalPoints(attempt.getTotalPoints())
-                .percentage(attempt.getPercentage())
-                .isPassed(attempt.getIsPassed())
-                .startedAt(attempt.getStartedAt())
-                .completedAt(attempt.getCompletedAt())
-                .questionResults(questionResults)
-                .build();
+                                        return QuizDTO.QuestionResult.builder()
+                                                        .questionId(userAnswer.getQuestion().getId())
+                                                        .questionContent(userAnswer.getQuestion().getContent())
+                                                        .isCorrect(userAnswer.getIsCorrect())
+                                                        .pointsEarned(userAnswer.getPointsEarned())
+                                                        .maxPoints(userAnswer.getQuestion().getPoints())
+                                                        .timeSpentSeconds(userAnswer.getTimeSpentSeconds())
+                                                        .isTimeout(userAnswer.getIsTimeout())
+                                                        .answers(answerDetails)
+                                                        .build();
+                                })
+                                .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
-    }
+                QuizDTO.QuizResultResponse response = QuizDTO.QuizResultResponse.builder()
+                                .attemptId(attempt.getAttemptId())
+                                .score(attempt.getScore())
+                                .totalPoints(attempt.getTotalPoints())
+                                .percentage(attempt.getPercentage())
+                                .isPassed(attempt.getIsPassed())
+                                .startedAt(attempt.getStartedAt())
+                                .completedAt(attempt.getCompletedAt())
+                                .questionResults(questionResults)
+                                .build();
 
-    @GetMapping("/{quizId}/attempts")
-    public ResponseEntity<IResponseMessage> getUserAttempts(
-            @PathVariable UUID quizId) {
+                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        }
 
-        UUID userId =  UserContext.getUserID();
-        List<UserQuizAttempt> attempts = quizService.getUserAttempts(userId, quizId);
+        @GetMapping("/{quizId}/attempts")
+        public ResponseEntity<IResponseMessage> getUserAttempts(
+                        @PathVariable UUID quizId) {
 
-        List<QuizDTO.QuizResultResponse> responses = attempts.stream()
-                .filter(attempt -> attempt.getStatus() == AttemptStatus.COMPLETED)
-                .map(attempt -> QuizDTO.QuizResultResponse.builder()
-                        .attemptId(attempt.getAttemptId())
-                        .score(attempt.getScore())
-                        .totalPoints(attempt.getTotalPoints())
-                        .percentage(attempt.getPercentage())
-                        .isPassed(attempt.getIsPassed())
-                        .startedAt(attempt.getStartedAt())
-                        .completedAt(attempt.getCompletedAt())
-                        .build())
-                .collect(Collectors.toList());
+                UUID userId = UserContext.getUserID();
+                List<UserQuizAttempt> attempts = quizService.getUserAttempts(userId, quizId);
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(responses));
-    }
+                List<QuizDTO.QuizResultResponse> responses = attempts.stream()
+                                .filter(attempt -> attempt.getStatus() == AttemptStatus.COMPLETED)
+                                .map(attempt -> QuizDTO.QuizResultResponse.builder()
+                                                .attemptId(attempt.getAttemptId())
+                                                .score(attempt.getScore())
+                                                .totalPoints(attempt.getTotalPoints())
+                                                .percentage(attempt.getPercentage())
+                                                .isPassed(attempt.getIsPassed())
+                                                .startedAt(attempt.getStartedAt())
+                                                .completedAt(attempt.getCompletedAt())
+                                                .build())
+                                .collect(Collectors.toList());
 
-
-
+                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(responses));
+        }
 
 }

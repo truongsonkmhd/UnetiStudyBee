@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller.message;
 import com.truongsonkmhd.unetistudy.dto.websocket.WsMessageEvent;
 import com.truongsonkmhd.unetistudy.dto.websocket.WsSendMessageRequest;
 import com.truongsonkmhd.unetistudy.model.message.ChatMessage;
-import com.truongsonkmhd.unetistudy.sevice.ChatService;
+import com.truongsonkmhd.unetistudy.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,8 +37,7 @@ public class ChatWsController {
                 me.toString(),
                 saved.getContent(),
                 saved.getCreatedAt(),
-                req.getClientMsgId()
-        );
+                req.getClientMsgId());
 
         messagingTemplate.convertAndSend("/topic/rooms/" + roomId, event);
     }

@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller;
 import com.truongsonkmhd.unetistudy.dto.role_dto.RoleRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.sevice.RoleService;
+import com.truongsonkmhd.unetistudy.service.RoleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +20,18 @@ public class RoleController {
     RoleService roleService;
 
     @PostMapping("/create")
-    ResponseEntity<IResponseMessage> create(@RequestBody RoleRequest request){
-        return  ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(roleService.create(request)));
+    ResponseEntity<IResponseMessage> create(@RequestBody RoleRequest request) {
+        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(roleService.create(request)));
     }
 
     @GetMapping
-    ResponseEntity<IResponseMessage> getAll(){
+    ResponseEntity<IResponseMessage> getAll() {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(roleService.getAll()));
     }
 
     @DeleteMapping("/{roleId}")
     ResponseEntity<IResponseMessage> delete(@PathVariable long roleId) {
         return ResponseEntity.ok().body(
-                SuccessResponseMessage.DeletedSuccess(roleService.delete(roleId))
-        );
+                SuccessResponseMessage.DeletedSuccess(roleService.delete(roleId)));
     }
 }

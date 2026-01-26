@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizAdminDTO;
-import com.truongsonkmhd.unetistudy.sevice.QuizAdminService;
+import com.truongsonkmhd.unetistudy.service.QuizAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,14 @@ public class QuizAdminController {
      * Create a new quiz with questions and answers
      * POST /api/admin/quiz
      */
-//    @PostMapping
-//    public ResponseEntity<IResponseMessage> createQuiz(
-//            @Valid @RequestBody QuizAdminDTO.CreateQuizRequest request) {
-//
-//        QuizAdminDTO.QuizResponse response = quizAdminService.createQuiz(request);
-//        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
-//    }
+    // @PostMapping
+    // public ResponseEntity<IResponseMessage> createQuiz(
+    // @Valid @RequestBody QuizAdminDTO.CreateQuizRequest request) {
+    //
+    // QuizAdminDTO.QuizResponse response = quizAdminService.createQuiz(request);
+    // return
+    // ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+    // }
 
     /**
      * Update quiz basic information
@@ -72,8 +73,7 @@ public class QuizAdminController {
     public ResponseEntity<IResponseMessage> getAllQuizzes(
             @RequestParam UUID contestLessonId) {
 
-        List<QuizAdminDTO.QuizSummaryResponse> responses =
-                quizAdminService.getAllQuizzes(contestLessonId);
+        List<QuizAdminDTO.QuizSummaryResponse> responses = quizAdminService.getAllQuizzes(contestLessonId);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(responses));
     }
 
@@ -128,8 +128,7 @@ public class QuizAdminController {
             @PathVariable UUID questionId,
             @Valid @RequestBody QuizAdminDTO.UpdateQuestionRequest request) {
 
-        QuizAdminDTO.QuestionResponse response =
-                quizAdminService.updateQuestion(questionId, request);
+        QuizAdminDTO.QuestionResponse response = quizAdminService.updateQuestion(questionId, request);
         return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(response));
     }
 
@@ -166,8 +165,7 @@ public class QuizAdminController {
             @PathVariable UUID answerId,
             @Valid @RequestBody QuizAdminDTO.UpdateAnswerRequest request) {
 
-        QuizAdminDTO.AnswerResponse response =
-                quizAdminService.updateAnswer(answerId, request);
+        QuizAdminDTO.AnswerResponse response = quizAdminService.updateAnswer(answerId, request);
         return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(response));
     }
 
@@ -180,6 +178,5 @@ public class QuizAdminController {
         quizAdminService.deleteAnswer(answerId);
         return ResponseEntity.noContent().build();
     }
-
 
 }

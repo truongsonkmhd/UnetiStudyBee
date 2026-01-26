@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseShowRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.sevice.CourseTreeService;
+import com.truongsonkmhd.unetistudy.service.CourseTreeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,40 +24,43 @@ public class CourseController {
 
     @PostMapping("/add")
     @Transactional
-    public ResponseEntity<IResponseMessage> addCourse(@RequestBody CourseShowRequest theCourse){
+    public ResponseEntity<IResponseMessage> addCourse(@RequestBody CourseShowRequest theCourse) {
         return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(courseTreeService.save(theCourse)));
     }
 
     @PutMapping("/upd/{courseId}")
     @Transactional
-    ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID courseId, @RequestBody CourseShowRequest theCourseRequest) {
+    ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID courseId,
+            @RequestBody CourseShowRequest theCourseRequest) {
         log.info("Updating user: {}", theCourseRequest);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(courseTreeService.update(courseId,theCourseRequest)));
+        return ResponseEntity.ok()
+                .body(SuccessResponseMessage.UpdatedSuccess(courseTreeService.update(courseId, theCourseRequest)));
     }
 
     @DeleteMapping("/delete/{courseID}")
     @Transactional
-    public ResponseEntity<IResponseMessage> deleteById(@PathVariable UUID courseID){
+    public ResponseEntity<IResponseMessage> deleteById(@PathVariable UUID courseID) {
         return ResponseEntity.ok().body(SuccessResponseMessage.DeletedSuccess(courseTreeService.deleteById(courseID)));
     }
 
     @GetMapping("/getCourseById/{courseID}")
     @Transactional
-    public ResponseEntity<IResponseMessage> getCourseByID(@PathVariable UUID courseID){
+    public ResponseEntity<IResponseMessage> getCourseByID(@PathVariable UUID courseID) {
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(courseTreeService.findById(courseID)));
     }
+
     @GetMapping("/{slug}/tree")
     public ResponseEntity<IResponseMessage> getCourseTreeForStudent(@PathVariable String slug) {
         return ResponseEntity.ok(
                 SuccessResponseMessage.LoadedSuccess(
-                        courseTreeService.getCourseTreeDetailPublished(slug)
-                )
-        );
+                        courseTreeService.getCourseTreeDetailPublished(slug)));
     }
+
     @GetMapping("/getCourseBySlug/{theSlug}")
     @Transactional
-    public ResponseEntity<IResponseMessage> getCourseByID(@PathVariable String theSlug){
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(courseTreeService.getCourseModuleByCourseSlug(theSlug)));
+    public ResponseEntity<IResponseMessage> getCourseByID(@PathVariable String theSlug) {
+        return ResponseEntity.ok()
+                .body(SuccessResponseMessage.LoadedSuccess(courseTreeService.getCourseModuleByCourseSlug(theSlug)));
     }
 
 }

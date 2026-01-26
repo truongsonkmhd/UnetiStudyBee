@@ -5,7 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.user_dto.UserRequest;
 import com.truongsonkmhd.unetistudy.dto.user_dto.UserUpdateRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.sevice.UserService;
+import com.truongsonkmhd.unetistudy.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -30,34 +30,37 @@ public class UserController {
     // c2 RequiredArgsConstructor
     UserService userService;
     // như ví dụ dưới (đỡ p viết dòng này:)
-    /*public UserController(UserService userService){
-        this.userService = userService;
-    }
-    */
+    /*
+     * public UserController(UserService userService){
+     * this.userService = userService;
+     * }
+     */
     // c3: sử dụng @Autowired
     /*
-        @Autowired
-        private final UserService userService;
-    */
+     * @Autowired
+     * private final UserService userService;
+     */
 
     @Operation(summary = "Get User Sorted", description = "API retrieve user sorted ")
     @GetMapping("/List")
     ResponseEntity<IResponseMessage> getAllUsersWithSortBy(@RequestParam(required = false) String sortBy,
-                                                         @RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                         @RequestParam(defaultValue = "20") int pageSize) {
+            @RequestParam(defaultValue = "0", required = false) int pageNo,
+            @RequestParam(defaultValue = "20") int pageSize) {
         log.info("Request get all users with sort by");
 
-        var listAllUsersWithSortBy = userService.getAllUsersWithSortBy( sortBy, pageNo, pageSize);
+        var listAllUsersWithSortBy = userService.getAllUsersWithSortBy(sortBy, pageNo, pageSize);
         return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(listAllUsersWithSortBy));
     }
 
     @Operation(summary = "Get User Sorted multiple column", description = "API retrieve user sorted multiple column")
     @GetMapping("/List_sort_multiple")
-    ResponseEntity<IResponseMessage> getAllUsersWithSortByMultipleColumns(@RequestParam(required = false) List<String> sort,
-                                                                @RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                                @RequestParam(defaultValue = "20") int pageSize) {
+    ResponseEntity<IResponseMessage> getAllUsersWithSortByMultipleColumns(
+            @RequestParam(required = false) List<String> sort,
+            @RequestParam(defaultValue = "0", required = false) int pageNo,
+            @RequestParam(defaultValue = "20") int pageSize) {
         log.info("Request get all of users with sort by multiple column");
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userService.getAllUsersWithSortByMultipleColumns( pageNo, pageSize, sort)));
+        return ResponseEntity.ok().body(SuccessResponseMessage
+                .LoadedSuccess(userService.getAllUsersWithSortByMultipleColumns(pageNo, pageSize, sort)));
 
     }
 
@@ -79,13 +82,10 @@ public class UserController {
     @PutMapping("/upd/{userId}")
     ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
         log.info("Updating user: {}", request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.update(userId,request)));
+        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.update(userId, request)));
     }
 
-    @Operation(
-            summary = "Deactivate User",
-            description = "API deactivate (soft delete) user from database"
-    )
+    @Operation(summary = "Deactivate User", description = "API deactivate (soft delete) user from database")
     @DeleteMapping("del/{userId}")
     ResponseEntity<IResponseMessage> deleteUser(@PathVariable("userId") UUID userId) {
         log.info("Deleting user: {}", userId);
@@ -97,7 +97,7 @@ public class UserController {
     @PatchMapping("/change-pwd")
     ResponseEntity<IResponseMessage> changePassword(@RequestBody UserPasswordRequest request) {
         log.info("Changing password for user: {}", request);
-        return ResponseEntity. ok().body(SuccessResponseMessage.LoadedSuccess(userService.changePassword(request)));
+        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userService.changePassword(request)));
     }
 
 }

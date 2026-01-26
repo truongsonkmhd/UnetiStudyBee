@@ -5,7 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizTemplateDTO;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
-import com.truongsonkmhd.unetistudy.sevice.QuizTemplateService;
+import com.truongsonkmhd.unetistudy.service.QuizTemplateService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,157 +22,145 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class QuizTemplateController {
 
-    private final QuizTemplateService quizTemplateService;
+        private final QuizTemplateService quizTemplateService;
 
-    // ================= CREATE =================
-    @PostMapping
-    public ResponseEntity<IResponseMessage> createTemplate(
-            @RequestBody QuizTemplateDTO.CreateRequest request) {
+        // ================= CREATE =================
+        @PostMapping
+        public ResponseEntity<IResponseMessage> createTemplate(
+                        @RequestBody QuizTemplateDTO.CreateRequest request) {
 
-        String createdBy = UserContext.getUserID().toString();
+                String createdBy = UserContext.getUserID().toString();
 
-        QuizTemplateDTO.DetailResponse response =
-                quizTemplateService.createTemplate(request, createdBy);
+                QuizTemplateDTO.DetailResponse response = quizTemplateService.createTemplate(request, createdBy);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.CreatedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.CreatedSuccess(response));
+        }
 
-    // ================= UPDATE =================
-    @PutMapping("/{templateId}")
-    public ResponseEntity<IResponseMessage> updateTemplate(
-            @PathVariable UUID templateId,
-            @RequestBody QuizTemplateDTO.UpdateRequest request) {
+        // ================= UPDATE =================
+        @PutMapping("/{templateId}")
+        public ResponseEntity<IResponseMessage> updateTemplate(
+                        @PathVariable UUID templateId,
+                        @RequestBody QuizTemplateDTO.UpdateRequest request) {
 
-        QuizTemplateDTO.DetailResponse response =
-                quizTemplateService.updateTemplate(templateId, request);
+                QuizTemplateDTO.DetailResponse response = quizTemplateService.updateTemplate(templateId, request);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.UpdatedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.UpdatedSuccess(response));
+        }
 
-    // ================= GET BY ID =================
-    @GetMapping("/{templateId}")
-    public ResponseEntity<IResponseMessage> getTemplateById(
-            @PathVariable UUID templateId) {
+        // ================= GET BY ID =================
+        @GetMapping("/{templateId}")
+        public ResponseEntity<IResponseMessage> getTemplateById(
+                        @PathVariable UUID templateId) {
 
-        QuizTemplateDTO.DetailResponse response =
-                quizTemplateService.getTemplateById(templateId);
+                QuizTemplateDTO.DetailResponse response = quizTemplateService.getTemplateById(templateId);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.LoadedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.LoadedSuccess(response));
+        }
 
-    // ================= GET ACTIVE TEMPLATES =================
-//    @GetMapping("/active")
-//    public ResponseEntity<IResponseMessage> getActiveTemplates(Pageable pageable) {
-//
-//        Page<QuizTemplateDTO.Response> response =
-//                quizTemplateService.getActiveTemplates(pageable);
-//
-//        return ResponseEntity.ok(
-//                SuccessResponseMessage.LoadedSuccess(response)
-//        );
-//    }
+        // ================= GET ACTIVE TEMPLATES =================
+        // @GetMapping("/active")
+        // public ResponseEntity<IResponseMessage> getActiveTemplates(Pageable pageable)
+        // {
+        //
+        // Page<QuizTemplateDTO.Response> response =
+        // quizTemplateService.getActiveTemplates(pageable);
+        //
+        // return ResponseEntity.ok(
+        // SuccessResponseMessage.LoadedSuccess(response)
+        // );
+        // }
 
-    // ================= SEARCH =================
-    @GetMapping("/search")
-    public ResponseEntity<IResponseMessage> searchTemplates(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(required = false) String searchTerm) {
-        return ResponseEntity.ok(
-                SuccessResponseMessage.LoadedSuccess(quizTemplateService.searchTemplates(page,size,category, isActive, searchTerm))
-        );
-    }
+        // ================= SEARCH =================
+        @GetMapping("/search")
+        public ResponseEntity<IResponseMessage> searchTemplates(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(required = false) String category,
+                        @RequestParam(required = false) Boolean isActive,
+                        @RequestParam(required = false) String searchTerm) {
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.LoadedSuccess(quizTemplateService.searchTemplates(page, size,
+                                                category, isActive, searchTerm)));
+        }
 
-    // ================= GET BY CATEGORY =================
-//    @GetMapping("/category/{category}")
-//    public ResponseEntity<IResponseMessage> getTemplatesByCategory(
-//            @PathVariable String category,
-//            Pageable pageable) {
-//
-//        Page<QuizTemplateDTO.Response> response =
-//                quizTemplateService.getTemplatesByCategory(category, pageable);
-//
-//        return ResponseEntity.ok(
-//                SuccessResponseMessage.LoadedSuccess(response)
-//        );
-//    }
+        // ================= GET BY CATEGORY =================
+        // @GetMapping("/category/{category}")
+        // public ResponseEntity<IResponseMessage> getTemplatesByCategory(
+        // @PathVariable String category,
+        // Pageable pageable) {
+        //
+        // Page<QuizTemplateDTO.Response> response =
+        // quizTemplateService.getTemplatesByCategory(category, pageable);
+        //
+        // return ResponseEntity.ok(
+        // SuccessResponseMessage.LoadedSuccess(response)
+        // );
+        // }
 
-    // ================= MOST USED =================
-    @GetMapping("/most-used")
-    public ResponseEntity<IResponseMessage> getMostUsedTemplates() {
+        // ================= MOST USED =================
+        @GetMapping("/most-used")
+        public ResponseEntity<IResponseMessage> getMostUsedTemplates() {
 
-        List<QuizTemplateDTO.Response> response =
-                quizTemplateService.getMostUsedTemplates();
+                List<QuizTemplateDTO.Response> response = quizTemplateService.getMostUsedTemplates();
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.LoadedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.LoadedSuccess(response));
+        }
 
-    // ================= GET ALL CATEGORIES =================
-    @GetMapping("/categories")
-    public ResponseEntity<IResponseMessage> getAllCategories() {
+        // ================= GET ALL CATEGORIES =================
+        @GetMapping("/categories")
+        public ResponseEntity<IResponseMessage> getAllCategories() {
 
-        List<String> response = quizTemplateService.getAllCategories();
+                List<String> response = quizTemplateService.getAllCategories();
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.LoadedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.LoadedSuccess(response));
+        }
 
-    // ================= CREATE QUIZ FROM TEMPLATE =================
-    @PostMapping("/{templateId}/create-quiz")
-    public ResponseEntity<IResponseMessage> createQuizFromTemplate(
-            @PathVariable UUID templateId) {
+        // ================= CREATE QUIZ FROM TEMPLATE =================
+        @PostMapping("/{templateId}/create-quiz")
+        public ResponseEntity<IResponseMessage> createQuizFromTemplate(
+                        @PathVariable UUID templateId) {
 
-        Quiz quiz = quizTemplateService.createQuizFromTemplate(templateId);
+                Quiz quiz = quizTemplateService.createQuizFromTemplate(templateId);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.CreatedSuccess(quiz.getId())
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.CreatedSuccess(quiz.getId()));
+        }
 
-    // ================= TOGGLE STATUS =================
-    @PatchMapping("/{templateId}/status")
-    public ResponseEntity<IResponseMessage> toggleTemplateStatus(
-            @PathVariable UUID templateId,
-            @RequestParam boolean isActive) {
-        return ResponseEntity.ok(
-                SuccessResponseMessage.UpdatedSuccess(quizTemplateService.toggleTemplateStatus(templateId, isActive))
-        );
-    }
+        // ================= TOGGLE STATUS =================
+        @PatchMapping("/{templateId}/status")
+        public ResponseEntity<IResponseMessage> toggleTemplateStatus(
+                        @PathVariable UUID templateId,
+                        @RequestParam boolean isActive) {
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.UpdatedSuccess(
+                                                quizTemplateService.toggleTemplateStatus(templateId, isActive)));
+        }
 
-    // ================= DUPLICATE =================
-    @PostMapping("/{templateId}/duplicate")
-    public ResponseEntity<IResponseMessage> duplicateTemplate(
-            @PathVariable UUID templateId,
-            @RequestParam String newName) {
+        // ================= DUPLICATE =================
+        @PostMapping("/{templateId}/duplicate")
+        public ResponseEntity<IResponseMessage> duplicateTemplate(
+                        @PathVariable UUID templateId,
+                        @RequestParam String newName) {
 
-        QuizTemplateDTO.DetailResponse response =
-                quizTemplateService.duplicateTemplate(templateId, newName);
+                QuizTemplateDTO.DetailResponse response = quizTemplateService.duplicateTemplate(templateId, newName);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.CreatedSuccess(response)
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.CreatedSuccess(response));
+        }
 
-    // ================= DELETE =================
-    @PatchMapping("/{templateId}")
-    public ResponseEntity<IResponseMessage> deleteTemplate(
-            @PathVariable UUID templateId) {
+        // ================= DELETE =================
+        @PatchMapping("/{templateId}")
+        public ResponseEntity<IResponseMessage> deleteTemplate(
+                        @PathVariable UUID templateId) {
 
-        quizTemplateService.deleteTemplate(templateId);
+                quizTemplateService.deleteTemplate(templateId);
 
-        return ResponseEntity.ok(
-                SuccessResponseMessage.DeletedSuccess(quizTemplateService.deleteTemplate(templateId))
-        );
-    }
+                return ResponseEntity.ok(
+                                SuccessResponseMessage.DeletedSuccess(quizTemplateService.deleteTemplate(templateId)));
+        }
 }
