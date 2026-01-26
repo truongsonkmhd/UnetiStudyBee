@@ -7,7 +7,7 @@ import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionRespon
 import com.truongsonkmhd.unetistudy.dto.contest_exercise_attempt.AttemptInfoDTO;
 import com.truongsonkmhd.unetistudy.dto.a_common.ErrorResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.model.*;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CodingExercise;
@@ -46,7 +46,7 @@ public class JudgeController {
 
     @PostMapping("/run")
     public ResponseEntity<IResponseMessage> handleRunCode(@RequestBody JudgeRequestDTO request) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(judgeService.runUserCode(request)));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(judgeService.runUserCode(request)));
     }
 
     @PostMapping("/submit")
@@ -112,7 +112,7 @@ public class JudgeController {
         exerciseAttempt.setScore(submission.getScore() != null ? submission.getScore().doubleValue() : 0.0);
 
         contestExerciseAttemptService.save(exerciseAttempt);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(submission));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(submission));
     }
 
     @PostMapping("/submitMQ")
@@ -175,7 +175,7 @@ public class JudgeController {
                     .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(SuccessResponseMessage.CreatedSuccess(response));
+                    .body(ResponseMessage.CreatedSuccess(response));
 
         } catch (Exception e) {
             log.error("Async submit failed: exerciseId={}", request.getExerciseId(), e);
@@ -210,7 +210,7 @@ public class JudgeController {
                     .build();
 
             return ResponseEntity.ok()
-                    .body(SuccessResponseMessage.CreatedSuccess(response));
+                    .body(ResponseMessage.CreatedSuccess(response));
 
         } catch (Exception e) {
             log.error("Failed to get submission: submissionId={}", submissionId, e);
@@ -233,7 +233,7 @@ public class JudgeController {
     // );
     //
     // return ResponseEntity.ok()
-    // .body(SuccessResponseMessage.CreatedSuccess(submissions));
+    // .body(ResponseMessage.CreatedSuccess(submissions));
     //
     // } catch (Exception e) {
     // log.error("Failed to get user submissions: exerciseId={}", exerciseId, e);

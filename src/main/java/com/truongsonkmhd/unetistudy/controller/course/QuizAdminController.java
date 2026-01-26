@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizAdminDTO;
 import com.truongsonkmhd.unetistudy.service.QuizAdminService;
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class QuizAdminController {
     //
     // QuizAdminDTO.QuizResponse response = quizAdminService.createQuiz(request);
     // return
-    // ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+    // ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
     // }
 
     /**
@@ -42,7 +42,7 @@ public class QuizAdminController {
             @Valid @RequestBody QuizAdminDTO.UpdateQuizRequest request) {
 
         QuizAdminDTO.QuizResponse response = quizAdminService.updateQuiz(quizId, request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(response));
     }
 
     /**
@@ -62,7 +62,7 @@ public class QuizAdminController {
     @GetMapping("/{quizId}")
     public ResponseEntity<IResponseMessage> getQuizById(@PathVariable UUID quizId) {
         QuizAdminDTO.QuizResponse response = quizAdminService.getQuizById(quizId);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(response));
     }
 
     /**
@@ -74,7 +74,7 @@ public class QuizAdminController {
             @RequestParam UUID contestLessonId) {
 
         List<QuizAdminDTO.QuizSummaryResponse> responses = quizAdminService.getAllQuizzes(contestLessonId);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(responses));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(responses));
     }
 
     /**
@@ -88,7 +88,7 @@ public class QuizAdminController {
                 .build();
 
         QuizAdminDTO.QuizResponse response = quizAdminService.updateQuiz(quizId, request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
     }
 
     /**
@@ -102,7 +102,7 @@ public class QuizAdminController {
                 .build();
 
         QuizAdminDTO.QuizResponse response = quizAdminService.updateQuiz(quizId, request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
     }
 
     // ==================== QUESTION ENDPOINTS ====================
@@ -116,7 +116,7 @@ public class QuizAdminController {
             @Valid @RequestBody QuizAdminDTO.AddQuestionRequest request) {
 
         QuizAdminDTO.QuestionResponse response = quizAdminService.addQuestion(request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
     }
 
     /**
@@ -129,7 +129,7 @@ public class QuizAdminController {
             @Valid @RequestBody QuizAdminDTO.UpdateQuestionRequest request) {
 
         QuizAdminDTO.QuestionResponse response = quizAdminService.updateQuestion(questionId, request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(response));
     }
 
     /**
@@ -153,7 +153,7 @@ public class QuizAdminController {
             @Valid @RequestBody QuizAdminDTO.AddAnswerRequest request) {
 
         QuizAdminDTO.AnswerResponse response = quizAdminService.addAnswer(request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
     }
 
     /**
@@ -166,7 +166,7 @@ public class QuizAdminController {
             @Valid @RequestBody QuizAdminDTO.UpdateAnswerRequest request) {
 
         QuizAdminDTO.AnswerResponse response = quizAdminService.updateAnswer(answerId, request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(response));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(response));
     }
 
     /**

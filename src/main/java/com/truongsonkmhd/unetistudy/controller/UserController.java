@@ -4,7 +4,7 @@ import com.truongsonkmhd.unetistudy.dto.user_dto.UserPasswordRequest;
 import com.truongsonkmhd.unetistudy.dto.user_dto.UserRequest;
 import com.truongsonkmhd.unetistudy.dto.user_dto.UserUpdateRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,7 +49,7 @@ public class UserController {
         log.info("Request get all users with sort by");
 
         var listAllUsersWithSortBy = userService.getAllUsersWithSortBy(sortBy, pageNo, pageSize);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(listAllUsersWithSortBy));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(listAllUsersWithSortBy));
     }
 
     @Operation(summary = "Get User Sorted multiple column", description = "API retrieve user sorted multiple column")
@@ -59,7 +59,7 @@ public class UserController {
             @RequestParam(defaultValue = "0", required = false) int pageNo,
             @RequestParam(defaultValue = "20") int pageSize) {
         log.info("Request get all of users with sort by multiple column");
-        return ResponseEntity.ok().body(SuccessResponseMessage
+        return ResponseEntity.ok().body(ResponseMessage
                 .LoadedSuccess(userService.getAllUsersWithSortByMultipleColumns(pageNo, pageSize, sort)));
 
     }
@@ -69,27 +69,27 @@ public class UserController {
     public ResponseEntity<IResponseMessage> getUserDetail(@PathVariable UUID userId) {
         log.info("Get user detail by ID: {}", userId);
         var userDetailById = userService.findByIdResponse(userId);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userDetailById));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(userDetailById));
     }
 
     @Operation(summary = "Create User", description = "API add new user to database")
     @PostMapping("/add")
     ResponseEntity<IResponseMessage> createUser(@RequestBody UserRequest request) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(userService.saveUser(request)));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(userService.saveUser(request)));
     }
 
     @Operation(summary = "Update User", description = "API update user to database")
     @PutMapping("/upd/{userId}")
     ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
         log.info("Updating user: {}", request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.update(userId, request)));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(userService.update(userId, request)));
     }
 
     @Operation(summary = "Deactivate User", description = "API deactivate (soft delete) user from database")
     @DeleteMapping("del/{userId}")
     ResponseEntity<IResponseMessage> deleteUser(@PathVariable("userId") UUID userId) {
         log.info("Deleting user: {}", userId);
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(userService.delete(userId)));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(userService.delete(userId)));
 
     }
 
@@ -97,7 +97,7 @@ public class UserController {
     @PatchMapping("/change-pwd")
     ResponseEntity<IResponseMessage> changePassword(@RequestBody UserPasswordRequest request) {
         log.info("Changing password for user: {}", request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(userService.changePassword(request)));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(userService.changePassword(request)));
     }
 
 }

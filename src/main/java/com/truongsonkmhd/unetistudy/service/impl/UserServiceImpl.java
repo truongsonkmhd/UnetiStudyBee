@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.service.impl;
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
 import com.truongsonkmhd.unetistudy.dto.user_dto.*;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.user.UserRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserResponseMapper;
 import com.truongsonkmhd.unetistudy.mapper.user.UserUpdateRequestMapper;
@@ -18,17 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
+import com.truongsonkmhd.unetistudy.utils.SortBuilder;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,27 +57,7 @@ public class UserServiceImpl implements UserService {
     public UserPageResponse getAllUsersWithSortBy(String sortBy, int pageNo, int pageSize) {
 
         // xu ly truong hop FE muon bat dau voi page = 1
-        if (pageNo > 0) {
-            pageNo -= 1;
-        }
-
-        List<Sort.Order> sorts = new ArrayList<>();
-        // nếu có giá trị
-        if (StringUtils.hasLength(sortBy)) {
-            // firstName: asc|desc
-            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
-            Matcher matcher = pattern.matcher(sortBy);
-            if (matcher.find()) {
-                if (matcher.group(3).equalsIgnoreCase("asc")) {
-                    sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
-                } else {
-                    sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
-                }
-            }
-
-        }
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, SortBuilder.parse(sortBy));
         Page<User> users = userRepository.findAll(pageable);
 
         return getUserPageResponse(pageNo, pageSize, users);
@@ -89,26 +66,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserPageResponse getAllUsersWithSortByMultipleColumns(int pageNo, int pageSize, List<String> sorts) {
         // xu ly truong hop FE muon bat dau voi page = 1
-        if (pageNo > 0) {
-            pageNo -= 1;
-        }
-        List<Sort.Order> orders = new ArrayList<>();
-
-        for (String sortBy : sorts) {
-
-            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
-
-            Matcher matcher = pattern.matcher(sortBy);
-            if (matcher.find()) {
-                if (matcher.group(3).equalsIgnoreCase("asc")) {
-                    orders.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
-                } else {
-                    orders.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
-                }
-            }
-        }
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(orders));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, SortBuilder.parse(sorts));
 
         Page<User> users = userRepository.findAll(pageable);
 

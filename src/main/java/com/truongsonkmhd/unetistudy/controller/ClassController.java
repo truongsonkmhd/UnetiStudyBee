@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.class_dto.CreateClazzRequest;
 import com.truongsonkmhd.unetistudy.service.ClassService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,14 +21,14 @@ public class ClassController {
 
     @PostMapping("/add")
     public ResponseEntity<IResponseMessage> createClass(@RequestBody CreateClazzRequest request) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(classService.saveClass(request)));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(classService.saveClass(request)));
     }
 
     @GetMapping("/getAll")
     public ResponseEntity<IResponseMessage> searchAdvanceContest() {
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
-                SuccessResponseMessage.LoadedSuccess(classService.getALlClass())));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(
+                ResponseMessage.LoadedSuccess(classService.getALlClass())));
     }
 
 }

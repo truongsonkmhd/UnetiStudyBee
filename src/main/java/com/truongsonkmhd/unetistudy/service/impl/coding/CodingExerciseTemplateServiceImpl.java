@@ -13,6 +13,7 @@ import com.truongsonkmhd.unetistudy.common.Difficulty;
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTemplateCardResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.CursorResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
+import com.truongsonkmhd.unetistudy.utils.PageResponseBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -91,7 +92,7 @@ public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplate
         Pageable pageable = PageRequest.of(safePage, safeSize);
         Page<CodingExerciseTemplateCardResponse> result = repository.findPublishedTemplates(pageable);
 
-        return buildPageResponse(result);
+        return PageResponseBuilder.build(result);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplate
         Page<CodingExerciseTemplateCardResponse> result = repository.searchTemplates(q, difficulty, category, language,
                 pageable);
 
-        return buildPageResponse(result);
+        return PageResponseBuilder.build(result);
     }
 
     @Override
@@ -127,7 +128,7 @@ public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplate
         Page<CodingExerciseTemplateCardResponse> result = repository.searchAllTemplates(
                 q, difficulty, category, language, published, pageable);
 
-        return buildPageResponse(result);
+        return PageResponseBuilder.build(result);
     }
 
     // ========== CURSOR PAGINATION ==========
@@ -207,18 +208,6 @@ public class CodingExerciseTemplateServiceImpl implements CodingExerciseTemplate
     }
 
     // ========== HELPER METHODS ==========
-
-    private PageResponse<CodingExerciseTemplateCardResponse> buildPageResponse(
-            Page<CodingExerciseTemplateCardResponse> page) {
-        return PageResponse.<CodingExerciseTemplateCardResponse>builder()
-                .items(page.getContent())
-                .page(page.getNumber())
-                .size(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .hasNext(page.hasNext())
-                .build();
-    }
 
     private CursorResponse<CodingExerciseTemplateCardResponse> buildCursorResponse(
             List<CodingExerciseTemplateCardResponse> items, int requestedSize) {

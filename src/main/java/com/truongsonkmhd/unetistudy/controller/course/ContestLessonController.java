@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.common.StatusContest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonRequestDTO;
 import com.truongsonkmhd.unetistudy.service.ContestLessonService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ public class ContestLessonController {
     @PostMapping("/add")
     public ResponseEntity<IResponseMessage> addContestLesson(@RequestBody ContestLessonRequestDTO request) {
         return ResponseEntity.ok()
-                .body(SuccessResponseMessage.CreatedSuccess(contestLessonService.addContestLesson(request)));
+                .body(ResponseMessage.CreatedSuccess(contestLessonService.addContestLesson(request)));
     }
 
     @GetMapping("/search")
@@ -33,7 +33,7 @@ public class ContestLessonController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) StatusContest statusContest) {
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(
                 contestLessonService.searchContestLessons(page, size, q, statusContest)));
     }
 

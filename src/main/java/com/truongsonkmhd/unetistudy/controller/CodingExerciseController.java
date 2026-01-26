@@ -1,12 +1,11 @@
 package com.truongsonkmhd.unetistudy.controller;
 
 import com.truongsonkmhd.unetistudy.context.UserContext;
-import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDTO;
-import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDetailDTO;
+
 import com.truongsonkmhd.unetistudy.dto.coding_submission.CodingSubmissionShowDTO;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
-import com.truongsonkmhd.unetistudy.service.CodingExerciseService;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
+
 import com.truongsonkmhd.unetistudy.service.CodingSubmissionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +31,14 @@ public class CodingExerciseController {
     public ResponseEntity<IResponseMessage> showExerciseSubmissions(@PathVariable("slug") String theSlug) {
         List<CodingSubmissionShowDTO> submissions = codingSubmissionService
                 .getCodingSubmissionShowByUserName(UserContext.getUsername(), theSlug);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(submissions));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(submissions));
     }
 
     @GetMapping("/leaderboard/{slug}")
     public ResponseEntity<IResponseMessage> showLeaderBoard(@PathVariable("slug") String theSlug) {
         List<CodingSubmissionShowDTO> submissions = codingSubmissionService
                 .getCodingSubmissionShowBySlugExercise(theSlug);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(submissions));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(submissions));
     }
 
     @GetMapping("/tutorial/{slug}")

@@ -3,8 +3,8 @@ package com.truongsonkmhd.unetistudy.service.impl.quiz;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTemplateCardResponse;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizTemplateDTO;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.OptimisticLockException;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
+
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.quiz.QuizTemplateMapper;
 import com.truongsonkmhd.unetistudy.model.quiz.*;
 import com.truongsonkmhd.unetistudy.model.quiz.template.AnswerTemplate;
@@ -12,6 +12,7 @@ import com.truongsonkmhd.unetistudy.model.quiz.template.QuestionTemplate;
 import com.truongsonkmhd.unetistudy.model.quiz.template.QuizTemplate;
 import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
 import com.truongsonkmhd.unetistudy.service.QuizTemplateService;
+import com.truongsonkmhd.unetistudy.validator.QuizTemplateValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.truongsonkmhd.unetistudy.utils.PageResponseBuilder;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
 
     private final QuizTemplateRepository templateRepository;
     private final QuizTemplateMapper templateMapper;
+    private final QuizTemplateValidator templateValidator;
 
     @Override
     @Transactional
@@ -51,12 +54,7 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
         log.info("Updating quiz template: {}", templateId);
 
         QuizTemplate template = findTemplateOrThrow(templateId);
-
-        if (request.getVersion() != null && request.getVersion().equals(template.getVersion())) {
-            throw new OptimisticLockException(
-                    "Template bas been modified by another user. Current version: " + template.getVersion()
-                            + " , Provided version: " + request.getVersion());
-        }
+        templateValidator.validateVersion(template, request.getVersion());
         if (request.getTemplateName() != null) {
             template.setTitle(request.getTemplateName());
         }
@@ -95,14 +93,6 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
 
         return templateMapper.toDetailResponse(template);
     }
-
-    // @Override
-    // @Transactional(readOnly = true)
-    // public Page<QuizTemplateDTO.Response> getActiveTemplates(Pageable pageable) {
-    // log.debug("Fetching active quiz templates");
-    // return templateRepository.findByIsActiveTrue(pageable)
-    // .map(templateMapper::toResponse);
-    // }
 
     @Override
     @Transactional(readOnly = true)
@@ -148,7 +138,7 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
             });
 
             // Build page response
-            PageResponse<QuizTemplateDTO.Response> result = buildPageResponse(responsePage);
+            PageResponse<QuizTemplateDTO.Response> result = PageResponseBuilder.build(responsePage);
 
             log.info("=== SEARCH TEMPLATES SUCCESS ===");
             log.info("Returning {} items out of {} total", result.getItems().size(), result.getTotalElements());
@@ -161,27 +151,6 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
             throw new RuntimeException("Failed to search templates", e);
         }
     }
-
-    private PageResponse<QuizTemplateDTO.Response> buildPageResponse(
-            Page<QuizTemplateDTO.Response> page) {
-        return PageResponse.<QuizTemplateDTO.Response>builder()
-                .items(page.getContent())
-                .page(page.getNumber())
-                .size(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .hasNext(page.hasNext())
-                .build();
-    }
-
-    // @Override
-    // @Transactional(readOnly = true)
-    // public Page<QuizTemplateDTO.Response> getTemplatesByCategory(String category,
-    // Pageable pageable) {
-    // log.debug("Fetching templates by category: {}", category);
-    // return templateRepository.findByCategoryAndIsActiveTrue(category, pageable)
-    // .map(templateMapper::toResponse);
-    // }
 
     @Override
     @Transactional(readOnly = true)
@@ -208,9 +177,7 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
         QuizTemplate template = templateRepository.findByIdWithQuestionsAndAnswers(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz template not found with ID: " + templateId));
 
-        if (!template.getIsActive()) {
-            throw new IllegalStateException("Cannot create quiz from inactive template");
-        }
+        templateValidator.validateForQuizCreation(template);
 
         // Increment usage count
         template.incrementUsageCount();

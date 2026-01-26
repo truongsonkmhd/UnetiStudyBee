@@ -4,7 +4,7 @@ import com.truongsonkmhd.unetistudy.common.AttemptStatus;
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.QuizDTO;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.model.quiz.Question;
 import com.truongsonkmhd.unetistudy.model.quiz.UserAnswer;
 import com.truongsonkmhd.unetistudy.model.quiz.UserQuizAttempt;
@@ -44,7 +44,7 @@ public class QuizController {
                                 .startedAt(attempt.getStartedAt())
                                 .build();
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+                return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
         }
 
         @GetMapping("/attempt/{attemptId}/next-question")
@@ -74,7 +74,7 @@ public class QuizController {
                                 .totalQuestions(question.getQuiz().getTotalQuestions())
                                 .build();
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(response));
+                return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(response));
         }
 
         @PostMapping("/attempt/{attemptId}/submit-answer")
@@ -98,7 +98,7 @@ public class QuizController {
                                 .hasNextQuestion(nextQuestion != null)
                                 .build();
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+                return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
         }
 
         @PostMapping("/attempt/{attemptId}/complete")
@@ -144,7 +144,7 @@ public class QuizController {
                                 .questionResults(questionResults)
                                 .build();
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(response));
+                return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(response));
         }
 
         @GetMapping("/{quizId}/attempts")
@@ -167,7 +167,7 @@ public class QuizController {
                                                 .build())
                                 .collect(Collectors.toList());
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(responses));
+                return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(responses));
         }
 
 }

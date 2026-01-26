@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleRequest;
 import com.truongsonkmhd.unetistudy.service.CourseModuleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,17 +25,17 @@ public class CourseModuleController {
     @GetMapping("/show-course-module")
     @Transactional
     ResponseEntity<IResponseMessage> getList() {
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(lessonService.getAllModule()));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(lessonService.getAllModule()));
     }
 
     @DeleteMapping("/delete/{id}")
     ResponseEntity<IResponseMessage> delete(@PathVariable UUID id) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.DeletedSuccess(lessonService.delete(id)));
+        return ResponseEntity.ok().body(ResponseMessage.DeletedSuccess(lessonService.delete(id)));
     }
 
     @PutMapping("/update/{id}")
     ResponseEntity<IResponseMessage> update(@RequestBody CourseModuleRequest request, @PathVariable UUID id) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.UpdatedSuccess(lessonService.update(id, request)));
+        return ResponseEntity.ok().body(ResponseMessage.UpdatedSuccess(lessonService.update(id, request)));
     }
 
 }

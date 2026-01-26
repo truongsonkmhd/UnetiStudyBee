@@ -4,13 +4,12 @@ import com.truongsonkmhd.unetistudy.dto.role_dto.RoleRequest;
 import com.truongsonkmhd.unetistudy.dto.role_dto.RoleResponse;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.role.RoleResponseMapper;
+import com.truongsonkmhd.unetistudy.model.Role;
 import com.truongsonkmhd.unetistudy.repository.auth.PermissionRepository;
 import com.truongsonkmhd.unetistudy.repository.auth.RoleRepository;
 import com.truongsonkmhd.unetistudy.service.RoleService;
+import com.truongsonkmhd.unetistudy.service.impl.BaseCrudService;
 import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +17,22 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RoleServiceImpl implements RoleService {
-    RoleRepository roleRepository;
+public class RoleServiceImpl extends BaseCrudService<Role, Long, RoleRepository> implements RoleService {
 
-    PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
+    private final RoleRequestMapper roleRequestMapper;
+    private final RoleResponseMapper roleResponseMapper;
 
-    RoleRequestMapper roleRequestMapper;
-
-    RoleResponseMapper roleResponseMapper;
+    public RoleServiceImpl(RoleRepository repository,
+            PermissionRepository permissionRepository,
+            RoleRequestMapper roleRequestMapper,
+            RoleResponseMapper roleResponseMapper) {
+        super(repository, "Role");
+        this.permissionRepository = permissionRepository;
+        this.roleRequestMapper = roleRequestMapper;
+        this.roleResponseMapper = roleResponseMapper;
+    }
 
     @Transactional
     @Override
@@ -38,13 +42,13 @@ public class RoleServiceImpl implements RoleService {
         var permissions = permissionRepository.findByNames(request.getPermissions());
         role.setPermissions(new HashSet<>(permissions));
 
-        role = roleRepository.save(role);
+        role = repository.save(role);
         return roleResponseMapper.toDto(role);
     }
 
     @Override
     public List<RoleResponse> getAll() {
-        return roleRepository.findAll()
+        return repository.findAll()
                 .stream()
                 .map(roleResponseMapper::toDto)
                 .toList();
@@ -52,8 +56,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public long delete(long roleId) {
-        roleRepository.deleteById(roleId);
+        deleteById(roleId);
         return roleId;
     }
-
 }

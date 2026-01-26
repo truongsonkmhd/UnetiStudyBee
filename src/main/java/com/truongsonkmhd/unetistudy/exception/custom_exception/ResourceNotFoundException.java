@@ -1,11 +1,10 @@
-package com.truongsonkmhd.unetistudy.exception.cutom_exeption;
+package com.truongsonkmhd.unetistudy.exception.custom_exception;
 
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 
 /**
  * Exception for resource not found scenarios
  */
-
 public class ResourceNotFoundException extends BaseException {
     public ResourceNotFoundException(String message) {
         super(ErrorCode.RESOURCE_NOT_FOUND, message);

@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.CreateClassContestRequest;
 import com.truongsonkmhd.unetistudy.service.ClassContestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +29,7 @@ public class ClassContestController {
                         @RequestBody CreateClassContestRequest request) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(
+                                ResponseMessage.CreatedSuccess(
                                                 classContestService.createClassContest(request)));
         }
 
@@ -40,7 +40,7 @@ public class ClassContestController {
                         @PathVariable UUID classId) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(
+                                ResponseMessage.LoadedSuccess(
                                                 classContestService.getClassContests(classId)));
         }
 
@@ -51,7 +51,7 @@ public class ClassContestController {
                         @PathVariable UUID classId) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(
+                                ResponseMessage.LoadedSuccess(
                                                 classContestService.getOngoingContests(classId)));
         }
 
@@ -62,7 +62,7 @@ public class ClassContestController {
                         @PathVariable UUID classId) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(
+                                ResponseMessage.LoadedSuccess(
                                                 classContestService.getUpcomingContests(classId)));
         }
 
@@ -73,7 +73,7 @@ public class ClassContestController {
                         @PathVariable UUID classContestId) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.UpdatedSuccess(
+                                ResponseMessage.UpdatedSuccess(
                                                 classContestService.cancelClassContest(classContestId)));
         }
 
@@ -86,7 +86,7 @@ public class ClassContestController {
                         @RequestParam Instant newEndTime) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.UpdatedSuccess(
+                                ResponseMessage.UpdatedSuccess(
                                                 classContestService.rescheduleClassContest(
                                                                 classContestId, newStartTime, newEndTime)));
         }
@@ -96,7 +96,7 @@ public class ClassContestController {
                         @PathVariable UUID classId) {
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.UpdatedSuccess(
+                                ResponseMessage.UpdatedSuccess(
                                                 classContestService.updateContestStatuses(
                                                                 classId)));
         }

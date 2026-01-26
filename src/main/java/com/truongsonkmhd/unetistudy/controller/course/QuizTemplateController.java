@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizTemplateDTO;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.service.QuizTemplateService;
@@ -34,7 +34,7 @@ public class QuizTemplateController {
                 QuizTemplateDTO.DetailResponse response = quizTemplateService.createTemplate(request, createdBy);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(response));
+                                ResponseMessage.CreatedSuccess(response));
         }
 
         // ================= UPDATE =================
@@ -46,7 +46,7 @@ public class QuizTemplateController {
                 QuizTemplateDTO.DetailResponse response = quizTemplateService.updateTemplate(templateId, request);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.UpdatedSuccess(response));
+                                ResponseMessage.UpdatedSuccess(response));
         }
 
         // ================= GET BY ID =================
@@ -57,7 +57,7 @@ public class QuizTemplateController {
                 QuizTemplateDTO.DetailResponse response = quizTemplateService.getTemplateById(templateId);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(response));
+                                ResponseMessage.LoadedSuccess(response));
         }
 
         // ================= GET ACTIVE TEMPLATES =================
@@ -69,7 +69,7 @@ public class QuizTemplateController {
         // quizTemplateService.getActiveTemplates(pageable);
         //
         // return ResponseEntity.ok(
-        // SuccessResponseMessage.LoadedSuccess(response)
+        // ResponseMessage.LoadedSuccess(response)
         // );
         // }
 
@@ -82,7 +82,7 @@ public class QuizTemplateController {
                         @RequestParam(required = false) Boolean isActive,
                         @RequestParam(required = false) String searchTerm) {
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(quizTemplateService.searchTemplates(page, size,
+                                ResponseMessage.LoadedSuccess(quizTemplateService.searchTemplates(page, size,
                                                 category, isActive, searchTerm)));
         }
 
@@ -96,7 +96,7 @@ public class QuizTemplateController {
         // quizTemplateService.getTemplatesByCategory(category, pageable);
         //
         // return ResponseEntity.ok(
-        // SuccessResponseMessage.LoadedSuccess(response)
+        // ResponseMessage.LoadedSuccess(response)
         // );
         // }
 
@@ -107,7 +107,7 @@ public class QuizTemplateController {
                 List<QuizTemplateDTO.Response> response = quizTemplateService.getMostUsedTemplates();
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(response));
+                                ResponseMessage.LoadedSuccess(response));
         }
 
         // ================= GET ALL CATEGORIES =================
@@ -117,7 +117,7 @@ public class QuizTemplateController {
                 List<String> response = quizTemplateService.getAllCategories();
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.LoadedSuccess(response));
+                                ResponseMessage.LoadedSuccess(response));
         }
 
         // ================= CREATE QUIZ FROM TEMPLATE =================
@@ -128,7 +128,7 @@ public class QuizTemplateController {
                 Quiz quiz = quizTemplateService.createQuizFromTemplate(templateId);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(quiz.getId()));
+                                ResponseMessage.CreatedSuccess(quiz.getId()));
         }
 
         // ================= TOGGLE STATUS =================
@@ -137,7 +137,7 @@ public class QuizTemplateController {
                         @PathVariable UUID templateId,
                         @RequestParam boolean isActive) {
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.UpdatedSuccess(
+                                ResponseMessage.UpdatedSuccess(
                                                 quizTemplateService.toggleTemplateStatus(templateId, isActive)));
         }
 
@@ -150,7 +150,7 @@ public class QuizTemplateController {
                 QuizTemplateDTO.DetailResponse response = quizTemplateService.duplicateTemplate(templateId, newName);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(response));
+                                ResponseMessage.CreatedSuccess(response));
         }
 
         // ================= DELETE =================
@@ -161,6 +161,6 @@ public class QuizTemplateController {
                 quizTemplateService.deleteTemplate(templateId);
 
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.DeletedSuccess(quizTemplateService.deleteTemplate(templateId)));
+                                ResponseMessage.DeletedSuccess(quizTemplateService.deleteTemplate(templateId)));
         }
 }

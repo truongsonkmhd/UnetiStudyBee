@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.service.impl.course;
 
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleRequest;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleResponse;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;

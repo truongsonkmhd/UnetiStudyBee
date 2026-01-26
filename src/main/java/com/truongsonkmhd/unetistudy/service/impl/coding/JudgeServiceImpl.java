@@ -17,6 +17,8 @@ import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeInternalResult;
 import com.truongsonkmhd.unetistudy.dto.judge_rabbit_mq.JudgeSubmitMessage;
 import com.truongsonkmhd.unetistudy.repository.coding.ExerciseTestCaseRepository;
 import com.truongsonkmhd.unetistudy.service.*;
+import com.truongsonkmhd.unetistudy.strategy.coding.LanguageRunner;
+import com.truongsonkmhd.unetistudy.strategy.coding.LanguageRunnerFactory;
 import com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +36,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.truongsonkmhd.unetistudy.utils.DockerCodeExecutionUtil.*;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,8 +48,9 @@ public class JudgeServiceImpl implements JudgeService {
     private final CodingExerciseService codingExerciseService;
     private final ContestExerciseAttemptService contestExerciseAttemptService;
     private final CourseLessonService lessonService;
+    private final DockerCodeExecutionUtil dockerCodeExecutionUtil;
+    private final LanguageRunnerFactory runnerFactory;
 
-    private static final String ENV_CONTAINER = "JUDGE_WORKDIR_CONTAINER";
     private static final String ENV_HOST = "JUDGE_WORKDIR_HOST";
 
     @Override
@@ -138,20 +139,21 @@ public class JudgeServiceImpl implements JudgeService {
             Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
+            LanguageRunner runner = runnerFactory.getRunnerOrThrow(request.getLanguage());
+            Path sourceFile = workingDir.resolve(runner.getSourceFileName());
             Files.writeString(sourceFile, request.getSourceCode() == null ? "" : request.getSourceCode());
 
-            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
+            dockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
             if (total == 0) {
-                String out = DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
+                String out = dockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
                 verdict = SubmissionVerdict.ACCEPTED;
                 message = out;
             } else {
                 boolean allPassed = true;
 
                 for (ExerciseTestCasesDTO tc : testCases) {
-                    String outputRun = DockerCodeExecutionUtil.runInContainer(
+                    String outputRun = dockerCodeExecutionUtil.runInContainer(
                             workingDir,
                             request.getLanguage(),
                             safeString(tc.getInput()));
@@ -205,17 +207,18 @@ public class JudgeServiceImpl implements JudgeService {
             Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
+            LanguageRunner runner = runnerFactory.getRunnerOrThrow(request.getLanguage());
+            Path sourceFile = workingDir.resolve(runner.getSourceFileName());
             Files.writeString(sourceFile, request.getSourceCode());
 
-            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
+            dockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
             Set<ExerciseTestCasesDTO> testCases = getListExerciseTestCase(request.getExerciseId());
 
             StringBuilder output = new StringBuilder();
 
             if (testCases == null || testCases.isEmpty()) {
-                output.append(DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), ""));
+                output.append(dockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), ""));
                 return new JudgeRunResponseDTO(output.toString(), "SUCCESS", "");
             }
 
@@ -225,7 +228,7 @@ public class JudgeServiceImpl implements JudgeService {
                 if (Boolean.FALSE.equals(testCase.getIsPublic()))
                     continue;
 
-                String outputRun = DockerCodeExecutionUtil.runInContainer(
+                String outputRun = dockerCodeExecutionUtil.runInContainer(
                         workingDir,
                         request.getLanguage(),
                         safeString(testCase.getInput()));
@@ -278,33 +281,31 @@ public class JudgeServiceImpl implements JudgeService {
         int total = (exerciseTestCases == null) ? 0 : exerciseTestCases.size();
         int score = 0;
 
-        Integer runtimeMs = null; // TODO
-        Integer memoryKb = null; // TODO
+        Integer runtimeMs = null;
+        Integer memoryKb = null;
 
         SubmissionVerdict verdict = SubmissionVerdict.PENDING;
 
         try {
 
-            Path containerDir = containerBaseDir().resolve(folderName);
-
             Files.createDirectories(hostBaseDir());
             Files.createDirectories(workingDir);
 
-            Path sourceFile = workingDir.resolve(resolveSourceFileName(request.getLanguage()));
+            LanguageRunner runner = runnerFactory.getRunnerOrThrow(request.getLanguage());
+            Path sourceFile = workingDir.resolve(runner.getSourceFileName());
             Files.writeString(sourceFile, request.getSourceCode());
 
-            DockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
+            dockerCodeExecutionUtil.compileInContainer(workingDir, request.getLanguage());
 
-            // KhÃ´ng cÃ³ test case -> cháº¡y 1 láº§n
             if (total == 0) {
-                DockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
+                dockerCodeExecutionUtil.runInContainer(workingDir, request.getLanguage(), "");
                 verdict = SubmissionVerdict.ACCEPTED;
                 score = 0;
             } else {
                 boolean allPassed = true;
 
                 for (ExerciseTestCasesDTO tc : exerciseTestCases) {
-                    String outputRun = DockerCodeExecutionUtil.runInContainer(
+                    String outputRun = dockerCodeExecutionUtil.runInContainer(
                             workingDir,
                             request.getLanguage(),
                             safeString(tc.getInput()));
@@ -351,11 +352,6 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     // Helper methods
-    private Path containerBaseDir() {
-        String v = System.getenv(ENV_CONTAINER);
-        return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
-    }
-
     private Path hostBaseDir() {
         String v = System.getenv(ENV_HOST);
         return Paths.get(v != null && !v.isBlank() ? v : "Code_Dir");
@@ -378,20 +374,5 @@ public class JudgeServiceImpl implements JudgeService {
         if (s == null || s.isBlank())
             return "user";
         return s.replaceAll("[^a-zA-Z0-9._-]", "_");
-    }
-
-    private static String resolveSourceFileName(String language) {
-        if (language == null || language.isBlank()) {
-            return "Main.java";
-        }
-
-        return switch (language.toLowerCase()) {
-            case LANG_JAVA -> "Main.java";
-            case LANG_PYTHON -> "main.py";
-            case LANG_CPP -> "main.cpp";
-            case LANG_CSHARP -> "Main.cs";
-            case LANG_GO -> "main.go";
-            default -> "Main.java";
-        };
     }
 }

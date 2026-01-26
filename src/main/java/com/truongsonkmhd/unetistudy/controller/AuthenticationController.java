@@ -4,7 +4,7 @@ import com.nimbusds.jose.JOSEException;
 import com.truongsonkmhd.unetistudy.dto.auth_dto.*;
 import com.truongsonkmhd.unetistudy.dto.a_custom.ApiResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,14 +31,14 @@ public class AuthenticationController {
     @Operation(summary = "Đăng nhập tài khoản")
     ResponseEntity<IResponseMessage> login(@RequestBody AuthenticationDTORequest request) {
         AuthenticationDTOResponse authenticateResponse = this.authenticationService.authenticate(request);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
     @PostMapping("/register")
     @Operation(summary = "Đăng ký tài khoản")
     ResponseEntity<IResponseMessage> register(@RequestBody RegisterDTORequest req) {
         AuthenticationDTOResponse authenticationDTOResponse = this.authenticationService.register(req);
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationDTOResponse));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(authenticationDTOResponse));
     }
 
     @PostMapping("/login-with-token")
@@ -46,13 +46,13 @@ public class AuthenticationController {
     ResponseEntity<IResponseMessage> loginWithToken(@RequestBody RefreshTokenDTORequest req) {
         AuthenticationDTOResponse authenticationDTOResponse = this.authenticationService
                 .loginWithToken(req.getRefreshToken());
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticationDTOResponse));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(authenticationDTOResponse));
     }
 
     @PostMapping("/refresh-token")
     ResponseEntity<IResponseMessage> login(@RequestBody RefreshTokenDTORequest req) {
         AuthenticationDTOResponse authenticateResponse = this.authenticationService.refreshToken(req.getRefreshToken());
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(authenticateResponse));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(authenticateResponse));
     }
 
     @PostMapping("/introspect")

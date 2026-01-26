@@ -1,16 +1,16 @@
-package com.truongsonkmhd.unetistudy.exception.cutom_exeption;
+package com.truongsonkmhd.unetistudy.exception.custom_exception;
 
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 
 /**
  * Exception for forbidden access
  */
-public class ForBiddenException extends BaseException {
-    public ForBiddenException(String message) {
+public class ForbiddenException extends BaseException {
+    public ForbiddenException(String message) {
         super(ErrorCode.FORBIDDEN, message);
     }
 
-    public ForBiddenException() {
+    public ForbiddenException() {
         super(ErrorCode.FORBIDDEN, "You don't have permission to access this resource");
     }
 }

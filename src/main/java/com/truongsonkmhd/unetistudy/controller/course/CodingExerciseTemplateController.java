@@ -6,7 +6,7 @@ import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTempla
 import com.truongsonkmhd.unetistudy.dto.a_common.CursorResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.service.CodingExerciseTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,7 +34,7 @@ public class CodingExerciseTemplateController {
         public ResponseEntity<IResponseMessage> createTemplate(
                         @RequestBody CodingExerciseTemplateDTO dto) {
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(codingExerciseTemplateService.save(dto)));
+                                ResponseMessage.CreatedSuccess(codingExerciseTemplateService.save(dto)));
         }
 
         @GetMapping("/{id}")
@@ -42,17 +42,17 @@ public class CodingExerciseTemplateController {
         public ResponseEntity<IResponseMessage> getById(
                         @PathVariable UUID id) {
                 return ResponseEntity.ok(
-                                SuccessResponseMessage.CreatedSuccess(codingExerciseTemplateService.getById(id)));
+                                ResponseMessage.CreatedSuccess(codingExerciseTemplateService.getById(id)));
         }
 
-    @PatchMapping("/{id}")
-    @Operation(summary = )
-    public ResponseEntity<IResponseMessage> updateStatus(
-            @PathVariable UUID id){
-           return ResponseEntity.ok().body(
-                   SuccessResponseMessage.UpdatedSuccess()
-           );
-    }
+//    @PatchMapping("/{id}")
+//    @Operation(summary = )
+//    public ResponseEntity<IResponseMessage> updateStatus(
+//            @PathVariable UUID id){
+//           return ResponseEntity.ok().body(
+//                   ResponseMessage.UpdatedSuccess()
+//           );
+//    }
 
         // ========== OFFSET PAGINATION ==========
 
@@ -74,7 +74,7 @@ public class CodingExerciseTemplateController {
                         @RequestParam(required = false) Difficulty difficulty,
                         @RequestParam(required = false) String category,
                         @RequestParam(required = false) String language) {
-                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
+                return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(
                                 codingExerciseTemplateService.searchTemplates(page, size, q, difficulty, category,
                                                 language)));
         }
@@ -90,7 +90,7 @@ public class CodingExerciseTemplateController {
                         @RequestParam(required = false) String language,
                         @RequestParam(required = false) Boolean published) {
 
-                return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(
+                return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(
                                 codingExerciseTemplateService.searchAllTemplates(page, size, q, difficulty, category,
                                                 language, published)));
         }

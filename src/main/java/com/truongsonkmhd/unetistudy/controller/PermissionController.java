@@ -2,7 +2,7 @@ package com.truongsonkmhd.unetistudy.controller;
 
 import com.truongsonkmhd.unetistudy.dto.permission_dto.PermissionRequest;
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.service.PermissionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +22,13 @@ public class PermissionController {
 
     @PostMapping("/create")
     ResponseEntity<IResponseMessage> create(@RequestBody PermissionRequest request) {
-        return ResponseEntity.ok().body(SuccessResponseMessage.CreatedSuccess(permissionService.create(request)));
+        return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(permissionService.create(request)));
     }
 
     @PutMapping("/update/{permissionId}")
     ResponseEntity<IResponseMessage> update(@RequestBody PermissionRequest request, @PathVariable long permissionId) {
         return ResponseEntity.ok()
-                .body(SuccessResponseMessage.UpdatedSuccess(permissionService.update(permissionId, request)));
+                .body(ResponseMessage.UpdatedSuccess(permissionService.update(permissionId, request)));
     }
 
     @GetMapping
@@ -38,13 +38,13 @@ public class PermissionController {
         log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
-        return ResponseEntity.ok().body(SuccessResponseMessage.LoadedSuccess(permissionService.getAll()));
+        return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(permissionService.getAll()));
     }
 
     @DeleteMapping("/{permissionId}")
     ResponseEntity<IResponseMessage> delete(@PathVariable long permissionId) {
         return ResponseEntity.ok().body(
-                SuccessResponseMessage.DeletedSuccess(permissionService.delete(permissionId)));
+                ResponseMessage.DeletedSuccess(permissionService.delete(permissionId)));
     }
 
 }

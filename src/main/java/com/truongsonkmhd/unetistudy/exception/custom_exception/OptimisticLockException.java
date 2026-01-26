@@ -1,9 +1,9 @@
-package com.truongsonkmhd.unetistudy.exception.cutom_exeption;
+package com.truongsonkmhd.unetistudy.exception.custom_exception;
 
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 
 /**
-        * Exception for optimistic locking failures
+ * Exception for optimistic locking failures
  */
 public class OptimisticLockException extends BaseException {
     public OptimisticLockException() {

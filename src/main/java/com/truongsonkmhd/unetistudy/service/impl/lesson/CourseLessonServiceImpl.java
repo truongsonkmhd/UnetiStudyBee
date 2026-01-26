@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.service.impl.lesson;
 import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.coding_submission.QuizExerciseMapper;
 import com.truongsonkmhd.unetistudy.mapper.lesson.CourseLessonRequestMapper;

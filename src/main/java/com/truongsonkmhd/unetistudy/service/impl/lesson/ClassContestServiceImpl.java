@@ -3,7 +3,7 @@ package com.truongsonkmhd.unetistudy.service.impl.lesson;
 import com.truongsonkmhd.unetistudy.common.ClassContestStatus;
 
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.*;
-import com.truongsonkmhd.unetistudy.exception.cutom_exeption.ResourceNotFoundException;
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ClassContest;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.Clazz;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;

@@ -1,7 +1,7 @@
 package com.truongsonkmhd.unetistudy.controller.course;
 
 import com.truongsonkmhd.unetistudy.dto.a_common.IResponseMessage;
-import com.truongsonkmhd.unetistudy.dto.a_common.SuccessResponseMessage;
+import com.truongsonkmhd.unetistudy.dto.a_common.ResponseMessage;
 import com.truongsonkmhd.unetistudy.service.CourseCatalogService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -25,7 +25,7 @@ public class CourseCatalogController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String q) {
         return ResponseEntity.ok()
-                .body(SuccessResponseMessage.LoadedSuccess(courseCatalogService.getPublishedCourses(page, size, q)));
+                .body(ResponseMessage.LoadedSuccess(courseCatalogService.getPublishedCourses(page, size, q)));
     }
 
     @GetMapping("/published/scroll")
@@ -34,7 +34,7 @@ public class CourseCatalogController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String q) {
         return ResponseEntity.ok().body(
-                SuccessResponseMessage.LoadedSuccess(courseCatalogService.getPublishedCoursesCursor(cursor, size, q)));
+                ResponseMessage.LoadedSuccess(courseCatalogService.getPublishedCoursesCursor(cursor, size, q)));
     }
 
 }

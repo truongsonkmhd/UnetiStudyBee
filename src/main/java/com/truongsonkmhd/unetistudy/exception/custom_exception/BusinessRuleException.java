@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.exception.cutom_exeption;
+package com.truongsonkmhd.unetistudy.exception.custom_exception;
 
 import com.truongsonkmhd.unetistudy.exception.ErrorCode;
 
