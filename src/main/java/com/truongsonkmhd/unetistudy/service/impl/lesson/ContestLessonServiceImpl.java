@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.service.impl.lesson;
 
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.common.StatusContest;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
 import com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonRequestDTO;
@@ -16,6 +17,8 @@ import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
 import com.truongsonkmhd.unetistudy.service.ContestLessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,19 +28,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service quản lý Contest Lesson với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside - @Cacheable cho searchContestLessons
+ * 2. Cache Invalidation - @CacheEvict khi addContestLesson
+ * 3. Time-based Expiration - TTL 15 phút
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ContestLessonServiceImpl implements ContestLessonService {
 
     private final ContestLessonRepository contestLessonRepository;
-
     private final CodingExerciseTemplateRepository templateRepository;
-
     private final QuizTemplateRepository quizTemplateRepository;
 
+    /**
+     * Cache Invalidation: Xóa cache danh sách contest khi tạo mới
+     */
     @Override
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, allEntries = true)
     public ContestLessonResponseDTO addContestLesson(ContestLessonRequestDTO request) {
+        log.info("Adding new contest lesson: {} - Evicting cache", request.getTitle());
 
         ContestLesson contestLesson = ContestLesson.builder()
                 .title(request.getTitle())
@@ -54,7 +68,6 @@ public class ContestLessonServiceImpl implements ContestLessonService {
         addCodingExercisesToContest(request.getExerciseTemplateIds(), contestLesson);
         addQuizToContest(request.getQuizTemplateIds(), contestLesson);
 
-        // save
         contestLessonRepository.save(contestLesson);
 
         return ContestLessonResponseDTO.builder()
@@ -70,13 +83,19 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                 .build();
     }
 
+    /**
+     * Cache-Aside: Tìm kiếm contest lessons
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheConstants.CONTESTS, key = "'search:' + #page + ':' + #size + ':' + (#q ?: '') + ':' + (#statusContest ?: '')", unless = "#result.items.isEmpty()")
     public PageResponse<ContestLessonResponseDTO> searchContestLessons(
             int page,
             int size,
             String q,
             StatusContest statusContest) {
+
+        log.debug("Cache MISS - Searching contest lessons: q={}, status={}", q, statusContest);
 
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 50);
@@ -120,10 +139,7 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                     contestExercise.addTestCase(testCase);
                 }
 
-                // Add to contest
                 contestLesson.addCodingExercise(contestExercise);
-
-                // Track usage
                 template.incrementUsageCount();
             }
         }
@@ -139,11 +155,8 @@ public class ContestLessonServiceImpl implements ContestLessonService {
         List<QuizTemplate> templates = quizTemplateRepository.findAllById(quizTemplateIds);
 
         templates.forEach(template -> {
-
             Quiz quiz = template.toQuiz();
-
             contestLesson.addQuizQuestion(quiz);
-
             template.incrementUsageCount();
         });
     }

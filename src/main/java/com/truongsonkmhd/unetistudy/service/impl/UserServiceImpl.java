@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.service.impl;
 
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.common.UserStatus;
 import com.truongsonkmhd.unetistudy.common.UserType;
 import com.truongsonkmhd.unetistudy.dto.user_dto.*;
@@ -15,6 +16,9 @@ import com.truongsonkmhd.unetistudy.security.MyUserDetail;
 import com.truongsonkmhd.unetistudy.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,26 +32,29 @@ import com.truongsonkmhd.unetistudy.utils.SortBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service quản lý User với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside (Lazy Loading) - @Cacheable cho findById, findByUsername
+ * 2. Cache Invalidation - @CacheEvict cho update, delete, changePassword
+ * 3. Time-based Expiration - TTL 15 phút (cấu hình trong CacheConfiguration)
+ * 4. LRU Eviction - Khi cache đầy, loại bỏ entries ít dùng nhất
+ */
 @Service
 @Slf4j(topic = "USER-SERVICE")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final UserResponseMapper userResponseMapper;
-
     private final UserRequestMapper userRequestMapper;
-
     private final UserUpdateRequestMapper userUpdateRequestMapper;
 
     @Override
     public UserDetailsService userDetailsService() {
-
         return username -> userRepository.findByUsername(username)
                 .map(MyUserDetail::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -55,32 +62,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserPageResponse getAllUsersWithSortBy(String sortBy, int pageNo, int pageSize) {
-
-        // xu ly truong hop FE muon bat dau voi page = 1
         Pageable pageable = PageRequest.of(pageNo, pageSize, SortBuilder.parse(sortBy));
         Page<User> users = userRepository.findAll(pageable);
-
         return getUserPageResponse(pageNo, pageSize, users);
     }
 
     @Override
     public UserPageResponse getAllUsersWithSortByMultipleColumns(int pageNo, int pageSize, List<String> sorts) {
-        // xu ly truong hop FE muon bat dau voi page = 1
         Pageable pageable = PageRequest.of(pageNo, pageSize, SortBuilder.parse(sorts));
-
         Page<User> users = userRepository.findAll(pageable);
-
         return getUserPageResponse(pageNo, pageSize, users);
     }
 
-    /**
-     * Convert UserEntities to user
-     *
-     * @param page
-     * @param pageSize
-     * @param userEntities
-     * @return
-     */
     private UserPageResponse getUserPageResponse(int page, int pageSize, Page<User> userEntities) {
         log.info("Convert User Entity Page");
         List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
@@ -106,20 +99,36 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * Cache-Aside: Lấy UserResponse by ID
+     * Cache key: userId
+     * TTL: 15 phút (cấu hình mặc định)
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.USER_BY_ID, key = "#id", unless = "#result == null")
     public UserResponse findByIdResponse(UUID id) {
-
+        log.debug("Cache MISS - Loading user from DB: {}", id);
         return userResponseMapper.toDto(getUserEntity(id));
     }
 
+    /**
+     * Cache-Aside: Lấy User entity by ID
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.USER_BY_ID, key = "'entity:' + #id", unless = "#result == null")
     public User findById(UUID id) {
-
+        log.debug("Cache MISS - Loading user entity from DB: {}", id);
         return getUserEntity(id);
     }
 
+    /**
+     * Cache-Aside: Lấy User by username
+     * Cache key: username
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.USER_BY_USERNAME, key = "#username", unless = "#result == null")
     public User findByUsername(String username) {
+        log.debug("Cache MISS - Loading user by username from DB: {}", username);
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
@@ -129,14 +138,15 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    /**
+     * Tạo user mới - không cần cache vì là dữ liệu mới
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserResponse saveUser(UserRequest req) {
-
         Set<String> roleCodes = req.getRoleCodes();
 
         if (roleCodes == null || roleCodes.isEmpty()) {
-            // Nếu client không gửi roles, mặc định dùng STUDENT
             roleCodes = Set.of(UserType.STUDENT.getValue());
         }
 
@@ -150,8 +160,7 @@ public class UserServiceImpl implements UserService {
                     .filter(code -> !foundCodes.contains(code))
                     .collect(Collectors.toSet());
 
-            throw new IllegalArgumentException(
-                    "Roles not found: " + notFoundCodes);
+            throw new IllegalArgumentException("Roles not found: " + notFoundCodes);
         }
 
         User user = User.builder()
@@ -171,68 +180,98 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         user.setRoles(new HashSet<>(roles));
+        User savedUser = userRepository.save(user);
 
-        log.info("User has added successfully, userId={}", user.getId());
-
-        return userResponseMapper.toDto(user);
+        log.info("User has added successfully, userId={}", savedUser.getId());
+        return userResponseMapper.toDto(savedUser);
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi update user
+     * Evict cả cache by ID và by username
+     */
     @Override
-    @Transactional()
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "#userId"),
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "'entity:' + #userId"),
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_USERNAME, allEntries = true)
+    })
     public UserResponse update(UUID userId, UserUpdateRequest req) {
-        log.info("Updating user: {}", req);
-        // Get user by id
-        User user = getUserEntity(userId);
+        log.info("Updating user: {} - Evicting cache", userId);
+
+        User user = getUserEntityNoCache(userId);
         userUpdateRequestMapper.partialUpdate(user, req);
 
         var roles = roleRepository.findAllByCodes(req.getRoles());
         user.setRoles(new HashSet<>(roles));
 
-        log.info("Updated user: {}", req);
-        log.info("Updated address: {}", req);
+        User savedUser = userRepository.save(user);
+        log.info("Updated user: {}", userId);
 
-        return userResponseMapper.toDto(userRepository.save(user));
+        return userResponseMapper.toDto(savedUser);
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi đổi password
+     */
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "#req.id"),
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "'entity:' + #req.id")
+    })
     public UUID changePassword(UserPasswordRequest req) {
-        log.info("Changing password for user: {}", req);
-        // Get user by id
-        User user = getUserEntity(req.getId());
+        log.info("Changing password for user: {} - Evicting cache", req.getId());
+
+        User user = getUserEntityNoCache(req.getId());
         if (req.getPassword().equals(req.getConfirmPassword())) {
             user.setPassword(passwordEncoder.encode(req.getPassword()));
         }
 
         userRepository.save(user);
-        log.info("Changed password for user: {}", req);
+        log.info("Changed password for user: {}", req.getId());
 
         return user.getId();
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi delete (soft delete)
+     */
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "#id"),
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_ID, key = "'entity:' + #id"),
+            @CacheEvict(cacheNames = CacheConstants.USER_BY_USERNAME, allEntries = true)
+    })
     public UUID delete(UUID id) {
-        log.info("Deleting user: {}", id);
+        log.info("Deleting user: {} - Evicting cache", id);
 
-        // Get user by id
-        User user = getUserEntity(id);
+        User user = getUserEntityNoCache(id);
         user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
-        log.info("Deleted user: {}", user);
+
+        log.info("Deleted user: {}", id);
         return id;
     }
 
     /**
-     * Get user by id
-     *
-     * @param id
-     * @return
+     * Get user by ID (no cache) - dùng internal để tránh cache khi update
+     */
+    private User getUserEntityNoCache(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    /**
+     * Get user by ID - có thể được cache từ caller
      */
     private User getUserEntity(UUID id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
     public UUID findUserIDByUserName(String userName) {
         return userRepository.getUserIDByUserName(userName);
-    };
+    }
 }

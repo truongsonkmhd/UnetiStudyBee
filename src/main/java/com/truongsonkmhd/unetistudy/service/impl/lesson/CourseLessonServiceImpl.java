@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.service.impl.lesson;
 
 import com.github.slugify.Slugify;
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonResponse;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
 import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
@@ -21,10 +22,21 @@ import com.truongsonkmhd.unetistudy.service.CourseLessonService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Service quản lý Course Lesson với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside - @Cacheable cho getLessonByModuleId, findById
+ * 2. Cache Invalidation - @CacheEvict cho add, update, delete
+ * 3. Time-based Expiration - TTL 15 phút
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,8 +50,13 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     private final UserRepository userRepository;
     private final CodingExerciseTemplateRepository templateRepository;
 
+    /**
+     * Cache-Aside: Lấy lessons by moduleId
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.LESSON_BY_MODULE, key = "#moduleId", unless = "#result.isEmpty()")
     public List<CourseLessonResponse> getLessonByModuleId(UUID moduleId) {
+        log.debug("Cache MISS - Loading lessons for module from DB: {}", moduleId);
         return courseLessonResponseMapper.toDto(courseLessonRepository.getLessonByModuleId(moduleId));
     }
 
@@ -54,32 +71,34 @@ public class CourseLessonServiceImpl implements CourseLessonService {
         return courseLessonResponseMapper.toDto(listCourseLesson);
     }
 
+    /**
+     * Cache Invalidation: Xóa cache related lessons khi thêm lesson mới
+     */
     @Override
     @Transactional
+    @CacheEvict(cacheNames = { CacheConstants.LESSON_BY_MODULE,
+            CacheConstants.COURSE_PUBLISHED_TREE }, allEntries = true)
     public CourseLessonResponse addLesson(CourseLessonRequest request) {
-        // Validate module exists
+        log.info("Adding lesson to module: {} - Evicting cache", request.getModuleId());
+
         CourseModule existsCourseModule = courseModuleRepository
                 .findById(request.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException(
                         "CourseModule not found: " + request.getModuleId()));
 
-        // Validate user exists
         User user = userRepository.findById(request.getCreatorId())
                 .orElseThrow(() -> new DataNotFoundException(
                         "User not found: " + request.getCreatorId()));
 
-        // Map request to CourseLesson entity
         CourseLesson lesson = courseLessonRequestMapper.toEntity(request);
         lesson.setCreator(user);
         lesson.setModule(existsCourseModule);
 
-        // Generate unique slug
         String baseSlug = new Slugify().slugify(request.getTitle());
         lesson.setSlug(generateUniqueSlug(baseSlug));
 
         addCodingExercisesToLesson(request.getExerciseTemplateIds(), lesson);
 
-        // Save lesson (will cascade to contest if present)
         CourseLesson savedLesson = courseLessonRepository.save(lesson);
 
         log.info("Successfully saved lesson with ID: {}", savedLesson.getLessonId());
@@ -107,30 +126,22 @@ public class CourseLessonServiceImpl implements CourseLessonService {
                     contestExercise.addTestCase(testCase);
                 }
 
-                // Add to contest
                 courseLesson.addCodingExercise(contestExercise);
-
-                // Track usage
                 template.incrementUsageCount();
-            }
-        }
-    }
-
-    /**
-     * Add quiz questions to contest
-     */
-    private void addQuizQuestionsToContest(CourseLessonRequest request, ContestLesson contestLesson) {
-        if (request.getQuizzes() != null && !request.getQuizzes().isEmpty()) {
-            for (var quizDto : request.getQuizzes()) {
-                Quiz quiz = quizExerciseMapper.toEntity(quizDto);
-                contestLesson.addQuizQuestion(quiz);
             }
         }
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.LESSON_BY_ID, key = "#theId"),
+            @CacheEvict(cacheNames = CacheConstants.LESSON_BY_MODULE, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_PUBLISHED_TREE, allEntries = true)
+    })
     public CourseLessonResponse update(UUID theId, CourseLessonRequest request) {
+        log.info("Updating lesson: {} - Evicting cache", theId);
+
         CourseLesson existing = courseLessonRepository.findById(theId)
                 .orElseThrow(() -> new ResourceNotFoundException("CourseLesson not found with id = " + theId));
 
@@ -141,13 +152,24 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.LESSON_BY_ID, key = "#theId"),
+            @CacheEvict(cacheNames = CacheConstants.LESSON_BY_MODULE, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_PUBLISHED_TREE, allEntries = true)
+    })
     public UUID delete(UUID theId) {
+        log.info("Deleting lesson: {} - Evicting cache", theId);
         courseLessonRepository.deleteById(theId);
         return theId;
     }
 
+    /**
+     * Cache-Aside: Lấy lesson by ID
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.LESSON_BY_ID, key = "#id", unless = "#result == null")
     public Optional<CourseLesson> findById(UUID id) {
+        log.debug("Cache MISS - Loading lesson from DB: {}", id);
         return courseLessonRepository.findById(id);
     }
 

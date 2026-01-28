@@ -1,5 +1,7 @@
 package com.truongsonkmhd.unetistudy.service.impl.quiz;
 
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
+import com.truongsonkmhd.unetistudy.cache.service.ScoreWriteBehindService;
 import com.truongsonkmhd.unetistudy.common.AttemptStatus;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.Answer;
@@ -9,6 +11,8 @@ import com.truongsonkmhd.unetistudy.model.quiz.UserQuizAttempt;
 import com.truongsonkmhd.unetistudy.repository.quiz.*;
 import com.truongsonkmhd.unetistudy.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +20,17 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service xử lý Quiz attempts với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside - Cache câu hỏi và đáp án
+ * 2. Write-Behind - Ghi điểm thi async để giảm tải DB
+ * 3. Time-based Expiration - TTL cho questions cache
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizServiceImpl implements QuizService {
 
         private final QuizQuestionRepository quizRepository;
@@ -25,12 +38,12 @@ public class QuizServiceImpl implements QuizService {
         private final AnswerRepository answerRepository;
         private final UserQuizAttemptRepository attemptRepository;
         private final UserAnswerRepository userAnswerRepository;
+        private final ScoreWriteBehindService scoreWriteBehindService;
 
         @Override
         @Transactional
         public UserQuizAttempt startQuizAttempt(UUID userId, UUID quizId) {
-                Quiz quiz = quizRepository.findById(quizId)
-                                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                Quiz quiz = getQuizCached(quizId);
 
                 if (!quiz.getIsPublished()) {
                         throw new RuntimeException("Quiz is not published");
@@ -46,25 +59,49 @@ public class QuizServiceImpl implements QuizService {
                 return attemptRepository.save(attempt);
         }
 
+        /**
+         * Cache-Aside: Lấy quiz từ cache hoặc DB
+         */
+        @Cacheable(cacheNames = CacheConstants.QUIZ_BY_ID, key = "'entity:' + #quizId", unless = "#result == null")
+        public Quiz getQuizCached(UUID quizId) {
+                log.debug("Cache MISS - Loading quiz entity from DB: {}", quizId);
+                return quizRepository.findById(quizId)
+                                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+        }
+
+        /**
+         * Cache-Aside: Lấy questions của quiz từ cache
+         */
         @Override
         @Transactional(readOnly = true)
+        @Cacheable(cacheNames = CacheConstants.QUIZ_QUESTIONS, key = "#attemptId", unless = "#result == null")
         public Question getNextQuestion(UUID attemptId) {
+                log.debug("Getting next question for attempt: {}", attemptId);
+
                 UserQuizAttempt attempt = attemptRepository.findById(attemptId)
                                 .orElseThrow(() -> new RuntimeException("Attempt not found"));
 
-                // Lấy danh sách câu hỏi đã trả lời
                 Set<UUID> answeredQuestionIds = attempt.getUserAnswers().stream()
                                 .map(ua -> ua.getQuestion().getId())
                                 .collect(Collectors.toSet());
 
-                // Lấy câu hỏi tiếp theo chưa trả lời
-                List<Question> questions = questionRepository
-                                .findByQuizOrderByQuestionOrderAsc(attempt.getQuiz());
+                List<Question> questions = getQuestionsCached(attempt.getQuiz().getId());
 
                 return questions.stream()
                                 .filter(q -> !answeredQuestionIds.contains(q.getId()))
                                 .findFirst()
                                 .orElse(null);
+        }
+
+        /**
+         * Cache-Aside: Lấy danh sách questions từ cache
+         */
+        @Cacheable(cacheNames = CacheConstants.QUIZ_QUESTIONS, key = "'list:' + #quizId")
+        public List<Question> getQuestionsCached(UUID quizId) {
+                log.debug("Cache MISS - Loading questions from DB for quiz: {}", quizId);
+                Quiz quiz = quizRepository.findById(quizId)
+                                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+                return questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
         }
 
         @Override
@@ -78,27 +115,21 @@ public class QuizServiceImpl implements QuizService {
                 Question question = questionRepository.findById(questionId)
                                 .orElseThrow(() -> new RuntimeException("Question not found"));
 
-                // Kiểm tra timeout
                 boolean isTimeout = timeSpentSeconds > question.getTimeLimitSeconds();
 
-                // Lấy các đáp án được chọn
                 Set<Answer> selectedAnswers = new HashSet<>();
                 if (selectedAnswerIds != null && !selectedAnswerIds.isEmpty()) {
                         selectedAnswers = new HashSet<>(answerRepository.findAllById(selectedAnswerIds));
                 }
 
-                // Kiểm tra đúng sai
                 Set<UUID> correctAnswerIds = question.getAnswers().stream()
                                 .filter(Answer::getIsCorrect)
                                 .map(Answer::getId)
                                 .collect(Collectors.toSet());
 
-                boolean isCorrect = !isTimeout &&
-                                correctAnswerIds.equals(selectedAnswerIds);
-
+                boolean isCorrect = !isTimeout && correctAnswerIds.equals(selectedAnswerIds);
                 double pointsEarned = isCorrect ? question.getPoints() : 0.0;
 
-                // Tạo UserAnswer
                 UserAnswer userAnswer = UserAnswer.builder()
                                 .attempt(attempt)
                                 .question(question)
@@ -113,9 +144,16 @@ public class QuizServiceImpl implements QuizService {
                 return userAnswerRepository.save(userAnswer);
         }
 
+        /**
+         * Write-Behind: Hoàn thành quiz và ghi điểm
+         * Điểm được ghi vào cache ngay lập tức
+         * Background thread sẽ flush vào DB định kỳ
+         */
         @Override
         @Transactional
         public UserQuizAttempt completeQuizAttempt(UUID attemptId) {
+                log.info("Completing quiz attempt: {}", attemptId);
+
                 UserQuizAttempt attempt = attemptRepository.findById(attemptId)
                                 .orElseThrow(() -> new RuntimeException("Attempt not found"));
 
@@ -124,9 +162,8 @@ public class QuizServiceImpl implements QuizService {
                                 .mapToDouble(UserAnswer::getPointsEarned)
                                 .sum();
 
-                double totalPossiblePoints = questionRepository
-                                .findByQuizOrderByQuestionOrderAsc(attempt.getQuiz())
-                                .stream()
+                List<Question> questions = getQuestionsCached(attempt.getQuiz().getId());
+                double totalPossiblePoints = questions.stream()
                                 .mapToDouble(Question::getPoints)
                                 .sum();
 
@@ -144,7 +181,17 @@ public class QuizServiceImpl implements QuizService {
                 attempt.setCompletedAt(Instant.now());
                 attempt.setStatus(AttemptStatus.COMPLETED);
 
-                return attemptRepository.save(attempt);
+                // Lưu vào DB ngay (vì cần ID)
+                UserQuizAttempt savedAttempt = attemptRepository.save(attempt);
+
+                // Write-Behind: Ghi vào cache để tracking và analytics
+                // Có thể dùng cho việc aggregate scores sau
+                scoreWriteBehindService.recordScore(savedAttempt);
+
+                log.info("Quiz attempt completed: attemptId={}, score={}, passed={}",
+                                attemptId, totalScore, isPassed);
+
+                return savedAttempt;
         }
 
         @Override

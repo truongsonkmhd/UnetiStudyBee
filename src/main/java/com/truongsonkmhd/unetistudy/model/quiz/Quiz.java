@@ -22,10 +22,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tbl_quiz",
-        indexes = {
-                @Index(name = "idx_quiz_contest", columnList = "contest_lesson_id")
-        })
+@Table(name = "tbl_quiz", indexes = {
+        @Index(name = "idx_quiz_contest", columnList = "contest_lesson_id")
+})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Quiz extends BaseEntityQuiz {
 
@@ -34,10 +33,10 @@ public class Quiz extends BaseEntityQuiz {
     ContestLesson contestLesson;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lesson_id", nullable =  true)
+    @JoinColumn(name = "lesson_id", nullable = true)
     CourseLesson courseLesson;
 
-    @OneToMany(mappedBy ="quiz" , cascade = CascadeType.ALL , orphanRemoval = true , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     List<Question> questions = new ArrayList<>();
 
@@ -56,10 +55,10 @@ public class Quiz extends BaseEntityQuiz {
     }
 
     public void publish() {
-        this.setIsPublished(true);
+        this.isPublished = true;
     }
 
     public void unpublish() {
-        this.setIsPublished(false);
+        this.isPublished = false;
     }
 }

@@ -1,5 +1,6 @@
 package com.truongsonkmhd.unetistudy.service.impl.quiz;
 
+import com.truongsonkmhd.unetistudy.cache.service.QuizCacheService;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizAdminDTO;
 import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ContestLesson;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
@@ -11,101 +12,71 @@ import com.truongsonkmhd.unetistudy.repository.quiz.QuestionRepository;
 import com.truongsonkmhd.unetistudy.repository.quiz.QuizQuestionRepository;
 import com.truongsonkmhd.unetistudy.service.QuizAdminService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service quản lý Quiz với tích hợp Programmatic Caching sử dụng
+ * QuizCacheService.
+ * 
+ * Ưu điểm:
+ * 1. Kiểm soát luồng ghi dữ liệu (Write-Through) thông tin hơn.
+ * 2. Invalidation chính xác cho từng đối tượng (Granular Invalidation).
+ * 3. Dễ dàng debug và monitor thông qua log loader.
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizAdminServiceImpl implements QuizAdminService {
 
     private final QuizQuestionRepository quizRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ContestLessonRepository contestLessonRepository;
+    private final QuizCacheService quizCacheService;
 
-    // @Override
-    // @Transactional
-    // public QuizAdminDTO.QuizResponse createQuiz(QuizAdminDTO.CreateQuizRequest
-    // request) {
-    // // Validate contest lesson exists
-    // ContestLesson contestLesson =
-    // contestLessonRepository.findById(request.getContestLessonId())
-    // .orElseThrow(() -> new RuntimeException("Contest lesson not found"));
-    //
-    // // Validate at least one correct answer per question
-    // validateQuestions(request.getQuestions());
-    //
-    // // Create quiz
-    // Quiz quiz = Quiz.builder()
-    // .contestLesson(contestLesson)
-    // .title(request.getTitle())
-    // .passScore(request.getPassScore())
-    // .isPublished(request.getIsPublished())
-    // .totalQuestions(request.getQuestions().size())
-    // .description(request.getDescription())
-    // .build();
-    //
-    //
-    // for (QuizAdminDTO.CreateQuestionRequest qReq : request.getQuestions()) {
-    // Question question = Question.builder()
-    // .quiz(quiz)
-    // .content(qReq.getContent())
-    // .questionOrder(qReq.getQuestionOrder())
-    // .timeLimitSeconds(qReq.getTimeLimitSeconds())
-    // .points(qReq.getPoints())
-    // .build();
-    //
-    // for (QuizAdminDTO.CreateAnswerRequest aReq : qReq.getAnswers()) {
-    // Answer answer = Answer.builder()
-    // .question(question)
-    // .content(aReq.getContent())
-    // .answerOrder(aReq.getAnswerOrder())
-    // .isCorrect(aReq.getIsCorrect())
-    // .build();
-    // question.addAnswer(answer);
-    // }
-    //
-    // quiz.addQuestion(question);
-    // }
-    //
-    //
-    // quiz = quizRepository.save(quiz);
-    //
-    // return mapToQuizResponse(quiz, quiz.getQuestions());
-    // }
-
+    /**
+     * Programmatic Cache Invalidation & Write-Through
+     */
     @Override
     @Transactional
     public QuizAdminDTO.QuizResponse updateQuiz(UUID quizId, QuizAdminDTO.UpdateQuizRequest request) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+        log.info("Updating quiz: {} using programmatic cache", quizId);
 
-        if (request.getTitle() != null) {
-            quiz.setTitle(request.getTitle());
-        }
-        if (request.getPassScore() != null) {
-            quiz.setPassScore(request.getPassScore());
-        }
-        if (request.getIsPublished() != null) {
-            // Validate before publishing
-            if (request.getIsPublished() && !validateQuizBeforePublish(quiz)) {
-                throw new RuntimeException("Quiz validation failed. Cannot publish.");
+        // Sử dụng Write-Through: Lưu DB và Cập nhật Cache trong cùng một flow
+        Quiz updatedQuiz = quizCacheService.updateQuizWithCache(quizId, null, (ignored) -> {
+            Quiz quiz = quizRepository.findById(quizId)
+                    .orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+            if (request.getTitle() != null)
+                quiz.setTitle(request.getTitle());
+            if (request.getPassScore() != null)
+                quiz.setPassScore(request.getPassScore());
+            if (request.getIsPublished() != null) {
+                if (request.getIsPublished() && !validateQuizBeforePublish(quiz)) {
+                    throw new RuntimeException("Quiz validation failed. Cannot publish.");
+                }
+                quiz.setIsPublished(request.getIsPublished());
             }
-            quiz.setIsPublished(request.getIsPublished());
-        }
+            return quizRepository.save(quiz);
+        });
 
-        quiz = quizRepository.save(quiz);
-        List<Question> questions = questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
-
-        return mapToQuizResponse(quiz, questions);
+        List<Question> questions = questionRepository.findByQuizOrderByQuestionOrderAsc(updatedQuiz);
+        return mapToQuizResponse(updatedQuiz, questions);
     }
 
+    /**
+     * Programmatic Invalidation
+     */
     @Override
     @Transactional
     public void deleteQuiz(UUID quizId) {
+        log.info("Deleting quiz: {} - Programmatic eviction", quizId);
+
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
@@ -113,35 +84,59 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             throw new RuntimeException("Cannot delete published quiz");
         }
 
+        UUID contestLessonId = quiz.getContestLesson() != null ? quiz.getContestLesson().getContestLessonId() : null;
+
         quizRepository.delete(quiz);
+
+        // Chủ động xóa tất cả cache liên quan sau khi delete thành công
+        quizCacheService.evictQuizAndRelated(quizId, contestLessonId);
     }
 
+    /**
+     * Cache-Aside Programmatic: Get one
+     */
     @Override
     @Transactional(readOnly = true)
     public QuizAdminDTO.QuizResponse getQuizById(UUID quizId) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new RuntimeException("Quiz not found"));
+        log.debug("Fetching quiz by ID: {} (Programmatic Cache)", quizId);
 
-        List<Question> questions = questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
-        return mapToQuizResponse(quiz, questions);
+        return quizCacheService.getQuizResponseById(quizId, () -> {
+            log.debug("Cache MISS - Executing DB Loader for quiz detail: {}", quizId);
+            Quiz quiz = quizRepository.findById(quizId)
+                    .orElseThrow(() -> new RuntimeException("Quiz not found"));
+            List<Question> questions = questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
+            return mapToQuizResponse(quiz, questions);
+        });
     }
 
+    /**
+     * Cache-Aside Programmatic: Get all
+     */
     @Override
     @Transactional(readOnly = true)
     public List<QuizAdminDTO.QuizSummaryResponse> getAllQuizzes(UUID contestLessonId) {
-        ContestLesson contestLesson = contestLessonRepository.findById(contestLessonId)
-                .orElseThrow(() -> new RuntimeException("Contest lesson not found"));
+        log.debug("Fetching quizzes for contest: {} (Programmatic Cache)", contestLessonId);
 
-        List<Quiz> quizzes = quizRepository.findByContestLessonAndIsPublishedTrue(contestLesson);
+        return quizCacheService.getQuizzesByContestLesson(contestLessonId, () -> {
+            log.debug("Cache MISS - Loading quiz list from DB");
+            ContestLesson contestLesson = contestLessonRepository.findById(contestLessonId)
+                    .orElseThrow(() -> new RuntimeException("Contest lesson not found"));
 
-        return quizzes.stream()
-                .map(this::mapToQuizSummaryResponse)
-                .collect(Collectors.toList());
+            return quizRepository.findByContestLessonAndIsPublishedTrue(contestLesson)
+                    .stream()
+                    .map(this::mapToQuizSummaryResponse)
+                    .collect(Collectors.toList());
+        });
     }
 
+    /**
+     * Programmatic Invalidation khi quản lý Question/Answer
+     */
     @Override
     @Transactional
     public QuizAdminDTO.QuestionResponse addQuestion(QuizAdminDTO.AddQuestionRequest request) {
+        log.info("Adding question - Invaliding quiz cache: {}", request.getQuizId());
+
         Quiz quiz = quizRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
@@ -149,12 +144,10 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             throw new RuntimeException("Cannot modify published quiz");
         }
 
-        // Validate at least one correct answer
         if (request.getAnswers().stream().noneMatch(QuizAdminDTO.CreateAnswerRequest::getIsCorrect)) {
             throw new RuntimeException("Question must have at least one correct answer");
         }
 
-        // Get next order number
         long questionCount = questionRepository.countByQuiz(quiz);
         int nextOrder = (int) questionCount + 1;
 
@@ -168,7 +161,6 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
         question = questionRepository.save(question);
 
-        // Create answers
         for (QuizAdminDTO.CreateAnswerRequest aReq : request.getAnswers()) {
             Answer answer = Answer.builder()
                     .question(question)
@@ -179,9 +171,11 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             answerRepository.save(answer);
         }
 
-        // Update total questions count
         quiz.setTotalQuestions(quiz.getTotalQuestions() + 1);
         quizRepository.save(quiz);
+
+        // Xóa cache vì Quiz đã thay đổi metadata (số câu hỏi) và danh sách câu hỏi
+        quizCacheService.evictQuiz(quiz.getId());
 
         return mapToQuestionResponse(question);
     }
@@ -189,6 +183,8 @@ public class QuizAdminServiceImpl implements QuizAdminService {
     @Override
     @Transactional
     public QuizAdminDTO.QuestionResponse updateQuestion(UUID questionId, QuizAdminDTO.UpdateQuestionRequest request) {
+        log.info("Updating question - Invaliding question cache: {}", questionId);
+
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
 
@@ -196,26 +192,28 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             throw new RuntimeException("Cannot modify published quiz");
         }
 
-        if (request.getContent() != null) {
+        if (request.getContent() != null)
             question.setContent(request.getContent());
-        }
-        if (request.getQuestionOrder() != null) {
+        if (request.getQuestionOrder() != null)
             question.setQuestionOrder(request.getQuestionOrder());
-        }
-        if (request.getTimeLimitSeconds() != null) {
+        if (request.getTimeLimitSeconds() != null)
             question.setTimeLimitSeconds(request.getTimeLimitSeconds());
-        }
-        if (request.getPoints() != null) {
+        if (request.getPoints() != null)
             question.setPoints(request.getPoints());
-        }
 
         question = questionRepository.save(question);
+
+        // Xóa cache danh sách câu hỏi của Quiz này
+        quizCacheService.evictQuizQuestions(question.getQuiz().getId());
+
         return mapToQuestionResponse(question);
     }
 
     @Override
     @Transactional
     public void deleteQuestion(UUID questionId) {
+        log.info("Deleting question - Invaliding quiz cache: {}", questionId);
+
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Question not found"));
 
@@ -226,16 +224,17 @@ public class QuizAdminServiceImpl implements QuizAdminService {
         Quiz quiz = question.getQuiz();
         questionRepository.delete(question);
 
-        // Update total questions count
         quiz.setTotalQuestions(quiz.getTotalQuestions() - 1);
         quizRepository.save(quiz);
 
-        // Reorder remaining questions
         List<Question> remainingQuestions = questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
         for (int i = 0; i < remainingQuestions.size(); i++) {
             remainingQuestions.get(i).setQuestionOrder(i + 1);
         }
         questionRepository.saveAll(remainingQuestions);
+
+        // Đồng bộ lại Cache
+        quizCacheService.evictQuiz(quiz.getId());
     }
 
     @Override
@@ -248,7 +247,6 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             throw new RuntimeException("Cannot modify published quiz");
         }
 
-        // Get next order number
         List<Answer> existingAnswers = answerRepository.findByQuestionOrderByAnswerOrderAsc(question);
         int nextOrder = existingAnswers.size() + 1;
 
@@ -260,6 +258,10 @@ public class QuizAdminServiceImpl implements QuizAdminService {
                 .build();
 
         answer = answerRepository.save(answer);
+
+        // Xóa cache câu hỏi vì đáp án đã thay đổi
+        quizCacheService.evictQuizQuestions(question.getQuiz().getId());
+
         return mapToAnswerResponse(answer);
     }
 
@@ -273,23 +275,21 @@ public class QuizAdminServiceImpl implements QuizAdminService {
             throw new RuntimeException("Cannot modify published quiz");
         }
 
-        if (request.getContent() != null) {
+        if (request.getContent() != null)
             answer.setContent(request.getContent());
-        }
-        if (request.getAnswerOrder() != null) {
+        if (request.getAnswerOrder() != null)
             answer.setAnswerOrder(request.getAnswerOrder());
-        }
-        if (request.getIsCorrect() != null) {
+        if (request.getIsCorrect() != null)
             answer.setIsCorrect(request.getIsCorrect());
-        }
 
         answer = answerRepository.save(answer);
 
-        // Validate at least one correct answer remains
         List<Answer> answers = answerRepository.findByQuestionOrderByAnswerOrderAsc(answer.getQuestion());
         if (answers.stream().noneMatch(Answer::getIsCorrect)) {
             throw new RuntimeException("Question must have at least one correct answer");
         }
+
+        quizCacheService.evictQuizQuestions(answer.getQuestion().getQuiz().getId());
 
         return mapToAnswerResponse(answer);
     }
@@ -313,22 +313,18 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
         answerRepository.delete(answer);
 
-        // Reorder remaining answers
         List<Answer> remainingAnswers = answerRepository.findByQuestionOrderByAnswerOrderAsc(question);
         for (int i = 0; i < remainingAnswers.size(); i++) {
             remainingAnswers.get(i).setAnswerOrder(i + 1);
         }
         answerRepository.saveAll(remainingAnswers);
+
+        quizCacheService.evictQuizQuestions(question.getQuiz().getId());
     }
 
-    // Helper methods
-    private void validateQuestions(List<QuizAdminDTO.CreateQuestionRequest> questions) {
-        for (QuizAdminDTO.CreateQuestionRequest question : questions) {
-            if (question.getAnswers().stream().noneMatch(QuizAdminDTO.CreateAnswerRequest::getIsCorrect)) {
-                throw new RuntimeException("Each question must have at least one correct answer");
-            }
-        }
-    }
+    // ========================
+    // HELPER METHODS
+    // ========================
 
     private boolean validateQuizBeforePublish(Quiz quiz) {
         List<Question> questions = questionRepository.findByQuizOrderByQuestionOrderAsc(quiz);
@@ -339,12 +335,10 @@ public class QuizAdminServiceImpl implements QuizAdminService {
 
         for (Question question : questions) {
             List<Answer> answers = answerRepository.findByQuestionOrderByAnswerOrderAsc(question);
-            if (answers.size() < 2) {
+            if (answers.size() < 2)
                 return false;
-            }
-            if (answers.stream().noneMatch(Answer::getIsCorrect)) {
+            if (answers.stream().noneMatch(Answer::getIsCorrect))
                 return false;
-            }
         }
 
         return true;
@@ -358,7 +352,7 @@ public class QuizAdminServiceImpl implements QuizAdminService {
                 .totalQuestions(quiz.getTotalQuestions())
                 .passScore(quiz.getPassScore())
                 .isPublished(quiz.getIsPublished())
-                .contestLessonId(quiz.getContestLesson().getContestLessonId())
+                .contestLessonId(quiz.getContestLesson() != null ? quiz.getContestLesson().getContestLessonId() : null)
                 .createdAt(quiz.getCreatedAt())
                 .updatedAt(quiz.getUpdatedAt())
                 .questions(questions.stream()

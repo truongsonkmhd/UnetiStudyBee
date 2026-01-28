@@ -1,6 +1,7 @@
 package com.truongsonkmhd.unetistudy.service.impl.course;
 
 import com.github.slugify.Slugify;
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.context.UserContext;
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDTO;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,8 +60,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     // =========================
     // BASIC CRUD
     // =========================
+    /**
+     * Cache-Aside: Lấy course by ID
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.COURSE_BY_ID, key = "#theId", unless = "#result == null")
     public CourseTreeResponse findById(UUID theId) {
+        log.debug("Cache MISS - Loading course from DB: {}", theId);
         Course course = courseRepository.findById(theId)
                 .orElseThrow(() -> new RuntimeException("Course not found with id =" + theId));
         return courseResponseMapper.toDto(course);
@@ -118,15 +125,22 @@ public class CourseTreeServiceImpl implements CourseTreeService {
 
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi update course
+     */
     @Override
     @Transactional
-    @CacheEvict(cacheNames = "course_published_tree", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.COURSE_PUBLISHED_TREE, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_BY_ID, key = "#courseId"),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_BY_SLUG, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_MODULES, allEntries = true)
+    })
     public CourseTreeResponse update(UUID courseId, CourseShowRequest req) {
+        log.info("Updating course: {} - Evicting cache", courseId);
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new DataNotFoundException("Course not found: " + courseId));
-
-        // instructor
         if (req.getInstructorId() != null) {
             User instructor = userRepository.findById(req.getInstructorId())
                     .orElseThrow(() -> new DataNotFoundException("Instructor not found: " + req.getInstructorId()));
@@ -166,15 +180,30 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         return courseResponseMapper.toDto(saved);
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi delete course
+     */
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = CacheConstants.COURSE_PUBLISHED_TREE, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_BY_ID, key = "#theId"),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_BY_SLUG, allEntries = true),
+            @CacheEvict(cacheNames = CacheConstants.COURSE_MODULES, allEntries = true)
+    })
     public UUID deleteById(UUID theId) {
+        log.info("Deleting course: {} - Evicting cache", theId);
         courseRepository.deleteById(theId);
         return theId;
     }
 
+    /**
+     * Cache-Aside: Lấy modules by course slug
+     */
     @Override
+    @Cacheable(cacheNames = CacheConstants.COURSE_MODULES, key = "#theSlug", unless = "#result.isEmpty()")
     public List<CourseModuleResponse> getCourseModuleByCourseSlug(String theSlug) {
+        log.debug("Cache MISS - Loading course modules for slug: {}", theSlug);
         return courseModuleResponseMapper.toDto(courseModuleRepository.getCourseModuleByCourseSlug(theSlug));
     }
 

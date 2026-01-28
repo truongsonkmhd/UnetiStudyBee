@@ -5,7 +5,7 @@ import com.truongsonkmhd.unetistudy.dto.role_dto.RoleResponse;
 
 import java.util.List;
 
-public interface RoleService {
+public interface RoleService {  
     RoleResponse create(RoleRequest request);
 
     List<RoleResponse> getAll();

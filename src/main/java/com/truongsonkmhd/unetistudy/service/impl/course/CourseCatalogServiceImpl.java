@@ -1,11 +1,14 @@
 package com.truongsonkmhd.unetistudy.service.impl.course;
 
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.CursorResponse;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
 import com.truongsonkmhd.unetistudy.repository.course.CourseRepository;
 import com.truongsonkmhd.unetistudy.service.CourseCatalogService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +21,32 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service quản lý Catalog khóa học với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside - Cache danh sách courses đã publish
+ * 2. Time-based Expiration - TTL 15 phút cho catalog
+ * 3. LRU Eviction - Tự động loại bỏ các pages ít truy cập
+ */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CourseCatalogServiceImpl implements CourseCatalogService {
 
     private final CourseRepository courseRepository;
 
-    // -------------------------
-    // 1) Offset pagination (page/size) - đơn giản
-    // -------------------------
+    /**
+     * Cache-Aside: Lấy danh sách courses đã publish (offset pagination)
+     * Cache key: page + size + query
+     * TTL: 15 phút
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheConstants.COURSE_CATALOG, key = "'page:' + #page + ':size:' + #size + ':q:' + (#q ?: '')", unless = "#result.items.isEmpty()")
     public PageResponse<CourseCardResponse> getPublishedCourses(int page, int size, String q) {
+        log.debug("Cache MISS - Loading published courses: page={}, size={}, q={}", page, size, q);
+
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 50);
 
@@ -48,9 +65,10 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
                 .build();
     }
 
-    // -------------------------
-    // 2) Cursor pagination - PHẢI CẬP NHẬT CourseRepository
-    // -------------------------
+    /**
+     * Cursor pagination - Không cache vì cursor unique cho mỗi request
+     * Tuy nhiên các courses riêng lẻ được cache ở tầng khác
+     */
     @Override
     @Transactional(readOnly = true)
     public CursorResponse<CourseCardResponse> getPublishedCoursesCursor(String cursor, int size, String q) {
@@ -72,23 +90,19 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
                     lastId = UUID.fromString(parts[1]);
                 }
             } catch (Exception e) {
-                // Invalid cursor, start from beginning
                 publishedAt = null;
                 lastId = null;
             }
         }
 
-        // Fetch data with cursor - CẦN THÊM METHOD MỚI VÀO REPOSITORY
-        Pageable pageable = PageRequest.of(0, safeSize + 1); // +1 để check hasNext
+        Pageable pageable = PageRequest.of(0, safeSize + 1);
         Page<CourseCardResponse> result;
 
         if (publishedAt == null || lastId == null) {
-            // First page
             result = (q == null || q.isBlank())
                     ? courseRepository.findPublishedCourseCards(pageable)
                     : courseRepository.searchPublishedCourseCards(q.trim(), pageable);
         } else {
-            // Subsequent pages - CẦN THÊM METHOD MỚI
             result = (q == null || q.isBlank())
                     ? courseRepository.findPublishedCourseCardsAfterCursor(publishedAt, lastId, pageable)
                     : courseRepository.searchPublishedCourseCardsAfterCursor(q.trim(), publishedAt, lastId, pageable);
@@ -101,7 +115,6 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
             items = items.subList(0, safeSize);
         }
 
-        // Build next cursor
         String nextCursor = null;
         if (hasNext && !items.isEmpty()) {
             CourseCardResponse last = items.get(items.size() - 1);

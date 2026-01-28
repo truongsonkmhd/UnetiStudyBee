@@ -1,9 +1,8 @@
 package com.truongsonkmhd.unetistudy.service.impl.quiz;
 
+import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
-import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseTemplateCardResponse;
 import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizTemplateDTO;
-
 import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.quiz.QuizTemplateMapper;
 import com.truongsonkmhd.unetistudy.model.quiz.*;
@@ -12,9 +11,11 @@ import com.truongsonkmhd.unetistudy.model.quiz.template.QuestionTemplate;
 import com.truongsonkmhd.unetistudy.model.quiz.template.QuizTemplate;
 import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
 import com.truongsonkmhd.unetistudy.service.QuizTemplateService;
+import com.truongsonkmhd.unetistudy.utils.PageResponseBuilder;
 import com.truongsonkmhd.unetistudy.validator.QuizTemplateValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.truongsonkmhd.unetistudy.cache.service.QuizTemplateCacheService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +23,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.truongsonkmhd.unetistudy.utils.PageResponseBuilder;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service quản lý Quiz Templates với tích hợp Caching
+ * 
+ * Cache Patterns áp dụng:
+ * 1. Cache-Aside - Cache template details và danh sách
+ * 2. Cache Invalidation - Evict cache khi create/update/delete
+ * 3. Time-based Expiration - TTL 15 phút
+ * 4. LRU Eviction - Loại bỏ templates ít dùng
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,26 +44,37 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
     private final QuizTemplateRepository templateRepository;
     private final QuizTemplateMapper templateMapper;
     private final QuizTemplateValidator templateValidator;
+    private final QuizTemplateCacheService templateCacheService;
 
+    /**
+     * Tạo template mới - Evict list caches
+     */
     @Override
     @Transactional
     public QuizTemplateDTO.DetailResponse createTemplate(QuizTemplateDTO.CreateRequest request, String createdBy) {
-        log.info("Creating quiz template: {}", request.getTemplateName());
+        log.info("Creating quiz template: {} - Programmatic eviction", request.getTemplateName());
 
         QuizTemplate template = templateMapper.toEntity(request, createdBy);
         QuizTemplate savedTemplate = templateRepository.save(template);
+
+        // Xóa list cache
+        templateCacheService.evictTemplatesList();
 
         log.info("Quiz template created successfully with ID: {}", savedTemplate.getId());
         return templateMapper.toDetailResponse(savedTemplate);
     }
 
+    /**
+     * Cache Invalidation: Evict cache khi update template
+     */
     @Override
     @Transactional
     public QuizTemplateDTO.DetailResponse updateTemplate(UUID templateId, QuizTemplateDTO.UpdateRequest request) {
-        log.info("Updating quiz template: {}", templateId);
+        log.info("Updating quiz template: {} - Programmatic eviction", templateId);
 
         QuizTemplate template = findTemplateOrThrow(templateId);
         templateValidator.validateVersion(template, request.getVersion());
+
         if (request.getTemplateName() != null) {
             template.setTitle(request.getTemplateName());
         }
@@ -78,149 +98,182 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
         }
 
         QuizTemplate updatedTemplate = templateRepository.save(template);
-        log.info("Quiz template updated successfully: {}", templateId);
 
+        // Xóa cache
+        templateCacheService.evictTemplate(templateId);
+
+        log.info("Quiz template updated successfully: {}", templateId);
         return templateMapper.toDetailResponse(updatedTemplate);
     }
 
+    /**
+     * Cache-Aside: Lấy template by ID
+     * Cache key: templateId
+     * TTL: 15 phút
+     */
     @Override
     @Transactional(readOnly = true)
     public QuizTemplateDTO.DetailResponse getTemplateById(UUID templateId) {
-        log.debug("Fetching quiz template: {}", templateId);
+        log.debug("Fetching quiz template by ID: {} (Programmatic Cache)", templateId);
 
-        QuizTemplate template = templateRepository.findByIdWithQuestionsAndAnswers(templateId)
-                .orElseThrow(() -> new ResourceNotFoundException("Quiz template not found with ID: " + templateId));
-
-        return templateMapper.toDetailResponse(template);
+        return templateCacheService.getTemplateById(templateId, () -> {
+            log.debug("Cache MISS - Loading quiz template from DB: {}", templateId);
+            QuizTemplate template = templateRepository.findByIdWithQuestionsAndAnswers(templateId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Quiz template not found with ID: " + templateId));
+            return templateMapper.toDetailResponse(template);
+        });
     }
 
+    /**
+     * Cache-Aside: Tìm kiếm templates
+     * Cache key: các params tìm kiếm
+     */
     @Override
     @Transactional(readOnly = true)
     public PageResponse<QuizTemplateDTO.Response> searchTemplates(
             int page, int size, String category, Boolean isActive, String searchTerm) {
 
-        log.info("=== SEARCH TEMPLATES START ===");
-        log.info("Input params - page: {}, size: {}, category: '{}', isActive: {}, searchTerm: '{}'",
-                page, size, category, isActive, searchTerm);
-
-        // Validate and sanitize inputs
         int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 100); // Max 100 items per page
-
-        // Normalize empty strings to null for consistent query behavior
+        int safeSize = Math.min(Math.max(size, 1), 100);
         String normalizedCategory = (category != null && category.trim().isEmpty()) ? null : category;
         String normalizedSearchTerm = (searchTerm != null && searchTerm.trim().isEmpty()) ? null : searchTerm;
 
-        log.info("Normalized params - category: '{}', searchTerm: '{}'", normalizedCategory, normalizedSearchTerm);
+        String cacheKey = String.format("search:%d:%d:%s:%s:%s",
+                safePage, safeSize, (normalizedCategory != null ? normalizedCategory : ""),
+                (isActive != null ? isActive : ""), (normalizedSearchTerm != null ? normalizedSearchTerm : ""));
 
-        // Create pageable with sorting by createdAt descending
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        log.debug("Searching templates: {} (Programmatic Cache)", cacheKey);
 
-        try {
-            // Execute query
-            Page<QuizTemplate> templatePage = templateRepository.searchTemplates(
-                    normalizedCategory,
-                    isActive,
-                    normalizedSearchTerm,
-                    pageable);
+        return templateCacheService.getTemplatesSearch(cacheKey, () -> {
+            log.debug("Cache MISS - Searching templates from DB");
+            Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+            try {
+                Page<QuizTemplate> templatePage = templateRepository.searchTemplates(
+                        normalizedCategory,
+                        isActive,
+                        normalizedSearchTerm,
+                        pageable);
 
-            log.info("Query executed - Found {} templates, Total pages: {}",
-                    templatePage.getTotalElements(), templatePage.getTotalPages());
+                log.info("Query executed - Found {} templates", templatePage.getTotalElements());
 
-            // Map to DTO
-            Page<QuizTemplateDTO.Response> responsePage = templatePage.map(template -> {
-                try {
-                    return templateMapper.toResponse(template);
-                } catch (Exception e) {
-                    log.error("Error mapping template ID: {} to response", template.getId(), e);
-                    throw new RuntimeException("Error mapping template: " + template.getId(), e);
-                }
-            });
+                Page<QuizTemplateDTO.Response> responsePage = templatePage.map(template -> {
+                    try {
+                        return templateMapper.toResponse(template);
+                    } catch (Exception e) {
+                        log.error("Error mapping template ID: {} to response", template.getId(), e);
+                        throw new RuntimeException("Error mapping template: " + template.getId(), e);
+                    }
+                });
 
-            // Build page response
-            PageResponse<QuizTemplateDTO.Response> result = PageResponseBuilder.build(responsePage);
-
-            log.info("=== SEARCH TEMPLATES SUCCESS ===");
-            log.info("Returning {} items out of {} total", result.getItems().size(), result.getTotalElements());
-
-            return result;
-
-        } catch (Exception e) {
-            log.error("=== SEARCH TEMPLATES ERROR ===", e);
-            log.error("Error details - Type: {}, Message: {}", e.getClass().getName(), e.getMessage());
-            throw new RuntimeException("Failed to search templates", e);
-        }
+                return PageResponseBuilder.build(responsePage);
+            } catch (Exception e) {
+                log.error("Error searching templates", e);
+                throw new RuntimeException("Failed to search templates", e);
+            }
+        });
     }
 
+    /**
+     * Cache-Aside: Lấy most used templates
+     * Cache dài hơn vì ít thay đổi
+     */
     @Override
     @Transactional(readOnly = true)
     public List<QuizTemplateDTO.Response> getMostUsedTemplates() {
-        log.debug("Fetching most used templates");
-        return templateRepository.findTop10ByIsActiveTrueOrderByUsageCountDesc()
-                .stream()
-                .map(templateMapper::toResponse)
-                .collect(Collectors.toList());
+        log.debug("Fetching most used templates (Programmatic Cache)");
+        return templateCacheService.getMostUsedTemplates(() -> {
+            log.debug("Cache MISS - Loading most used templates");
+            return templateRepository.findTop10ByIsActiveTrueOrderByUsageCountDesc()
+                    .stream()
+                    .map(templateMapper::toResponse)
+                    .collect(Collectors.toList());
+        });
     }
 
+    /**
+     * Cache-Aside: Lấy tất cả categories
+     * Cache dài vì categories ít thay đổi
+     */
     @Override
     @Transactional(readOnly = true)
     public List<String> getAllCategories() {
-        log.debug("Fetching all categories");
-        return templateRepository.findAllCategories();
+        log.debug("Fetching all categories (Programmatic Cache)");
+        return templateCacheService.getAllCategories(() -> {
+            log.debug("Cache MISS - Loading all categories");
+            return templateRepository.findAllCategories();
+        });
     }
 
+    /**
+     * Tạo quiz từ template - Evict cache vì usage count thay đổi
+     */
     @Override
     @Transactional
     public Quiz createQuizFromTemplate(UUID templateId) {
-        log.info("Creating quiz from template: {}", templateId);
+        log.info("Creating quiz from template: {} - Programmatic eviction", templateId);
 
         QuizTemplate template = templateRepository.findByIdWithQuestionsAndAnswers(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz template not found with ID: " + templateId));
 
         templateValidator.validateForQuizCreation(template);
 
-        // Increment usage count
         template.incrementUsageCount();
         templateRepository.save(template);
 
-        // Convert template to quiz
+        // Evict cache
+        templateCacheService.evictTemplate(templateId);
+
         Quiz quiz = templateMapper.templateToQuiz(template);
 
         log.info("Quiz created from template successfully. Template usage count: {}", template.getUsageCount());
         return quiz;
     }
 
+    /**
+     * Toggle status - Evict caches
+     */
     @Override
     @Transactional
     public boolean toggleTemplateStatus(UUID templateId, boolean isActive) {
-        log.info("Toggling template status: {} to {}", templateId, isActive);
+        log.info("Toggling template status: {} to {} - Programmatic eviction", templateId, isActive);
 
         QuizTemplate template = findTemplateOrThrow(templateId);
         template.setIsActive(isActive);
         templateRepository.save(template);
 
+        // Xóa cache
+        templateCacheService.evictTemplate(templateId);
+
         log.info("Template status toggled successfully");
         return true;
     }
 
+    /**
+     * Soft delete - Evict caches
+     */
     @Override
     @Transactional
     public boolean deleteTemplate(UUID templateId) {
-        log.info("Soft deleting quiz template: {}", templateId);
+        log.info("Soft deleting quiz template: {} - Programmatic eviction", templateId);
 
         QuizTemplate template = findTemplateOrThrow(templateId);
         template.softDelete();
         templateRepository.save(template);
 
-        log.info("Quiz template soft deleted successfully");
+        // Xóa cache
+        templateCacheService.evictTemplate(templateId);
 
+        log.info("Quiz template soft deleted successfully");
         return true;
     }
 
+    /**
+     * Duplicate template - Evict list cache
+     */
     @Override
     @Transactional
     public QuizTemplateDTO.DetailResponse duplicateTemplate(UUID templateId, String newName) {
-        log.info("Duplicating template: {} with new name: {}", templateId, newName);
+        log.info("Duplicating template: {} with new name: {} - Programmatic eviction", templateId, newName);
 
         QuizTemplate original = templateRepository.findByIdWithQuestionsAndAnswers(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz template not found with ID: " + templateId));
@@ -237,7 +290,6 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
                 .isDeleted(false)
                 .build();
 
-        // Duplicate questions and answers
         original.getQuestionTemplates().forEach(qt -> {
             QuestionTemplate duplicateQuestion = QuestionTemplate.builder()
                     .content(qt.getContent())
@@ -259,6 +311,10 @@ public class QuizTemplateServiceImpl implements QuizTemplateService {
         });
 
         QuizTemplate savedDuplicate = templateRepository.save(duplicate);
+
+        // Xóa list cache
+        templateCacheService.evictTemplatesList();
+
         log.info("Template duplicated successfully with ID: {}", savedDuplicate.getId());
 
         return templateMapper.toDetailResponse(savedDuplicate);
