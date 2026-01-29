@@ -1,6 +1,5 @@
 package com.truongsonkmhd.unetistudy.dto.contest_lesson;
 
-
 import com.truongsonkmhd.unetistudy.common.StatusContest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +13,8 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContestLessonResponseDTO {
+    UUID contestLessonId;
+
     String title;
 
     String description;

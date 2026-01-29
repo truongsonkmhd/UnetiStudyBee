@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/admin/contest-lesson")
 @Slf4j(topic = "LESSON-CONTROLLER")
@@ -35,6 +37,41 @@ public class ContestLessonController {
 
         return ResponseEntity.ok().body(ResponseMessage.LoadedSuccess(
                 contestLessonService.searchContestLessons(page, size, q, statusContest)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IResponseMessage> getById(@PathVariable UUID id) {
+        return ResponseEntity.ok()
+                .body(ResponseMessage.LoadedSuccess(contestLessonService.getById(id)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<IResponseMessage> updateContestLesson(
+            @PathVariable UUID id,
+            @RequestBody ContestLessonRequestDTO request) {
+        return ResponseEntity.ok()
+                .body(ResponseMessage.UpdatedSuccess(contestLessonService.updateContestLesson(id, request)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<IResponseMessage> deleteContestLesson(@PathVariable UUID id) {
+        contestLessonService.deleteContestLesson(id);
+        return ResponseEntity.ok()
+                .body(ResponseMessage.DeletedSuccess("Deleted contest lesson successfully"));
+    }
+
+    @PostMapping("/{id}/publish")
+    public ResponseEntity<IResponseMessage> publishContestLesson(@PathVariable UUID id) {
+        contestLessonService.publishContestLesson(id);
+        return ResponseEntity.ok()
+                .body(ResponseMessage.ProcessSuccess("Published contest lesson successfully"));
+    }
+
+    @PostMapping("/{id}/archive")
+    public ResponseEntity<IResponseMessage> archiveContestLesson(@PathVariable UUID id) {
+        contestLessonService.archiveContestLesson(id);
+        return ResponseEntity.ok()
+                .body(ResponseMessage.ProcessSuccess("Archived contest lesson successfully"));
     }
 
 }

@@ -17,6 +17,7 @@ public interface ContestLessonRepository extends JpaRepository<ContestLesson, UU
 
     @Query("""
 select new com.truongsonkmhd.unetistudy.dto.contest_lesson.ContestLessonResponseDTO(
+    ct.contestLessonId,
     ct.title,
     ct.description,
     ct.defaultDurationMinutes,

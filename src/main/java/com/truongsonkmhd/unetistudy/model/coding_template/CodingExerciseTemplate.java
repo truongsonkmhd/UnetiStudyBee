@@ -22,12 +22,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tbl_coding_exercise_template",
-        indexes = {
-                @Index(name = "uk_template_slug", columnList = "slug", unique = true),
-                @Index(name = "idx_template_published", columnList = "is_published"),
-                @Index(name = "idx_template_difficulty", columnList = "difficulty")
-        })
+@Table(name = "tbl_coding_exercise_template", indexes = {
+        @Index(name = "uk_template_slug", columnList = "slug", unique = true),
+        @Index(name = "idx_template_published", columnList = "is_published"),
+        @Index(name = "idx_template_difficulty", columnList = "difficulty")
+})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CodingExerciseTemplate extends BaseCodingExercise {
 
@@ -73,7 +72,6 @@ public class CodingExerciseTemplate extends BaseCodingExercise {
                 .solutionCode(this.getSolutionCode())
                 .timeLimitMs(this.getTimeLimitMs())
                 .memoryLimitMb(this.getMemoryLimitMb())
-                .slug(this.getSlug())
                 .inputFormat(this.getInputFormat())
                 .outputFormat(this.getOutputFormat())
                 .constraintName(this.getConstraintName())

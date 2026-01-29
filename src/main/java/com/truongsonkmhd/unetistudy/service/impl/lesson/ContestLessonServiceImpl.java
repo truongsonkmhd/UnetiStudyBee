@@ -11,6 +11,7 @@ import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.ExerciseTestCase;
 import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
 import com.truongsonkmhd.unetistudy.model.quiz.template.QuizTemplate;
+import com.truongsonkmhd.unetistudy.exception.custom_exception.ResourceNotFoundException;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseTemplateRepository;
 import com.truongsonkmhd.unetistudy.repository.course.ContestLessonRepository;
 import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
@@ -45,6 +46,16 @@ public class ContestLessonServiceImpl implements ContestLessonService {
     private final CodingExerciseTemplateRepository templateRepository;
     private final QuizTemplateRepository quizTemplateRepository;
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheConstants.CONTESTS, key = "#contestId")
+    public ContestLessonResponseDTO getById(UUID contestId) {
+        log.debug("Cache MISS - Getting contest lesson by id: {}", contestId);
+        ContestLesson contestLesson = contestLessonRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("ContestLesson", contestId));
+        return convertToResponseDTO(contestLesson);
+    }
+
     /**
      * Cache Invalidation: Xóa cache danh sách contest khi tạo mới
      */
@@ -70,7 +81,12 @@ public class ContestLessonServiceImpl implements ContestLessonService {
 
         contestLessonRepository.save(contestLesson);
 
+        return convertToResponseDTO(contestLesson);
+    }
+
+    private ContestLessonResponseDTO convertToResponseDTO(ContestLesson contestLesson) {
         return ContestLessonResponseDTO.builder()
+                .contestLessonId(contestLesson.getContestLessonId())
                 .title(contestLesson.getTitle())
                 .description(contestLesson.getDescription())
                 .defaultDurationMinutes(contestLesson.getDefaultDurationMinutes())
@@ -81,6 +97,90 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                 .instructions(contestLesson.getInstructions())
                 .status(contestLesson.getStatus())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, key = "#contestId", allEntries = false)
+    public ContestLessonResponseDTO updateContestLesson(UUID contestId, ContestLessonRequestDTO request) {
+        log.info("Updating contest lesson: {} - Evicting cache", contestId);
+
+        ContestLesson contestLesson = contestLessonRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("ContestLesson", contestId));
+
+        contestLesson.setTitle(request.getTitle());
+        contestLesson.setDescription(request.getDescription());
+        contestLesson.setDefaultDurationMinutes(request.getDefaultDurationMinutes());
+        contestLesson.setTotalPoints(request.getTotalPoints());
+        contestLesson.setDefaultMaxAttempts(request.getDefaultMaxAttempts());
+        contestLesson.setPassingScore(request.getPassingScore());
+        contestLesson.setShowLeaderboardDefault(request.getShowLeaderboardDefault());
+        contestLesson.setInstructions(request.getInstructions());
+
+        // Update Exercises and Quizzes
+        contestLesson.getCodingExercises().clear();
+        contestLesson.getQuizzes().clear();
+
+        addCodingExercisesToContest(request.getExerciseTemplateIds(), contestLesson);
+        addQuizToContest(request.getQuizTemplateIds(), contestLesson);
+
+        contestLesson = contestLessonRepository.save(contestLesson);
+
+        // Also evict the search list cache
+        evictSearchCache();
+
+        return convertToResponseDTO(contestLesson);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, key = "#contestId")
+    public void deleteContestLesson(UUID contestId) {
+        log.info("Deleting contest lesson: {} - Evicting cache", contestId);
+        ContestLesson contestLesson = contestLessonRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("ContestLesson", contestId));
+
+        if (contestLesson.isUsedInClasses()) {
+            throw new IllegalStateException("Cannot delete contest lesson that is currently used in classes.");
+        }
+
+        contestLessonRepository.delete(contestLesson);
+        evictSearchCache();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, key = "#contestId")
+    public void publishContestLesson(UUID contestId) {
+        log.info("Publishing contest lesson: {} - Evicting cache", contestId);
+        ContestLesson contestLesson = contestLessonRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("ContestLesson", contestId));
+
+        if (contestLesson.getCodingExercises().isEmpty() && contestLesson.getQuizzes().isEmpty()) {
+            throw new IllegalStateException("Cannot publish contest lesson with no content (exercises or quizzes).");
+        }
+
+        contestLesson.updateStatus(StatusContest.READY);
+        contestLessonRepository.save(contestLesson);
+        evictSearchCache();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, key = "#contestId")
+    public void archiveContestLesson(UUID contestId) {
+        log.info("Archiving contest lesson: {} - Evicting cache", contestId);
+        ContestLesson contestLesson = contestLessonRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("ContestLesson", contestId));
+
+        contestLesson.updateStatus(StatusContest.ARCHIVED);
+        contestLessonRepository.save(contestLesson);
+        evictSearchCache();
+    }
+
+    @CacheEvict(cacheNames = CacheConstants.CONTESTS, allEntries = true)
+    public void evictSearchCache() {
+        log.debug("Evicting all contest search caches");
     }
 
     /**
@@ -119,6 +219,8 @@ public class ContestLessonServiceImpl implements ContestLessonService {
                 .build();
     }
 
+
+    @Transactional
     public void addCodingExercisesToContest(List<UUID> exerciseTemplateIds2, ContestLesson contestLesson) {
 
         if (exerciseTemplateIds2 != null && !exerciseTemplateIds2.isEmpty()) {
