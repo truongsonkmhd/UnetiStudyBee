@@ -19,5 +19,12 @@ public class CourseTreeResponse {
     String description;
     Boolean isPublished;
     CourseStatus status;
+    String imageUrl;
+    String videoUrl;
+
+    public String getFileUrl() {
+        return videoUrl;
+    }
+
     List<CourseModuleResponse> modules;
 }

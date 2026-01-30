@@ -11,6 +11,12 @@ spring:
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+      enabled: true
+
   rabbitmq:
     host: rabbitmq
     port: 5672
@@ -76,6 +82,12 @@ app:
         ttl: 21600
         max-size: 100
         eviction-policy: LFU
+
+pocketbase:
+  url: ${POCKETBASE_URL:http://localhost:8090}
+  external-url: ${POCKETBASE_EXTERNAL_URL:http://localhost:8090}
+  admin-email: ${POCKETBASE_ADMIN_EMAIL:admin@example.com}
+  admin-password: ${POCKETBASE_ADMIN_PASSWORD:password}
 
 security:
   jwt:

@@ -7,7 +7,7 @@ import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.CourseLesson;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", imports = {LessonType.class})
+@Mapper(componentModel = "spring", imports = { LessonType.class })
 public interface CourseLessonRequestMapper extends EntityMapper<CourseLessonRequest, CourseLesson> {
 
     @Override
@@ -18,6 +18,5 @@ public interface CourseLessonRequestMapper extends EntityMapper<CourseLessonRequ
     @Mapping(target = "updatedAt", ignore = true)
 
     @Mapping(target = "slug", ignore = true) // slug set ở service (hoặc generate)
-
     CourseLesson toEntity(CourseLessonRequest dto);
 }

@@ -1,10 +1,11 @@
 package com.truongsonkmhd.unetistudy.dto.lesson_dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.truongsonkmhd.unetistudy.common.LessonType;
-import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDTO;
-import com.truongsonkmhd.unetistudy.dto.course_dto.QuizDTO;
+import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseLessonRequest {
 
-     UUID lessonId;      // update thì gửi, create thì null
+     UUID lessonId; // update thì gửi, create thì null
      UUID moduleId;
      UUID creatorId;
 
@@ -26,7 +27,9 @@ public class CourseLessonRequest {
      String content;
      String videoUrl;
 
-     Integer duration;
+     @JsonIgnore
+     MultipartFile videoFile;
+
      Integer orderIndex;
 
      Boolean isPreview;
@@ -35,10 +38,8 @@ public class CourseLessonRequest {
      String slug;
      LessonType lessonType;
 
-     Date contestStartTime;
-     Date contestEndTime;
      Integer totalPoints;
 
-     List<UUID> exerciseTemplateIds;  // Add this for METHOD 2
-     List<QuizDTO> quizzes;
+     List<UUID> exerciseTemplateIds;
+     List<UUID> quizTemplateIds;
 }

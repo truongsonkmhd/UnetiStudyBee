@@ -1,4 +1,4 @@
-package com.truongsonkmhd.unetistudy.dto.course_dto;
+package com.truongsonkmhd.unetistudy.dto.quiz_dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

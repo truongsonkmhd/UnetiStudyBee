@@ -43,11 +43,8 @@ public class SecurityConfiguration {
                                 authz
                                         .requestMatchers(JwtServiceImpl.WHITE_LIST_URL).permitAll()
                                         .requestMatchers(mvc.pattern("/api/permissions/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN , AuthoritiesConstants.SYS_ADMIN)
-                                        .requestMatchers(mvc.pattern("/api/admin/courses")).hasAnyAuthority(AuthoritiesConstants.ADMIN , AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/users/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,AuthoritiesConstants.SYS_ADMIN)
                                         .requestMatchers(mvc.pattern("/api/roles/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
-                                        .requestMatchers(HttpMethod.POST, "/api/courses/add").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
-                                        .requestMatchers(mvc.pattern("/api/admin/courses/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN , AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/courses/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN , AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/course-module/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,  AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/course-lesson/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN ,  AuthoritiesConstants.TEACHER)

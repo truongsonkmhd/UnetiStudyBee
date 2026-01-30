@@ -24,8 +24,6 @@ public class CourseModuleServiceImpl implements CourseModuleService {
 
     private final CourseModuleRepository courseModuleRepository;
 
-    private final CourseRepository courseRepository;
-
     private final CourseModuleResponseMapper courseModuleResponseMapper;
 
     private final CourseModuleRequestMapper courseModuleRequestMapper;

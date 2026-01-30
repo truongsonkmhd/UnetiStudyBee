@@ -22,12 +22,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "tbl_course_lesson",
-        indexes = {
-                @Index(name = "idx_lesson_module", columnList = "module_id"),
-                @Index(name = "idx_lesson_slug", columnList = "slug"),
-                @Index(name = "idx_lesson_published", columnList = "is_published")
-        })
+@Table(name = "tbl_course_lesson", indexes = {
+        @Index(name = "idx_lesson_module", columnList = "module_id"),
+        @Index(name = "idx_lesson_slug", columnList = "slug"),
+        @Index(name = "idx_lesson_published", columnList = "is_published")
+})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseLesson {
 
@@ -55,9 +54,6 @@ public class CourseLesson {
 
     @Column(name = "video_url")
     String videoUrl;
-
-    @Column(name = "duration")
-    Integer duration;
 
     @Column(name = "order_index", nullable = false)
     @Builder.Default

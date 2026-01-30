@@ -9,7 +9,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import java.util.UUID;
 
@@ -22,17 +25,22 @@ public class CourseController {
 
     private final CourseTreeService courseTreeService;
 
-    @PostMapping("/add")
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    @PostMapping(value = "/add", consumes = { "multipart/form-data" })
     @Transactional
-    public ResponseEntity<IResponseMessage> addCourse(@RequestBody CourseShowRequest theCourse) {
+    public ResponseEntity<IResponseMessage> addCourse(@ModelAttribute CourseShowRequest theCourse) {
         return ResponseEntity.ok().body(ResponseMessage.CreatedSuccess(courseTreeService.save(theCourse)));
     }
 
-    @PutMapping("/upd/{courseId}")
+    @PutMapping(value = "/upd/{courseId}", consumes = { "multipart/form-data" })
     @Transactional
-    ResponseEntity<IResponseMessage> updateUser(@PathVariable UUID courseId,
-            @RequestBody CourseShowRequest theCourseRequest) {
-        log.info("Updating user: {}", theCourseRequest);
+    public ResponseEntity<IResponseMessage> updateCourse(@PathVariable UUID courseId,
+            @ModelAttribute CourseShowRequest theCourseRequest) {
+        log.info("Updating course: {}", theCourseRequest);
         return ResponseEntity.ok()
                 .body(ResponseMessage.UpdatedSuccess(courseTreeService.update(courseId, theCourseRequest)));
     }
@@ -61,6 +69,17 @@ public class CourseController {
     public ResponseEntity<IResponseMessage> getCourseByID(@PathVariable String theSlug) {
         return ResponseEntity.ok()
                 .body(ResponseMessage.LoadedSuccess(courseTreeService.getCourseModuleByCourseSlug(theSlug)));
+    }
+
+    @GetMapping
+    public ResponseEntity<IResponseMessage> getAllCourses(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String category) {
+        return ResponseEntity.ok(
+                ResponseMessage.LoadedSuccess(courseTreeService.getAllCourses(page, size, q, status, category)));
     }
 
 }

@@ -56,7 +56,7 @@ public class CodingExerciseTemplateController {
 
         // ========== OFFSET PAGINATION ==========
 
-        @GetMapping("/templates")
+        @GetMapping("")
         @Operation(summary = "Get published templates (offset pagination)")
         public ResponseEntity<PageResponse<CodingExerciseTemplateCardResponse>> getPublishedTemplates(
                         @Parameter(description = "Page number (0-indexed)") @RequestParam(defaultValue = "0") int page,
@@ -65,7 +65,7 @@ public class CodingExerciseTemplateController {
                 return ResponseEntity.ok(codingExerciseTemplateService.getPublishedTemplates(page, size));
         }
 
-        @GetMapping("/templates/search")
+        @GetMapping("/search")
         @Operation(summary = "Search published templates with filters")
         public ResponseEntity<IResponseMessage> searchTemplates(
                         @RequestParam(defaultValue = "0") int page,
@@ -79,7 +79,7 @@ public class CodingExerciseTemplateController {
                                                 language)));
         }
 
-        @GetMapping("/templates/search/all")
+        @GetMapping("/search/all")
         @Operation(summary = "Search all templates (admin only)")
         public ResponseEntity<IResponseMessage> searchAllTemplates(
                         @RequestParam(defaultValue = "0") int page,
@@ -97,7 +97,7 @@ public class CodingExerciseTemplateController {
 
         // ========== CURSOR PAGINATION ==========
 
-        @GetMapping("/templates/cursor")
+        @GetMapping("/cursor")
         @Operation(summary = "Get published templates (cursor pagination for infinite scroll)")
         public ResponseEntity<CursorResponse<CodingExerciseTemplateCardResponse>> getTemplatesCursor(
                         @Parameter(description = "Cursor for next page (from previous response)") @RequestParam(required = false) String cursor,
@@ -106,7 +106,7 @@ public class CodingExerciseTemplateController {
                 return ResponseEntity.ok(codingExerciseTemplateService.getPublishedTemplatesCursor(cursor, size));
         }
 
-        @GetMapping("/templates/cursor/search")
+        @GetMapping("/cursor/search")
         @Operation(summary = "Search templates with cursor pagination")
         public ResponseEntity<CursorResponse<CodingExerciseTemplateCardResponse>> searchTemplatesCursor(
                         @RequestParam(required = false) String cursor,

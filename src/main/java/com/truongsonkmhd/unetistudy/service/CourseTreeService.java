@@ -1,5 +1,7 @@
 package com.truongsonkmhd.unetistudy.service;
 
+import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
+import com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseModuleResponse;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseShowRequest;
 import com.truongsonkmhd.unetistudy.dto.course_dto.CourseTreeResponse;
@@ -19,4 +21,7 @@ public interface CourseTreeService {
     UUID deleteById(UUID theId);
 
     List<CourseModuleResponse> getCourseModuleByCourseSlug(String theSlug);
+
+    PageResponse<CourseCardResponse> getAllCourses(
+            Integer page, Integer size, String q, String status, String category);
 }

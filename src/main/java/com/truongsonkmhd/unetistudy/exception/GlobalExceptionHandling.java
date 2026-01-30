@@ -359,7 +359,6 @@ public class GlobalExceptionHandling {
         }
 
         @ExceptionHandler(DataIntegrityViolationException.class)
-        @ResponseStatus(HttpStatus.CONFLICT)
         public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
                         DataIntegrityViolationException ex,
                         HttpServletRequest request) {
@@ -367,26 +366,33 @@ public class GlobalExceptionHandling {
                 log.error("Data integrity violation: {}", ex.getMessage());
 
                 String message = "Data integrity violation occurred";
+                HttpStatus status = HttpStatus.CONFLICT;
+                ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
+
                 if (ex.getMessage() != null) {
-                        if (ex.getMessage().contains("unique constraint")
-                                        || ex.getMessage().contains("Duplicate entry")) {
-                                message = "A record with this information already exists";
-                        } else if (ex.getMessage().contains("foreign key constraint")) {
-                                message = "Cannot perform operation due to related data";
+                        String detail = ex.getMessage();
+                        if (detail.contains("unique constraint") || detail.contains("Duplicate entry")) {
+                                message = "A record with this information already exists (unique constraint violation)";
+                        } else if (detail.contains("foreign key constraint")) {
+                                message = "Cannot perform operation due to related data (foreign key constraint violation)";
+                        } else if (detail.contains("null value") || detail.contains("violates not-null constraint")) {
+                                message = "Required information is missing (null value constraint violation)";
+                                status = HttpStatus.BAD_REQUEST;
+                                errorCode = ErrorCode.INVALID_DATA;
                         }
                 }
 
                 ErrorResponse errorResponse = ErrorResponse.builder()
                                 .timestamp(Instant.now())
-                                .status(HttpStatus.CONFLICT.value())
-                                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                                .status(status.value())
+                                .error(status.getReasonPhrase())
                                 .message(message)
                                 .path(request.getRequestURI())
-                                .code(ErrorCode.DATA_INTEGRITY_VIOLATION.name())
+                                .code(errorCode.name())
                                 .debugInfo(buildDebugInfo(ex))
                                 .build();
 
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+                return ResponseEntity.status(status).body(errorResponse);
         }
 
         // ==================== BUSINESS LOGIC EXCEPTIONS ====================

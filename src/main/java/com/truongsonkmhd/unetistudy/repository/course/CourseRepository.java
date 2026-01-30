@@ -18,110 +18,126 @@ import java.util.UUID;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID> {
 
-    List<Course> findByStatus(CourseStatus status);
+  List<Course> findByStatus(CourseStatus status);
 
-    boolean existsBySlug(String slug);
+  boolean existsBySlug(String slug);
 
-    Optional<Course> findBySlug(String slug);
+  Optional<Course> findBySlug(String slug);
 
-    // ========== OFFSET PAGINATION ==========
+  // ========== OFFSET PAGINATION ==========
 
-    @Query(
-            value = """
-        select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, size(c.modules), c.publishedAt
-        )
-        from Course c
-        where c.isPublished = true
-        order by
-            case when c.publishedAt is null then 1 else 0 end,
-            c.publishedAt desc,
-            c.createdAt desc
-    """,
-            countQuery = """
-        select count(c)
-        from Course c
-        where c.isPublished = true
-    """
-    )
-    Page<CourseCardResponse> findPublishedCourseCards(Pageable pageable);
-
-    @Query(
-            value = """
-        select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, size(c.modules), c.publishedAt
-        )
-        from Course c
-        where c.isPublished = true
-          and (
-               lower(c.title) like lower(concat('%', :q, '%'))
-            or lower(c.slug)  like lower(concat('%', :q, '%'))
+  @Query(value = """
+          select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
+              c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, CAST(size(c.modules) AS Integer), c.publishedAt
           )
-        order by
-            case when c.publishedAt is null then 1 else 0 end,
-            c.publishedAt desc,
-            c.createdAt desc
-    """,
-            countQuery = """
-        select count(c)
-        from Course c
-        where c.isPublished = true
-          and (
-               lower(c.title) like lower(concat('%', :q, '%'))
-            or lower(c.slug)  like lower(concat('%', :q, '%'))
-          )
-    """
-    )
-    Page<CourseCardResponse> searchPublishedCourseCards(@Param("q") String q, Pageable pageable);
+          from Course c
+          where c.isPublished = true
+          order by
+              case when c.publishedAt is null then 1 else 0 end,
+              c.publishedAt desc,
+              c.createdAt desc
+      """, countQuery = """
+          select count(c)
+          from Course c
+          where c.isPublished = true
+      """)
+  Page<CourseCardResponse> findPublishedCourseCards(Pageable pageable);
 
-    // ========== CURSOR PAGINATION ==========
+  @Query(value = """
+          select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
+              c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, CAST(size(c.modules) AS Integer), c.publishedAt
+          )
+          from Course c
+          where c.isPublished = true
+            and (
+                 lower(c.title) like lower(concat('%', cast(:q as string), '%'))
+              or lower(c.slug)  like lower(concat('%', cast(:q as string), '%'))
+            )
+          order by
+              case when c.publishedAt is null then 1 else 0 end,
+              c.publishedAt desc,
+              c.createdAt desc
+      """, countQuery = """
+          select count(c)
+          from Course c
+          where c.isPublished = true
+            and (
+                 lower(c.title) like lower(concat('%', :q, '%'))
+              or lower(c.slug)  like lower(concat('%', :q, '%'))
+            )
+      """)
+  Page<CourseCardResponse> searchPublishedCourseCards(@Param("q") String q, Pageable pageable);
 
-    @Query("""
-        select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, size(c.modules), c.publishedAt
-        )
-        from Course c
-        where c.isPublished = true
-          and (
-               c.publishedAt < :publishedAt
-            or (c.publishedAt = :publishedAt and c.courseId < :lastId)
-            or c.publishedAt is null
-          )
-        order by
-            case when c.publishedAt is null then 1 else 0 end,
-            c.publishedAt desc,
-            c.createdAt desc
-    """)
-    Page<CourseCardResponse> findPublishedCourseCardsAfterCursor(
-            @Param("publishedAt") LocalDateTime publishedAt,
-            @Param("lastId") UUID lastId,
-            Pageable pageable
-    );
+  // ========== CURSOR PAGINATION ==========
 
-    @Query("""
-        select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
-            c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, size(c.modules), c.publishedAt
-        )
-        from Course c
-        where c.isPublished = true
-          and (
-               lower(c.title) like lower(concat('%', :q, '%'))
-            or lower(c.slug)  like lower(concat('%', :q, '%'))
+  @Query("""
+          select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
+              c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, CAST(size(c.modules) AS Integer), c.publishedAt
           )
-          and (
-               c.publishedAt < :publishedAt
-            or (c.publishedAt = :publishedAt and c.courseId < :lastId)
-            or c.publishedAt is null
+          from Course c
+          where c.isPublished = true
+            and (
+                 c.publishedAt < :publishedAt
+              or (c.publishedAt = :publishedAt and c.courseId < :lastId)
+              or c.publishedAt is null
+            )
+          order by
+              case when c.publishedAt is null then 1 else 0 end,
+              c.publishedAt desc,
+              c.createdAt desc
+      """)
+  Page<CourseCardResponse> findPublishedCourseCardsAfterCursor(
+      @Param("publishedAt") LocalDateTime publishedAt,
+      @Param("lastId") UUID lastId,
+      Pageable pageable);
+
+  @Query(value = """
+          select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
+              c.courseId,
+              c.title,
+              c.slug,
+              c.shortDescription,
+              c.imageUrl,
+              c.isPublished,
+              CAST(size(c.modules) AS Integer),
+              c.publishedAt
           )
-        order by
-            case when c.publishedAt is null then 1 else 0 end,
-            c.publishedAt desc,
-            c.createdAt desc
-    """)
-    Page<CourseCardResponse> searchPublishedCourseCardsAfterCursor(
-            @Param("q") String q,
-            @Param("publishedAt") LocalDateTime publishedAt,
-            @Param("lastId") UUID lastId,
-            Pageable pageable
-    );
+          from Course c
+          where (cast(:q as string) is null or lower(c.title) like lower(concat('%', cast(:q as string), '%'))
+                 or lower(c.slug) like lower(concat('%', cast(:q as string), '%')))
+            and (cast(:status as string) is null or c.status = :status)
+            and (cast(:category as string) is null or c.category = :category)
+          order by c.createdAt desc
+      """)
+  Page<CourseCardResponse> findCourseCardsWithFilters(
+      @Param("q") String q,
+      @Param("status") CourseStatus status,
+      @Param("category") String category,
+      Pageable pageable);
+
+  @Query("""
+          select new com.truongsonkmhd.unetistudy.dto.course_dto.CourseCardResponse(
+              c.courseId, c.title, c.slug, c.shortDescription, c.imageUrl, c.isPublished, CAST(size(c.modules) AS Integer), c.publishedAt
+          )
+          from Course c
+          where c.isPublished = true
+            and (
+                 lower(c.title) like lower(concat('%', cast(:q as string), '%'))
+              or lower(c.slug)  like lower(concat('%', cast(:q as string), '%'))
+            )
+            and (
+                 c.publishedAt < :publishedAt
+              or (c.publishedAt = :publishedAt and c.courseId < :lastId)
+              or c.publishedAt is null
+            )
+          order by
+              case when c.publishedAt is null then 1 else 0 end,
+              c.publishedAt desc,
+              c.createdAt desc
+      """)
+  Page<CourseCardResponse> searchPublishedCourseCardsAfterCursor(
+      @Param("q") String q,
+      @Param("publishedAt") LocalDateTime publishedAt,
+      @Param("lastId") UUID lastId,
+      Pageable pageable);
 }

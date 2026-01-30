@@ -14,10 +14,12 @@ import com.truongsonkmhd.unetistudy.model.lesson.course_lesson.*;
 import com.truongsonkmhd.unetistudy.model.course.CourseModule;
 import com.truongsonkmhd.unetistudy.model.coding_template.CodingExerciseTemplate;
 import com.truongsonkmhd.unetistudy.model.quiz.Quiz;
+import com.truongsonkmhd.unetistudy.model.quiz.template.QuizTemplate;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseTemplateRepository;
 import com.truongsonkmhd.unetistudy.repository.course.CourseLessonRepository;
 import com.truongsonkmhd.unetistudy.repository.course.CourseModuleRepository;
 import com.truongsonkmhd.unetistudy.repository.UserRepository;
+import com.truongsonkmhd.unetistudy.repository.quiz.QuizTemplateRepository;
 import com.truongsonkmhd.unetistudy.service.CourseLessonService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +47,9 @@ public class CourseLessonServiceImpl implements CourseLessonService {
     private final CourseLessonRepository courseLessonRepository;
     private final CourseLessonResponseMapper courseLessonResponseMapper;
     private final CourseLessonRequestMapper courseLessonRequestMapper;
-    private final QuizExerciseMapper quizExerciseMapper;
     private final CourseModuleRepository courseModuleRepository;
     private final UserRepository userRepository;
+    private final QuizTemplateRepository quizTemplateRepository;
     private final CodingExerciseTemplateRepository templateRepository;
 
     /**
@@ -94,10 +96,17 @@ public class CourseLessonServiceImpl implements CourseLessonService {
         lesson.setCreator(user);
         lesson.setModule(existsCourseModule);
 
-        String baseSlug = new Slugify().slugify(request.getTitle());
-        lesson.setSlug(generateUniqueSlug(baseSlug));
+        String lessonSlug = request.getSlug();
+        if (lessonSlug == null || lessonSlug.isBlank()) {
+            String title = request.getTitle() != null ? request.getTitle() : "lesson";
+            String baseSlug = new Slugify().slugify(title);
+            lessonSlug = generateUniqueSlug(baseSlug);
+        }
+        lesson.setSlug(lessonSlug);
 
         addCodingExercisesToLesson(request.getExerciseTemplateIds(), lesson);
+
+        addQuizToContest(request.getQuizTemplateIds(), lesson);
 
         CourseLesson savedLesson = courseLessonRepository.save(lesson);
 
@@ -106,6 +115,23 @@ public class CourseLessonServiceImpl implements CourseLessonService {
         return courseLessonResponseMapper.toDto(savedLesson);
     }
 
+    @Transactional
+    public void addQuizToContest(List<UUID> quizTemplateIds, CourseLesson courseLesson) {
+
+        if (quizTemplateIds == null || quizTemplateIds.isEmpty()) {
+            return;
+        }
+
+        List<QuizTemplate> templates = quizTemplateRepository.findAllById(quizTemplateIds);
+
+        templates.forEach(template -> {
+            Quiz quiz = template.toQuiz();
+            courseLesson.addQuizQuestion(quiz);
+            template.incrementUsageCount();
+        });
+    }
+
+    @Transactional
     public void addCodingExercisesToLesson(List<UUID> exerciseTemplateIds, CourseLesson courseLesson) {
 
         if (exerciseTemplateIds != null && !exerciseTemplateIds.isEmpty()) {

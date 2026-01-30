@@ -48,9 +48,12 @@ public class CacheConfiguration {
                 CacheConstants.COURSE_BY_SLUG,
                 CacheConstants.COURSE_PUBLISHED_TREE,
                 CacheConstants.COURSE_CATALOG,
+                CacheConstants.COURSE_MODULES,
+                CacheConstants.ALL_USERS,
                 CacheConstants.QUIZ_BY_ID,
                 CacheConstants.QUIZ_LIST,
                 CacheConstants.QUIZ_QUESTIONS,
+                CacheConstants.QUIZ_ANSWERS,
                 CacheConstants.QUIZ_TEMPLATE_BY_ID,
                 CacheConstants.QUIZ_TEMPLATE_LIST,
                 CacheConstants.LESSON_BY_ID,
@@ -61,7 +64,10 @@ public class CacheConfiguration {
                 CacheConstants.PERMISSIONS,
                 CacheConstants.USER_ROLES,
                 CacheConstants.CLASSES,
-                CacheConstants.CONTESTS));
+                CacheConstants.CONTESTS,
+                CacheConstants.USER_STATS,
+                CacheConstants.COURSE_STATS,
+                CacheConstants.QUIZ_STATS));
 
         return cacheManager;
     }

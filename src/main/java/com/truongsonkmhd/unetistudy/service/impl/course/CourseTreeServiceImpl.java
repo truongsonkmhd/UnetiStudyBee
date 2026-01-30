@@ -4,9 +4,11 @@ import com.github.slugify.Slugify;
 import com.truongsonkmhd.unetistudy.cache.CacheConstants;
 import com.truongsonkmhd.unetistudy.common.CourseStatus;
 import com.truongsonkmhd.unetistudy.context.UserContext;
+import com.truongsonkmhd.unetistudy.dto.a_common.PageResponse;
 import com.truongsonkmhd.unetistudy.dto.coding_exercise_dto.CodingExerciseDTO;
 import com.truongsonkmhd.unetistudy.dto.course_dto.*;
 import com.truongsonkmhd.unetistudy.dto.lesson_dto.CourseLessonRequest;
+import com.truongsonkmhd.unetistudy.dto.quiz_dto.QuizDTO;
 import com.truongsonkmhd.unetistudy.exception.payload.DataNotFoundException;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleRequestMapper;
 import com.truongsonkmhd.unetistudy.mapper.course.CourseModuleResponseMapper;
@@ -23,15 +25,19 @@ import com.truongsonkmhd.unetistudy.repository.UserRepository;
 import com.truongsonkmhd.unetistudy.repository.coding.CodingExerciseRepository;
 import com.truongsonkmhd.unetistudy.repository.course.CourseRepository;
 import com.truongsonkmhd.unetistudy.repository.course.CourseModuleRepository;
-import com.truongsonkmhd.unetistudy.repository.course.CourseLessonRepository;
 import com.truongsonkmhd.unetistudy.repository.course.LessonRepository;
 import com.truongsonkmhd.unetistudy.repository.course.QuizRepository;
 import com.truongsonkmhd.unetistudy.service.CourseTreeService;
+import com.truongsonkmhd.unetistudy.service.infrastructure.PocketBaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +60,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     private final CourseModuleRequestMapper courseModuleRequestMapper;
     private final CourseModuleResponseMapper courseModuleResponseMapper;
     private final Slugify slugify;
+    private final PocketBaseService pocketBaseService;
 
     private static final Comparator<Integer> NULL_SAFE_INT = Comparator.nullsLast(Integer::compareTo);
 
@@ -74,12 +81,30 @@ public class CourseTreeServiceImpl implements CourseTreeService {
 
     @Override
     @Transactional
-    public CourseTreeResponse save(CourseShowRequest req) {
-        User instructor = userRepository.findById(req.getInstructorId())
-                .orElseThrow(() -> new DataNotFoundException("Instructor not found: " + req.getInstructorId()));
+    public CourseTreeResponse save(@NonNull CourseShowRequest req) {
+
+        UUID userID = UserContext.getUserID();
+        User instructor = userRepository.findById(userID)
+                .orElseThrow(() -> new DataNotFoundException("Instructor not found: " + userID));
 
         Course course = courseRequestMapper.toEntity(req);
         course.setInstructor(instructor);
+
+        // Upload intro video if exists
+        if (req.getVideoFile() != null && !req.getVideoFile().isEmpty()) {
+            String pbUrl = pocketBaseService.uploadFile("course_videos", req.getVideoFile());
+            if (pbUrl != null) {
+                course.setVideoUrl(pbUrl);
+            }
+        }
+
+        // Upload course image if exists
+        if (req.getImageFile() != null && !req.getImageFile().isEmpty()) {
+            String pbUrl = pocketBaseService.uploadFile("course_images", req.getImageFile());
+            if (pbUrl != null) {
+                course.setImageUrl(pbUrl);
+            }
+        }
 
         String baseSlug = slugify.slugify(req.getTitle());
         course.setSlug(generateUniqueSlug(baseSlug));
@@ -106,23 +131,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
             course.setPublishedAt(null);
         }
 
-        List<CourseModule> modules = courseModuleRequestMapper.toEntity(req.getModules());
-
-        // if (modules != null) {
-        // for (CourseModule m : modules) {
-        // course.addCourse(m);
-        // }
-        // }
-
-        if (modules != null) {
-            for (CourseModule m : modules) {
-                m.setCourse(course);
-            }
+        course.setModules(new ArrayList<>());
+        if (req.getModules() != null) {
+            syncModules(course, req.getModules(), instructor);
         }
-        course.setModules(modules);
-        Course saved = courseRepository.save(course);
-        return courseResponseMapper.toDto(saved);
 
+        Course saved = courseRepository.save(course);
+        return getCourseTree(saved.getSlug(), userRepository.findRolesByUserId(instructor.getId()));
     }
 
     /**
@@ -138,12 +153,12 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     })
     public CourseTreeResponse update(UUID courseId, CourseShowRequest req) {
         log.info("Updating course: {} - Evicting cache", courseId);
-
+        UUID userID = UserContext.getUserID();
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new DataNotFoundException("Course not found: " + courseId));
-        if (req.getInstructorId() != null) {
-            User instructor = userRepository.findById(req.getInstructorId())
-                    .orElseThrow(() -> new DataNotFoundException("Instructor not found: " + req.getInstructorId()));
+        if (userID != null) {
+            User instructor = userRepository.findById(userID)
+                    .orElseThrow(() -> new DataNotFoundException("Instructor not found: " + userID));
             course.setInstructor(instructor);
         }
 
@@ -156,14 +171,28 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         course.setSubCategory(req.getSubCategory());
         course.setDuration(req.getDuration());
         course.setCapacity(req.getCapacity());
-        course.setImageUrl(req.getImageUrl());
-        course.setVideoUrl(req.getVideoUrl());
         course.setRequirements(req.getRequirements());
         course.setObjectives(req.getObjectives());
         course.setSyllabus(req.getSyllabus());
         course.setStatus(req.getStatus());
         course.setIsPublished(req.getIsPublished());
         course.setPublishedAt(req.getPublishedAt());
+
+        // Upload/Update intro video if exists
+        if (req.getVideoFile() != null && !req.getVideoFile().isEmpty()) {
+            String pbUrl = pocketBaseService.uploadFile("course_videos", req.getVideoFile());
+            if (pbUrl != null) {
+                course.setVideoUrl(pbUrl);
+            }
+        }
+
+        // Upload/Update course image if exists
+        if (req.getImageFile() != null && !req.getImageFile().isEmpty()) {
+            String pbUrl = pocketBaseService.uploadFile("course_images", req.getImageFile());
+            if (pbUrl != null) {
+                course.setImageUrl(pbUrl);
+            }
+        }
 
         // slug update (optional)
         String newBaseSlug = slugify.slugify(req.getTitle());
@@ -174,10 +203,10 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         }
 
         // upsert tree
-        syncModules(course, req.getModules());
+        syncModules(course, req.getModules(), course.getInstructor());
 
         Course saved = courseRepository.save(course);
-        return courseResponseMapper.toDto(saved);
+        return getCourseTree(saved.getSlug(), userRepository.findRolesByUserId(course.getInstructor().getId()));
     }
 
     /**
@@ -193,7 +222,10 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     })
     public UUID deleteById(UUID theId) {
         log.info("Deleting course: {} - Evicting cache", theId);
-        courseRepository.deleteById(theId);
+        Course course = courseRepository.findById(theId)
+                .orElseThrow(() -> new DataNotFoundException("course not found: " + theId));
+
+        courseRepository.deleteById(course.getCourseId());
         return theId;
     }
 
@@ -208,16 +240,52 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PageResponse<CourseCardResponse> getAllCourses(Integer page, Integer size, String q, String status,
+            String category) {
+        int safePage = (page != null) ? Math.max(page, 0) : 0;
+        int safeSize = (size != null) ? Math.min(Math.max(size, 1), 50) : 10;
+
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+        CourseStatus courseStatus = null;
+        if (status != null && !status.isBlank()) {
+            try {
+                courseStatus = CourseStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid course status: {}", status);
+            }
+        }
+        Page<CourseCardResponse> result = courseRepository.findCourseCardsWithFilters(q, courseStatus, category,
+                pageable);
+        return PageResponse.<CourseCardResponse>builder()
+                .items(result.getContent())
+                .page(result.getNumber())
+                .size(result.getSize())
+                .totalElements(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .hasNext(result.hasNext())
+                .build();
+    }
+
+    @Override
     @Cacheable(cacheNames = "course_published_tree", key = "#slug")
     @Transactional(readOnly = true)
     public CourseTreeResponse getCourseTreeDetailPublished(String slug) {
+        if (slug == null || slug.isBlank()) {
+            throw new DataNotFoundException("Course slug must not be null or empty");
+        }
         UUID userId = UserContext.getUserID();
-        return getCourseTree(slug, userRepository.findRolesByUserId(userId));
+        Set<Role> roles = (userId != null) ? userRepository.findRolesByUserId(userId) : Collections.emptySet();
+        return getCourseTree(slug, roles);
     }
 
-    private CourseTreeResponse getCourseTree(String slug, Set<Role> mode) {
+    private CourseTreeResponse getCourseTree(String slug, Set<Role> roles) {
+        if (slug == null || slug.isBlank()) {
+            throw new DataNotFoundException("Course slug must not be null or empty");
+        }
         Course course = courseRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Course not found: " + slug));
+                .orElseThrow(() -> new DataNotFoundException("Course not found with slug: " + slug));
+
         UUID courseId = course.getCourseId();
 
         List<CourseModule> courseModule = courseModuleRepository.findModulesByCourseId(courseId);
@@ -230,12 +298,14 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         List<Quiz> quizzes = quizRepository.findQuizzesByLessonIds(lessonIds);
 
         Map<UUID, List<CodingExercise>> exByLesson = exercises.stream()
-                .collect(Collectors.groupingBy(e -> e.getContestLesson().getContestLessonId()));
+                .filter(e -> e.getCourseLesson() != null)
+                .collect(Collectors.groupingBy(e -> e.getCourseLesson().getLessonId()));
 
         Map<UUID, List<Quiz>> quizByLesson = quizzes.stream()
-                .collect(Collectors.groupingBy(q -> q.getContestLesson().getContestLessonId()));
+                .filter(q -> q.getCourseLesson() != null)
+                .collect(Collectors.groupingBy(q -> q.getCourseLesson().getLessonId()));
 
-        return mapCourse(course, courseModule, lessons, mode, exByLesson, quizByLesson);
+        return mapCourse(course, courseModule, lessons, roles, exByLesson, quizByLesson);
     }
 
     // =========================
@@ -243,13 +313,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     // =========================
 
     private CourseTreeResponse mapCourse(Course course, List<CourseModule> courseModule,
-            List<CourseLesson> courseLessons, Set<Role> mode, Map<UUID, List<CodingExercise>> exByLesson,
+            List<CourseLesson> courseLessons, Set<Role> roles, Map<UUID, List<CodingExercise>> exByLesson,
             Map<UUID, List<Quiz>> quizByLesson) {
+
         List<CourseModuleResponse> modules = courseModule.stream()
                 .sorted(Comparator.comparing(CourseModule::getOrderIndex, NULL_SAFE_INT))
-                // .filter(m -> !isOnlyStudent(mode) || allowPublished(m.getIsPublished()))
-                .filter(m -> allowPublished(m.getIsPublished()))
-                .map(m -> mapModule(m, courseLessons, mode, exByLesson, quizByLesson))
+                .filter(m -> !isOnlyStudent(roles) || allowPublished(m.getIsPublished()))
+                .map(m -> mapModule(m, courseLessons, roles, exByLesson, quizByLesson))
                 .toList();
 
         return new CourseTreeResponse(
@@ -259,17 +329,18 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 course.getDescription(),
                 course.getIsPublished(),
                 course.getStatus(),
+                pocketBaseService.toDisplayUrl(course.getImageUrl()),
+                pocketBaseService.toDisplayUrl(course.getVideoUrl()),
                 modules);
     }
 
-    private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> mode,
+    private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> roles,
             Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<Quiz>> quizByLesson) {
 
         List<CourseLessonResponse> lessons = courseLessons.stream()
                 .sorted(Comparator.comparing(CourseLesson::getOrderIndex, NULL_SAFE_INT))
-                // .filter(l -> !isOnlyStudent(mode) || allowLessonForStudent(l))
-                .filter(l -> allowLessonForStudent(l))
-                .map(l -> mapLesson(l, mode, exByLesson, quizByLesson))
+                .filter(l -> !isOnlyStudent(roles) || allowLessonForStudent(l))
+                .map(l -> mapLesson(l, roles, exByLesson, quizByLesson))
                 .toList();
 
         return new CourseModuleResponse(
@@ -280,7 +351,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 lessons);
     }
 
-    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> mode,
+    private CourseLessonResponse mapLesson(CourseLesson courseLesson, Set<Role> roles,
             Map<UUID, List<CodingExercise>> exByLesson, Map<UUID, List<Quiz>> quizByLesson) {
 
         List<CodingExerciseDTO> coding = exByLesson.getOrDefault(courseLesson.getLessonId(), List.of()).stream()
@@ -293,15 +364,19 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 .map(this::mapQuiz)
                 .toList();
 
-        return new CourseLessonResponse(
-                courseLesson.getLessonId(),
-                courseLesson.getTitle(),
-                courseLesson.getOrderIndex(),
-                courseLesson.getLessonType(),
-                courseLesson.getIsPreview(),
-                courseLesson.getIsPublished(),
-                coding,
-                quizzes);
+        return CourseLessonResponse.builder()
+                .lessonId(courseLesson.getLessonId())
+                .title(courseLesson.getTitle())
+                .orderIndex(courseLesson.getOrderIndex())
+                .lessonType(courseLesson.getLessonType())
+                .isPreview(courseLesson.getIsPreview())
+                .isPublished(courseLesson.getIsPublished())
+                .videoUrl(pocketBaseService.toDisplayUrl(courseLesson.getVideoUrl()))
+                .description(courseLesson.getDescription())
+                .content(courseLesson.getContent())
+                .codingExercises(coding)
+                .quizzes(quizzes)
+                .build();
     }
 
     private CodingExerciseDTO mapCoding(CodingExercise e) {
@@ -345,7 +420,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
     // UPDATE TREE HELPERS
     // =========================
 
-    private void syncModules(Course course, List<CourseModuleRequest> moduleRequests) {
+    private void syncModules(Course course, List<CourseModuleRequest> moduleRequests, User instructor) {
         if (moduleRequests == null)
             moduleRequests = List.of();
 
@@ -373,7 +448,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 module.setCourse(course);
             }
 
-            syncLessons(module, mr.getLessons());
+            syncLessons(module, mr.getLessons(), instructor);
             newList.add(module);
         }
 
@@ -381,7 +456,7 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         course.getModules().addAll(newList);
     }
 
-    private void syncLessons(CourseModule module, List<CourseLessonRequest> courseLessonRequests) {
+    private void syncLessons(CourseModule module, List<CourseLessonRequest> courseLessonRequests, User instructor) {
         if (courseLessonRequests == null)
             courseLessonRequests = List.of();
 
@@ -402,6 +477,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 lesson = new CourseLesson();
                 lesson.setLessonId(null);
                 lesson.setModule(module);
+                lesson.setCreator(instructor); // Set creator for new lesson
+            }
+
+            // Always ensure creator is set if it was somehow missing (though it shouldn't
+            // be for existing ones)
+            if (lesson.getCreator() == null) {
+                lesson.setCreator(instructor);
             }
 
             // set/update fields
@@ -410,11 +492,29 @@ public class CourseTreeServiceImpl implements CourseTreeService {
             lesson.setLessonType(lr.getLessonType());
             lesson.setContent(lr.getContent());
             lesson.setVideoUrl(lr.getVideoUrl());
-            lesson.setDuration(lr.getDuration());
             lesson.setOrderIndex(lr.getOrderIndex());
             lesson.setIsPreview(Boolean.TRUE.equals(lr.getIsPreview()));
             lesson.setIsPublished(Boolean.TRUE.equals(lr.getIsPublished()));
-            lesson.setSlug(lr.getSlug());
+
+
+            String lessonSlug = lr.getSlug();
+            if (lessonSlug == null || lessonSlug.isBlank()) {
+                String title = lr.getTitle() != null ? lr.getTitle() : "lesson";
+                String baseSlug = slugify.slugify(title);
+                lessonSlug = generateUniqueLessonSlug(baseSlug);
+            }
+            lesson.setSlug(lessonSlug);
+
+            // Upload lesson video if exists
+            if (lr.getVideoFile() != null && !lr.getVideoFile().isEmpty()) {
+                String pbUrl = pocketBaseService.uploadFile("lesson_videos", lr.getVideoFile());
+                if (pbUrl != null) {
+                    lesson.setVideoUrl(pbUrl);
+                }
+            } else if (lr.getVideoUrl() != null) {
+                lesson.setVideoUrl(lr.getVideoUrl());
+            }
+
             newList.add(lesson);
         }
 
@@ -452,13 +552,25 @@ public class CourseTreeServiceImpl implements CourseTreeService {
         }
     }
 
+    private String generateUniqueLessonSlug(String baseSlug) {
+        String slug = baseSlug;
+        int counter = 1;
+        while (lessonRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + counter;
+            counter++;
+        }
+        return slug;
+    }
+
     // =========================
     // FILTER HELPERS
     // =========================
-    // private boolean isOnlyStudent(Set<Role> roles) {
-    // return roles != null && roles.stream()
-    // .anyMatch(r -> UserType.STUDENT.getValue().equals(r.getCode()));
-    // }
+    private boolean isOnlyStudent(Set<Role> roles) {
+        if (roles == null || roles.isEmpty())
+            return true;
+        return roles.stream()
+                .allMatch(r -> com.truongsonkmhd.unetistudy.common.UserType.STUDENT.getValue().equals(r.getCode()));
+    }
 
     private boolean allowPublished(Boolean flag) {
         return Boolean.TRUE.equals(flag);

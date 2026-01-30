@@ -20,7 +20,5 @@ public class ContestShowDTO {
     String image;
     Boolean isPreview;
     String slug;
-    LocalDateTime contestStartTime;
-    LocalDateTime contestEndTime;
 
 }
