@@ -21,7 +21,8 @@ public class CourseCatalogController {
 
     @GetMapping("/published")
     @Transactional
-    public ResponseEntity<IResponseMessage> getPublished(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<IResponseMessage> getPublished(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String q) {
         return ResponseEntity.ok()

@@ -21,10 +21,10 @@ public class CourseTreeResponse {
     CourseStatus status;
     String imageUrl;
     String videoUrl;
-
-    public String getFileUrl() {
-        return videoUrl;
-    }
-
     List<CourseModuleResponse> modules;
+
+    Integer enrolledCount;
+    Double rating;
+    Integer ratingCount;
+    java.time.Instant updatedAt;
 }

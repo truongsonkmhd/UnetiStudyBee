@@ -20,4 +20,6 @@ public class CourseCardResponse {
     private Boolean isPublished;
     private Integer totalModules;
     private LocalDateTime publishedAt;
+    private Integer enrolledCount;
+    private String instructorName;
 }

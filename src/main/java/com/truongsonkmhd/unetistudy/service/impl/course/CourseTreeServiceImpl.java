@@ -331,7 +331,13 @@ public class CourseTreeServiceImpl implements CourseTreeService {
                 course.getStatus(),
                 pocketBaseService.toDisplayUrl(course.getImageUrl()),
                 pocketBaseService.toDisplayUrl(course.getVideoUrl()),
-                modules);
+                modules,
+                course.getEnrolledCount() != null ? course.getEnrolledCount() : 0,
+                course.getRating() != null ? course.getRating().doubleValue() : 0.0,
+                course.getRatingCount() != null ? course.getRatingCount() : 0,
+                course.getUpdatedAt() != null ? course.getUpdatedAt()
+                        : (course.getPublishedAt() != null ? course.getPublishedAt().toInstant(java.time.ZoneOffset.UTC)
+                                : java.time.Instant.now()));
     }
 
     private CourseModuleResponse mapModule(CourseModule m, List<CourseLesson> courseLessons, Set<Role> roles,
@@ -495,7 +501,6 @@ public class CourseTreeServiceImpl implements CourseTreeService {
             lesson.setOrderIndex(lr.getOrderIndex());
             lesson.setIsPreview(Boolean.TRUE.equals(lr.getIsPreview()));
             lesson.setIsPublished(Boolean.TRUE.equals(lr.getIsPublished()));
-
 
             String lessonSlug = lr.getSlug();
             if (lessonSlug == null || lessonSlug.isBlank()) {

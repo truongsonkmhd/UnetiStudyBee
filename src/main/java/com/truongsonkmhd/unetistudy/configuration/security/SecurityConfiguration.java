@@ -63,6 +63,7 @@ public class SecurityConfiguration {
                                         .requestMatchers(mvc.pattern("/api/admin/class/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/admin/quiz-templates/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER)
                                         .requestMatchers(mvc.pattern("/api/admin/managerment-cache/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN)
+                                        .requestMatchers(mvc.pattern("/api/enrollments/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN  , AuthoritiesConstants.TEACHER ,AuthoritiesConstants.STUDENT)
                                         .requestMatchers(mvc.pattern("/api/quiz/**")).hasAnyAuthority(AuthoritiesConstants.ADMIN ,  AuthoritiesConstants.SYS_ADMIN, AuthoritiesConstants.TEACHER ,AuthoritiesConstants.STUDENT)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
